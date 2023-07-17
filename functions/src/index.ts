@@ -9,16 +9,7 @@
 
 import { getFirestore } from "firebase-admin/firestore";
 import { onRequest } from "firebase-functions/v1/https";
-
-// import {onRequest} from "firebase-functions/v2/https";
-// import * as logger from "firebase-functions/logger";
-
-// The Cloud Functions for Firebase SDK to create Cloud Functions and triggers.
-// const {onDocumentCreated} = require("firebase-functions/v2/firestore");
-
-// The Firebase Admin SDK to access Firestore.
-const {initializeApp} = require("firebase-admin/app");
-// const {getFirestore} = require("firebase-admin/firestore");
+const { initializeApp } = require("firebase-admin/app");
 
 initializeApp();
 
@@ -35,8 +26,8 @@ exports.addmessage = onRequest(async (req, res) => {
   const original = req.query.text;
   // Push the new message into Firestore using the Firebase Admin SDK.
   const writeResult = await getFirestore()
-      .collection("messages")
-      .add({original: original});
+    .collection("messages")
+    .add({original: original});
   // Send back a message that we've successfully written the message
   res.json({result: `Message with ID: ${writeResult.id} added.`});
 });
