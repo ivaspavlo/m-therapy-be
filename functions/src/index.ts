@@ -46,6 +46,8 @@ exports.makeuppercase = onDocumentCreated("/messages/{documentId}", (event: any)
 
 // _______________________________________________________ //
 
+// Debugger instructions https://medium.com/firebase-developers/debugging-firebase-functions-in-vs-code-a1caf22db0b2
+
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
 
