@@ -3,10 +3,11 @@ import { onRequest } from 'firebase-functions/v2/https';
 import { onDocumentCreated } from 'firebase-functions/v2/firestore';
 import { initializeApp } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
+import { RegisterFunction } from './auth';
 
 initializeApp();
 
-
+exports.register = RegisterFunction;
 
 // Take the text parameter passed to this HTTP endpoint and insert it into
 // Firestore under the path /messages/:documentId/original
@@ -40,21 +41,21 @@ exports.makeuppercase = onDocumentCreated("/messages/{documentId}", (event: any)
   return event.data.ref.set({uppercase}, {merge: true});
 });
 
-exports.registerUser = onRequest(async (req: Request, res: Response) => {
+exports.registerUser = onRequest(
+  { enforceAppCheck: true }, async (req: Request, res: Response) => {
+    let user;
 
-  let user;
+    try {
+      user = JSON.parse(req.body);
+    } catch (e: any) {
+      logger.log(e);
+    }
 
-  try {
-    user = JSON.parse(req.body);
-  } catch (e: any) {
-    logger.log(e);
+    console.log(user);
+
+    res.json({result: `User with ID: ${1} created.`});
   }
-
-  console.log(user);
-
-  res.json({result: `User with ID: ${1} created.`});
-
-});
+);
 
 
 
