@@ -1,5 +1,9 @@
 {
   "projects": {
-    "default": "massage-therapy-v2"
-  }
+    "default": "massage-therapy-v2",
+    "mt-stage": "mt-stage",
+    "mt-prod": "mt-prod-ef7f0"
+  },
+  "targets": {},
+  "etags": {}
 }
