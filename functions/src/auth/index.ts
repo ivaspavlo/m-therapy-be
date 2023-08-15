@@ -1,1 +1,1 @@
-export * from './register.function';
+export * from './register/register.function';
