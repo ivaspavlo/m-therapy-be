@@ -3,14 +3,14 @@ import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
 import { defineString } from 'firebase-functions/params';
 
-const welcomeMessage = defineString('WELCOME_MESSAGE');
-
+const message = defineString('WELCOME_MESSAGE');
 
 export const RegisterFunction = onRequest(
   // { cors: CORS_URLS, enforceAppCheck: true },
   async (req: Request, res: Response) => {
-    console.log(welcomeMessage);
-    const original = req.query.text;
+    
+
+    const original = req.body;
     const writeResult = await getFirestore()
       .collection('messages')
       .add({original: original});
