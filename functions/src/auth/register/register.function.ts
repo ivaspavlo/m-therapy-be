@@ -1,20 +1,26 @@
 import { getFirestore } from 'firebase-admin/firestore';
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
-import { defineString } from 'firebase-functions/params';
 
-const message = defineString('WELCOME_MESSAGE');
+import { RegisterValidator } from './register.validator';
+import { ResponseBody } from '../../models/response-body.model';
+import { COLLECTIONS } from '../../constants';
+
 
 export const RegisterFunction = onRequest(
-  // { cors: CORS_URLS, enforceAppCheck: true },
+  // { cors: CORS_URLS },
   async (req: Request, res: Response) => {
-    
+    const prospectiveUser = req.body;
+    const validationErrors = RegisterValidator(prospectiveUser);
 
-    const original = req.body;
-    const writeResult = await getFirestore()
-      .collection('messages')
-      .add({original: original});
+    if (validationErrors) {
+      res.json(new ResponseBody(null, false, validationErrors))
+    }
 
-    res.json({result: `Message with ID: ${writeResult.id} added.`});
+    const createdUser = await getFirestore()
+      .collection(COLLECTIONS.USERS)
+      .add(prospectiveUser);
+
+    res.json(new ResponseBody(createdUser, true));
   }
 );

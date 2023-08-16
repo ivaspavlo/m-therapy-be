@@ -1,7 +1,8 @@
 export interface IRegisterReq {
-
-}
-
-export interface IRegisterRes {
-  
+  firstname: string,
+  lastname: string,
+  email: string,
+  phone: string,
+  address: string,
+  password: string
 }
