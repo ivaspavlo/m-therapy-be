@@ -1,5 +1,5 @@
 import { IRegisterReq } from './register.interface';
 
-export const RegisterValidator = (req: IRegisterReq): string[] | null => {
+export const RegisterValidator = async (req: IRegisterReq): Promise<string[] | null> => {
   return null;
 }
