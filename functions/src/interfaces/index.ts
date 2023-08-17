@@ -1,1 +1,2 @@
-export * from './http-response.interface';
+export * from './response-body.interface';
+export * from './validation-result.interface';
