@@ -1,6 +1,6 @@
 import { QuerySnapshot } from 'firebase-admin/firestore';
 import { IRegisterReq } from './register.interface';
-import { ERROR_MESSAGES } from '../../constants';
+import { ERROR_MESSAGES } from '../../shared/constants';
 
 
 const fieldValidators: Record<keyof IRegisterReq, Function[]> = {

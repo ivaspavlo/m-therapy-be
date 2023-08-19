@@ -1,4 +1,5 @@
-import { IResponseBody } from '../interfaces';
+import { IResponseBody } from '../../shared/interfaces';
+
 
 export class ResponseBody<T> implements IResponseBody<T> {
   public data!: T;
