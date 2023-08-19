@@ -2,8 +2,8 @@ import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
 import { QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
 
-import { ResponseBody } from '../../models/response-body.model';
-import { COLLECTIONS, ERROR_MESSAGES } from '../../constants';
+import { ResponseBody } from '../../shared/models';
+import { COLLECTIONS, ERROR_MESSAGES } from '../../shared/constants';
 import { RegisterValidator } from './register.validator';
 import { IRegisterReq } from './register.interface';
 
