@@ -3,6 +3,5 @@ export interface IRegisterReq {
   lastname: string,
   email: string,
   phone: string,
-  address: string,
   password: string
 }
