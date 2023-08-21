@@ -4,7 +4,7 @@ export class User {
   public lastname!: string;
   public email!: string;
   public phone!: string;
-  public address!: string;
+  public birthday!: number;
   public password!: string;
 
   constructor(
@@ -12,14 +12,14 @@ export class User {
     lastname: string,
     email: string,
     phone: string,
-    address: string,
+    birthday: number,
     password: string
   ) {
     this.firstname = firstname;
     this.lastname = lastname;
     this.email = email;
     this.phone = phone;
-    this.address = address;
+    this.birthday = birthday;
     this.password = password;
   }
 }
