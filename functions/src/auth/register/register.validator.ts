@@ -7,6 +7,7 @@ const fieldValidators: Record<keyof IRegisterReq, Function[]> = {
   firstname: [minCharQty(3), maxCharQty(20)],
   lastname: [minCharQty(3), maxCharQty(20)],
   email: [emailValidator],
+  birthday: [birthdayValidator],
   phone: [minCharQty(9), maxCharQty(15)],
   password: [passwordValidator]
 }
@@ -56,4 +57,11 @@ function emailValidator(value: string): boolean {
 // At least: 8 characters, one letter, one number, one special character.
 function passwordValidator(value: string): boolean {
   return typeof value === 'string' && /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(value);
+}
+
+function birthdayValidator(value: number): boolean {
+  if (typeof value !== 'number') {
+    return false;
+  }
+  return new Date().getFullYear() - new Date(value).getFullYear() <= 90;
 }
