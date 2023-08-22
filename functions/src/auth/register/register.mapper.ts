@@ -1,9 +1,10 @@
 import { defineInt } from 'firebase-functions/params';
 import { IRegisterReq } from './register.interface';
-import { User } from '../../shared/models';
+import { IUser } from '../../shared/interfaces';
+import { ENV_KEYS } from '../../shared/constants';
 
 const bcrypt = require('bcrypt');
-const saltRounds = defineInt('SALT_ROUNDS');
+const saltRounds = defineInt(ENV_KEYS.SALT_ROUNDS);
 
 
 export const RegisterMapper = async (req: IRegisterReq): Promise<any> => {
@@ -13,12 +14,14 @@ export const RegisterMapper = async (req: IRegisterReq): Promise<any> => {
     return Promise.reject();
   }
 
-  return new User(
-    req.firstname,
-    req.lastname,
-    req.email,
-    req.phone,
-    req.birthday,
-    hashedPassword
-  );
+  const user: IUser = {
+    firstname: req.firstname,
+    lastname: req.lastname,
+    email: req.email,
+    phone: req.phone,
+    birthday: req.birthday,
+    password: hashedPassword
+  };
+
+  return user;
 }

@@ -9,3 +9,7 @@ export enum ERROR_MESSAGES {
 export enum COLLECTIONS {
   USERS = 'users'
 }
+
+export enum ENV_KEYS {
+  SALT_ROUNDS = 'SALT_ROUNDS'
+}
