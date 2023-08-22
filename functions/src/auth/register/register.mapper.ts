@@ -1,17 +1,13 @@
-import * as bcrypt from 'bcryptjs';
+import { defineInt } from 'firebase-functions/params';
 import { IRegisterReq } from './register.interface';
 import { User } from '../../shared/models';
 
+const bcrypt = require('bcrypt');
+const saltRounds = defineInt('SALT_ROUNDS');
+
 
 export const RegisterMapper = async (req: IRegisterReq): Promise<any> => {
-  const hashedPassword = await new Promise<string | null>((resolve) => {
-    bcrypt.hash(req.password, bcrypt.getSalt('test'), (err: any, hash: string) => {
-      if (err) {
-        resolve(null);
-      }
-      resolve(hash);
-    });
-  });
+  const hashedPassword = await bcrypt.hash(req.password, saltRounds.value());
 
   if (!hashedPassword) {
     return Promise.reject();
