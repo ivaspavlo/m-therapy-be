@@ -4,6 +4,7 @@ import { IUser } from '../../shared/interfaces';
 import { ENV_KEYS } from '../../shared/constants';
 
 const bcrypt = require('bcrypt');
+const xss = require('xss');
 const saltRounds = defineInt(ENV_KEYS.SALT_ROUNDS);
 
 
@@ -15,10 +16,10 @@ export const RegisterMapper = async (req: IRegisterReq): Promise<any> => {
   }
 
   const user: IUser = {
-    firstname: req.firstname,
-    lastname: req.lastname,
-    email: req.email,
-    phone: req.phone,
+    firstname: xss(req.firstname),
+    lastname: xss(req.lastname),
+    email: xss(req.email),
+    phone: xss(req.phone),
     birthday: req.birthday,
     password: hashedPassword
   };
