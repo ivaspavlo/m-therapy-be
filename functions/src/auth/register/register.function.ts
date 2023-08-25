@@ -12,7 +12,7 @@ import { RegisterMapper } from './register.mapper';
 
 export const RegisterFunction = onRequest(
   // { cors: CORS_URLS },
-  async (req: Request, res: Response) => {
+  async (req: Request, res: Response): Promise<void> => {
     const userData: IRegisterReq = req.body;
     let validationErrors: string[] | null = null;
 
