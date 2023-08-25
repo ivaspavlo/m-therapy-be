@@ -1,6 +1,7 @@
 import { initializeApp } from 'firebase-admin/app';
-import { RegisterFunction } from './auth';
+import { LoginFunction, RegisterFunction } from './auth';
 
 initializeApp();
 
 exports.register = RegisterFunction;
+exports.login = LoginFunction;
