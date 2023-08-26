@@ -4,6 +4,7 @@ export enum ERROR_MESSAGES {
   GENERAL = 'Internal server error',
   DUPLICATE = 'Instance already exists',
   NOT_FOUND = 'Instance not found',
+  CREDENTIALS = 'Credentials are incorrect',
   FIELDS_VALIDATION = 'Validation for fields failed'
 };
 

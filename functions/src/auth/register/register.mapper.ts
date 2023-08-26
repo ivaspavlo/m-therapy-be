@@ -8,7 +8,7 @@ const xss = require('xss');
 const saltRounds = defineInt(ENV_KEYS.SALT_ROUNDS);
 
 
-export const RegisterMapper = async (req: IRegisterReq): Promise<any> => {
+export const RegisterMapper = async (req: IRegisterReq): Promise<IUser> => {
   const hashedPassword = await bcrypt.hash(req.password, saltRounds.value());
 
   if (!hashedPassword) {
