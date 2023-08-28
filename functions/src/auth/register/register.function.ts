@@ -47,6 +47,6 @@ export const RegisterFunction = onRequest(
       return;
     }
 
-    res.status(200).send(new ResponseBody({}, true));
+    res.status(201).send(new ResponseBody({}, true));
   }
 );

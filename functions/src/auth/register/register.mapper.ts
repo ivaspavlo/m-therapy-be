@@ -5,11 +5,11 @@ import { ENV_KEYS } from '../../shared/constants';
 
 const bcrypt = require('bcrypt');
 const xss = require('xss');
-const saltRounds = defineInt(ENV_KEYS.SALT_ROUNDS);
+const saltRounds = defineInt(ENV_KEYS.SALT_ROUNDS).value();
 
 
 export const RegisterMapper = async (req: IRegisterReq): Promise<IUser> => {
-  const hashedPassword = await bcrypt.hash(req.password, saltRounds.value());
+  const hashedPassword = await bcrypt.hash(req.password, saltRounds);
 
   if (!hashedPassword) {
     return Promise.reject();
@@ -21,7 +21,8 @@ export const RegisterMapper = async (req: IRegisterReq): Promise<IUser> => {
     email: xss(req.email),
     phone: xss(req.phone),
     birthday: req.birthday,
-    password: hashedPassword
+    password: hashedPassword,
+    created: Date.now()
   };
 
   return user;
