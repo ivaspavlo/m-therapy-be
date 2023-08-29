@@ -49,8 +49,14 @@ export const LoginFunction = onRequest(
       return;
     }
 
-    const jwtToken = jwt.sign({ id: user.id }, jwtSecret, { expiresIn: jwtExp });
+    let jwtToken = null;
+    try {
+      jwtToken = jwt.sign({ id: userDocumentSnapshot.id }, jwtSecret, { expiresIn: jwtExp });
+    } catch (e: any) {
+      res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+      return;
+    }
 
-    res.status(200).send(new ResponseBody({ jwtToken, id: user.id }, true));
+    res.status(200).send(new ResponseBody({ jwtToken, id: userDocumentSnapshot.id }, true));
   }
 );
