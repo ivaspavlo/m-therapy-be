@@ -9,7 +9,8 @@ export enum ERROR_MESSAGES {
 };
 
 export enum COLLECTIONS {
-  USERS = 'users'
+  USERS = 'users',
+  ADMIN = 'admin'
 }
 
 export enum ENV_KEYS {

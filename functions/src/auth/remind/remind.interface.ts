@@ -1,3 +1,10 @@
 export interface IRemind {
-  email: string
+  email: string,
+  lang: string
+}
+
+export interface IMailingData {
+  from: string,
+  pass: string,
+  user: string
 }

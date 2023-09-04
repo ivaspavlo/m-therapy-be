@@ -1,23 +1,44 @@
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
+import { QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
+import { defineInt } from 'firebase-functions/params';
 import { ResponseBody } from '../../shared/models';
-import { ERROR_MESSAGES } from '../../shared/constants';
-import { IRemind } from './remind.interface';
+import { COLLECTIONS, ERROR_MESSAGES } from '../../shared/constants';
+import { ENV_KEYS } from '../../shared/constants';
+import { IMailingData, IRemind } from './remind.interface';
 
+const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
+const saltRounds = defineInt(ENV_KEYS.SALT_ROUNDS).value();
 
-let transporter = nodemailer.createTransport({
-  service: 'gmail',
-  auth: {
-    user: 'samoran4ez@gmail.com',
-    pass: 'edcnmmtlusecbshk'
-  }
-});
 
 export const RemindFunction = onRequest(
   async (req: Request, res: Response): Promise<void> => {
-
     const addressee: IRemind = req.body;
+    let queryForMailingData;
+
+    try {
+      queryForMailingData = await getFirestore().collection(COLLECTIONS.ADMIN).where('id', '==', 'email').get();
+    } catch(e: any) {
+      res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+      return;
+    }
+
+    const mailingDataSnapshot: QueryDocumentSnapshot | undefined = queryForMailingData.docs.find(d => !!d);
+    if (!mailingDataSnapshot || !mailingDataSnapshot.data()) {
+      res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+      return;
+    }
+
+    const mailingData: IMailingData = mailingDataSnapshot.data() as IMailingData;
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: 'samoran4ez@gmail.com',
+        pass: 'edcnmmtlusecbshk'
+      }
+    });
 
     const mailOptions = {
       from: 'Your Account Name <yourgmailaccount@gmail.com>',
@@ -304,12 +325,15 @@ export const RemindFunction = onRequest(
       `
     };
 
+    const pass = await bcrypt.hash('edcnmmtlusecbshk', saltRounds);
+    const email = await bcrypt.hash('samoran4ez@gmail.com', saltRounds);
+
     transporter.sendMail(mailOptions, (e: any, info: any) => {
       if (e) {
         res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
         return;
       }
-      res.status(200).send(new ResponseBody({}, true));
+      res.status(200).send(new ResponseBody({ pass, email }, true));
     });
   }
 );
