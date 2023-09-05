@@ -1,18 +1,15 @@
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
 import { QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
-import { defineInt } from 'firebase-functions/params';
 import { ResponseBody } from '../../shared/models';
 import { COLLECTIONS, ERROR_MESSAGES } from '../../shared/constants';
-import { ENV_KEYS } from '../../shared/constants';
 import { IMailingData, IRemind } from './remind.interface';
 
-const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
-const saltRounds = defineInt(ENV_KEYS.SALT_ROUNDS).value();
 
 
 export const RemindFunction = onRequest(
+  { secrets: ["MAIL_USER", "MAIL_PASS"] },
   async (req: Request, res: Response): Promise<void> => {
     const addressee: IRemind = req.body;
     let queryForMailingData;
@@ -35,8 +32,8 @@ export const RemindFunction = onRequest(
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: 'samoran4ez@gmail.com',
-        pass: 'edcnmmtlusecbshk'
+        user: mailingData.user,
+        pass: mailingData.pass
       }
     });
 
@@ -325,15 +322,12 @@ export const RemindFunction = onRequest(
       `
     };
 
-    const pass = await bcrypt.hash('edcnmmtlusecbshk', saltRounds);
-    const email = await bcrypt.hash('samoran4ez@gmail.com', saltRounds);
-
     transporter.sendMail(mailOptions, (e: any, info: any) => {
       if (e) {
         res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
         return;
       }
-      res.status(200).send(new ResponseBody({ pass, email }, true));
+      res.status(200).send(new ResponseBody(mailingData, true));
     });
   }
 );
