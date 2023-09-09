@@ -1,9 +1,9 @@
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
-import { QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
 import { ResponseBody } from '../../shared/models';
-import { COLLECTIONS, ERROR_MESSAGES } from '../../shared/constants';
-import { IMailingData, IRemind } from './remind.interface';
+import { ERROR_MESSAGES } from '../../shared/constants';
+import { IRemind } from './remind.interface';
+import { RemindValidator } from './remind.validator';
 
 const nodemailer = require('nodemailer');
 
@@ -12,28 +12,34 @@ export const RemindFunction = onRequest(
   { secrets: ["MAIL_USER", "MAIL_PASS"] },
   async (req: Request, res: Response): Promise<void> => {
     const addressee: IRemind = req.body;
-    let queryForMailingData;
 
-    try {
-      queryForMailingData = await getFirestore().collection(COLLECTIONS.ADMIN).where('id', '==', 'email').get();
-    } catch(e: any) {
-      res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+    const validationErrors: string[] | null = RemindValidator(req.body);
+    if (validationErrors) {
+      res.status(400).send(new ResponseBody(null, false, [ERROR_MESSAGES.FIELDS_VALIDATION]));
       return;
     }
+    
+    // let queryForMailingData;
+    // try {
+    //   queryForMailingData = await getFirestore().collection(COLLECTIONS.ADMIN).where('id', '==', 'email').get();
+    // } catch(e: any) {
+    //   res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+    //   return;
+    // }
 
-    const mailingDataSnapshot: QueryDocumentSnapshot | undefined = queryForMailingData.docs.find(d => !!d);
-    if (!mailingDataSnapshot || !mailingDataSnapshot.data()) {
-      res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
-      return;
-    }
+    // const mailingDataSnapshot: QueryDocumentSnapshot | undefined = queryForMailingData.docs.find(d => !!d);
+    // if (!mailingDataSnapshot || !mailingDataSnapshot.data()) {
+    //   res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+    //   return;
+    // }
 
-    const mailingData: IMailingData = mailingDataSnapshot.data() as IMailingData;
+    // const mailingData: IMailingData = mailingDataSnapshot.data() as IMailingData;
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: mailingData.user,
-        pass: mailingData.pass
+        user: 'mailingData.user',
+        pass: 'mailingData.pass'
       }
     });
 
@@ -327,7 +333,7 @@ export const RemindFunction = onRequest(
         res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
         return;
       }
-      res.status(200).send(new ResponseBody(mailingData, true));
+      res.status(200).send(new ResponseBody({}, true));
     });
   }
 );
