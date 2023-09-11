@@ -1,4 +1,4 @@
-export interface IRemind {
+export interface IRemindReq {
   email: string,
   lang: string
 }
