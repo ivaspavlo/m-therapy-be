@@ -1,11 +1,11 @@
 import { IRemindReq } from './remind.interface';
 
-export const GetNodemailerOptions = (req: IRemindReq) => {
+export const GetNodemailerOptions = (req: IRemindReq, uiUrl: string, resetToken: string) => {
   return {
     from: 'Tkachuk Massage Therapy <tkachuk_massage_therapy@gmail.com>',
     to: req.email,
     subject: GetEmailSubjectPerLanguage(req.lang),
-    html: GetEmailTemplatePerLanguage(req.lang)
+    html: GetEmailTemplatePerLanguage(req.lang, `${uiUrl}/reset/${resetToken}`)
   };
 }
 
@@ -15,7 +15,7 @@ export const GetEmailSubjectPerLanguage = (lang: string): string => {
     : 'Змінити пароль для Tkachuk Massage Therapy';
 }
 
-export const GetEmailTemplatePerLanguage = (lang: string): string => {
+export const GetEmailTemplatePerLanguage = (lang: string, url: string): string => {
   return `
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -230,7 +230,7 @@ export const GetEmailTemplatePerLanguage = (lang: string): string => {
             
       <div style="font-size: 14px; line-height: 160%; text-align: center; word-wrap: break-word;">
         <p style="font-size: 14px; line-height: 160%;">${ lang === 'ua' ? 'Будь ласка, перейдіть за посиланням нижче для того, щоб змінити пароль:' : 'Please follow the link below in order to reset your password:'}</p>
-        <p style="font-size: 14px; line-height: 160%;"><span style="color: #2dc26b; line-height: 25.6px; font-size: 16px;"><a rel="noopener" href="https://www.pavlo.pro/" target="_blank" style="color: #044e3b;">http://www.somelink.com</a></span></p>
+        <p style="font-size: 14px; line-height: 160%;"><span style="color: #2dc26b; line-height: 25.6px; font-size: 16px;"><a rel="noopener" href="${ url }" target="_blank" style="color: #044e3b;">${ url }</a></span></p>
         <p style="font-size: 14px; line-height: 160%;"><span style="font-size: 12px; line-height: 19.2px;">${ lang === 'ua' ? 'Якщо ви не надсилали запит на зміну пароля, проігноруйте цей електронний лист.' : 'In case you have not requested the password reset please ignore this email.'}</span></p>
       </div>
     

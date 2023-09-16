@@ -1,5 +1,6 @@
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
+import { defineString } from 'firebase-functions/params';
 import { ResponseBody } from '../../shared/models';
 import { ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
 import { IRemindReq } from './remind.interface';
@@ -7,10 +8,14 @@ import { RemindValidator } from './remind.validator';
 import { GetNodemailerOptions } from './remind.utils';
 
 const nodemailer = require('nodemailer');
+const jwt = require('jsonwebtoken');
+
+const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP).value();
+const uiUrl = defineString(ENV_KEYS.UI_URL);
 
 
 export const RemindFunction = onRequest(
-  { secrets: [ENV_KEYS.MAIL_PASS, ENV_KEYS.MAIL_USER] },
+  { secrets: [ENV_KEYS.MAIL_PASS, ENV_KEYS.MAIL_USER, ENV_KEYS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
     const remindReq: IRemindReq = req.body;
 
@@ -28,9 +33,15 @@ export const RemindFunction = onRequest(
       }
     });
 
-    // let resetToken = crypto.randomBytes(32).toString("hex");
+    let resetToken = null;
+    try {
+      resetToken = jwt.sign({ id: remindReq.email }, process.env[ENV_KEYS.JWT_SECRET], { expiresIn: resetTokenExp });
+    } catch (e: any) {
+      res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+      return;
+    }
 
-    const mailOptions = GetNodemailerOptions(remindReq);
+    const mailOptions = GetNodemailerOptions(remindReq, uiUrl.value(), resetToken);
 
     transporter.sendMail(mailOptions, (e: any) => {
       if (e) {
