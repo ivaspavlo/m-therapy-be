@@ -35,7 +35,7 @@ export const RemindFunction = onRequest(
 
     let resetToken = null;
     try {
-      resetToken = jwt.sign({ id: remindReq.email }, process.env[ENV_KEYS.JWT_SECRET], { expiresIn: resetTokenExp });
+      resetToken = jwt.sign({ email: remindReq.email }, process.env[ENV_KEYS.JWT_SECRET], { expiresIn: resetTokenExp });
     } catch (e: any) {
       res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       return;
