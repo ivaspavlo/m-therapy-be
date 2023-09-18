@@ -7,7 +7,7 @@ import { ResponseBody } from '../../shared/models';
 import { IUser } from '../../shared/interfaces';
 
 
-export const LoginFunction = onRequest(
+export const ResetFunction = onRequest(
   // { secrets: [ENV_KEYS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
     const resetToken: string = req.query.token as string;
