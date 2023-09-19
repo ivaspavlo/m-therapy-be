@@ -1,3 +1,4 @@
 export interface IResetReq {
-  password: string
+  password: string,
+  oldPassword: string
 }

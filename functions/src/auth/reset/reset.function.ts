@@ -2,13 +2,13 @@ import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
 import { QueryDocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
 import { COLLECTIONS, ERROR_MESSAGES } from '../../shared/constants';
-import { IResetReq } from './reset.interface';
 import { ResponseBody } from '../../shared/models';
 import { IUser } from '../../shared/interfaces';
+import { IResetReq } from './reset.interface';
+import { ResetValidator } from './reset.validator';
 
 
 export const ResetFunction = onRequest(
-  // { secrets: [ENV_KEYS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
     const resetToken: string = req.query.token as string;
     const resetData: IResetReq = req.body;
@@ -41,6 +41,12 @@ export const ResetFunction = onRequest(
     }
 
     const user: IUser = userDocumentSnapshot.data() as IUser;
+
+    const validationErrors: string[] | null = await ResetValidator(resetData, user);
+    if (validationErrors) {
+      res.status(401).json(new ResponseBody(null, false, validationErrors));
+      return;
+    }
 
     res.status(200).send(new ResponseBody({}, true));
   }
