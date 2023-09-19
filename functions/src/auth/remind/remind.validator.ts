@@ -17,5 +17,3 @@ export const RemindValidator = (req: IRemindReq): string[] | null => {
 
   return null;
 }
-
-

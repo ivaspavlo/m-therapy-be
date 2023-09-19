@@ -45,3 +45,7 @@ export function emailValidator(value: string): boolean {
 export function langFieldValidator(value: string): boolean {
   return value === 'en' || value === 'ua';
 }
+
+export function stringValidator(value: any): boolean {
+  return typeof value === 'string';
+}

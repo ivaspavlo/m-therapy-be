@@ -5,18 +5,16 @@ import { ILoginReq } from './login.interface';
 const bcrypt = require('bcrypt');
 
 
-export const LoginValidator = async (loginData: ILoginReq, user: IUser): Promise<string[] | null> => {
-  const credentialsError = Promise.resolve([ERROR_MESSAGES.CREDENTIALS]);
-
+export const LoginValidator = async (req: ILoginReq, user: IUser): Promise<string[] | null> => {
   let isPasswordCorrect: boolean;
   try {
-    isPasswordCorrect = await bcrypt.compare(loginData.password, user.password);
+    isPasswordCorrect = await bcrypt.compare(req.password, user.password);
   } catch (e: any) {
-    return credentialsError
+    return Promise.resolve([ERROR_MESSAGES.GENERAL]);
   }
 
   if (!isPasswordCorrect) {
-    return credentialsError
+    return Promise.resolve([ERROR_MESSAGES.CREDENTIALS]);
   }
 
   return null;
