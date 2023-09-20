@@ -48,6 +48,15 @@ export const ResetFunction = onRequest(
       return;
     }
 
+    try {
+      userDocumentSnapshot.ref.update({
+        ...user,
+        password: 'test'
+      });
+    } catch (e: any) {
+      res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+    }
+
     res.status(200).send(new ResponseBody({}, true));
   }
 );

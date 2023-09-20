@@ -11,7 +11,8 @@ import { LoginValidator } from './login.validator';
 import { ILoginReq } from './login.interface';
 
 const jwt = require('jsonwebtoken');
-const jwtExp = defineString(ENV_KEYS.JWT_EXP).value();
+
+const jwtExp = defineString(ENV_KEYS.JWT_EXP);
 
 
 export const LoginFunction = onRequest(
@@ -51,7 +52,7 @@ export const LoginFunction = onRequest(
 
     let jwtToken = null;
     try {
-      jwtToken = jwt.sign({ id: userDocumentSnapshot.id }, process.env[ENV_KEYS.JWT_SECRET], { expiresIn: jwtExp });
+      jwtToken = jwt.sign({ id: userDocumentSnapshot.id }, process.env[ENV_KEYS.JWT_SECRET], { expiresIn: jwtExp.value() });
     } catch (e: any) {
       res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       return;
