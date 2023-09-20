@@ -19,7 +19,7 @@ export const ResetValidator = async (req: IResetReq, user: IUser): Promise<strin
 
   let isPasswordCorrect: boolean;
   try {
-    isPasswordCorrect = await bcrypt.compare(req.password, user.password);
+    isPasswordCorrect = await bcrypt.compare(req.oldPassword, user.password);
   } catch (e: any) {
     return Promise.resolve([ERROR_MESSAGES.GENERAL]);
   }
