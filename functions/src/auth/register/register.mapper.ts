@@ -9,13 +9,18 @@ const saltRounds = defineInt(ENV_KEYS.SALT_ROUNDS);
 
 
 export const RegisterMapper = async (req: IRegisterReq): Promise<IUser> => {
-  const hashedPassword = await bcrypt.hash(req.password, saltRounds.value());
+  let hashedPassword;
+  try {
+    hashedPassword = await bcrypt.hash(req.password, saltRounds.value());
+  } catch (e: any) {
+    return Promise.reject();
+  }
 
   if (!hashedPassword) {
     return Promise.reject();
   }
 
-  const user: IUser = {
+  return {
     firstname: xss(req.firstname),
     lastname: xss(req.lastname),
     email: xss(req.email),
@@ -25,6 +30,4 @@ export const RegisterMapper = async (req: IRegisterReq): Promise<IUser> => {
     isAdmin: false,
     created: Date.now()
   };
-
-  return user;
 }

@@ -1,10 +1,8 @@
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
 import { QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
-
 import { ResponseBody } from '../../shared/models';
 import { COLLECTIONS, ERROR_MESSAGES } from '../../shared/constants';
-
 import { RegisterValidator } from './register.validator';
 import { IRegisterReq } from './register.interface';
 import { RegisterMapper } from './register.mapper';
@@ -12,6 +10,7 @@ import { RegisterMapper } from './register.mapper';
 
 export const RegisterFunction = onRequest(
   async (req: Request, res: Response): Promise<void> => {
+    const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
     const userData: IRegisterReq = req.body;
     let validationErrors: string[] | null = null;
 
@@ -19,7 +18,7 @@ export const RegisterFunction = onRequest(
       const existingUser: QuerySnapshot = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', userData.email).get();
       validationErrors = RegisterValidator(userData, existingUser);
     } catch(e: any) {
-      res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+      res.status(500).json(generalError);
       return;
     }
 
@@ -33,7 +32,7 @@ export const RegisterFunction = onRequest(
     try {
       prospectiveUser = await RegisterMapper(userData);
     } catch (e: any) {
-      res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+      res.status(500).json(generalError);
       return;
     }
 
@@ -42,7 +41,7 @@ export const RegisterFunction = onRequest(
         .collection(COLLECTIONS.USERS)
         .add(prospectiveUser);
     } catch (e: any) {
-      res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+      res.status(500).json(generalError);
       return;
     }
 
