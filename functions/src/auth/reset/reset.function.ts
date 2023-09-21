@@ -6,10 +6,12 @@ import { ResponseBody } from '../../shared/models';
 import { IUser } from '../../shared/interfaces';
 import { IResetReq } from './reset.interface';
 import { ResetValidator } from './reset.validator';
+import { ResetMapper } from './reset.mapper';
 
 
 export const ResetFunction = onRequest(
   async (req: Request, res: Response): Promise<void> => {
+    const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
     const resetToken: string = req.query.token as string;
     const resetData: IResetReq = req.body;
 
@@ -17,7 +19,7 @@ export const ResetFunction = onRequest(
     try {
       parsedResetToken = JSON.parse(Buffer.from(resetToken.split('.')[1], 'base64').toString());
     } catch (e: any) {
-      res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+      res.status(500).json(generalError);
       return;
     }
 
@@ -25,7 +27,7 @@ export const ResetFunction = onRequest(
     try {
       queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', parsedResetToken.email).get();
     } catch(e: any) {
-      res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+      res.status(500).json(generalError);
       return;
     }
 
@@ -48,13 +50,21 @@ export const ResetFunction = onRequest(
       return;
     }
 
+    let updatedUser: IUser;
+    try {
+      updatedUser = await ResetMapper(resetData, user);
+    } catch (error) {
+      res.status(500).json(generalError);
+      return;
+    }
+
     try {
       userDocumentSnapshot.ref.update({
-        ...user,
-        password: 'test'
+        ...updatedUser
       });
     } catch (e: any) {
-      res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+      res.status(500).json(generalError);
+      return;
     }
 
     res.status(200).send(new ResponseBody({}, true));
