@@ -62,8 +62,5 @@ node_modules/
 # Yarn Integrity file
 .yarn-integrity
 
-# dotenv environment variables file
-.env
-
 # google api key
 massage-therapy-v2-95fb3cdecf21.json
