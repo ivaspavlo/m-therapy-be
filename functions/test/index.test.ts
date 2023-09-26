@@ -1,11 +1,10 @@
-const admin = require('firebase-admin');
-const chai = require('chai');
-const sinon = require('sinon');
-const assert = chai.assert;
+import { database } from 'firebase-admin';
+import { assert } from 'chai';
+
 
 const projectConfig = {
-  projectId: 'my-project',
-  databaseURL: 'https://my-project.firebaseio.com'
+  projectId: 'mt-stage-db6be',
+  databaseURL: 'https://mt-stage-db6be.firebaseio.com'
 };
 const test = require('firebase-functions-test')(projectConfig, './service-account-key.json');
 
@@ -23,7 +22,7 @@ describe('Cloud Functions', () => {
     // Do cleanup tasks.
     test.cleanup();
     // Reset the database.
-    admin.database().ref('messages').remove();
+    database().ref('messages').remove();
   });
 
   describe('makeUpperCase', () => {
@@ -41,7 +40,7 @@ describe('Cloud Functions', () => {
         // Read the value of the data at messages/11111/uppercase. Because `admin.initializeApp()` is
         // called in functions/index.js, there's already a Firebase app initialized. Otherwise, add
         // `admin.initializeApp()` before this line.
-        return admin.database().ref('messages/11111/uppercase').once('value').then((createdSnap) => {
+        return database().ref('messages/11111/uppercase').once('value').then((createdSnap) => {
           // Assert that the value is the uppercased version of our input.
           assert.equal(createdSnap.val(), 'INPUT');
         });
