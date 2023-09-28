@@ -6,28 +6,29 @@ const projectConfig = {
   projectId: 'mt-stage-db6be',
   databaseURL: 'https://mt-stage-db6be.firebaseio.com'
 };
-const testFunctions = require('firebase-functions-test')(projectConfig, '../../mt-stage-db6be-a531eb8c5a6b.json');
+const testBase = require('firebase-functions-test')(projectConfig, '../mt-stage-db6be-a531eb8c5a6b.json');
+
 
 describe('MT cloud functions', () => {
-  // let myFunctions: any;
+  let myFunctions: any;
 
-  // before(() => {
-  //   // myFunctions = require('../index');
-  // });
+  beforeAll(() => {
+    myFunctions = require('../index');
+  });
 
-  // after(() => {
-  //   test.cleanup();
-  //   // Reset the database.
-  //   // database().ref('messages').remove();
-  // });
+  afterAll(() => {
+    testBase.cleanup();
+    // database().ref('messages').remove();
+  });
 
   describe('register', () => {
     test('should return true', () => {
 
-      expect(true).toBeTruthy();
       // Create a DataSnapshot with the value 'input' and the reference path 'messages/11111/original'.
-      const snap = testFunctions.database.makeDataSnapshot('input', 'messages/11111/original');
+      const snap = testBase.database.makeDataSnapshot('input', 'messages/11111/original');
       console.log(snap);
+      console.log(myFunctions);
+      expect(true).toBeTruthy();
 
       // Wrap the makeUppercase function
       // const wrapped = test.wrap(myFunctions.makeUppercase);
