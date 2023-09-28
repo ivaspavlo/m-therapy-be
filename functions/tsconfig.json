@@ -1,5 +1,6 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
     "module": "commonjs",
     "noImplicitReturns": true,
     "noUnusedLocals": true,
@@ -11,6 +12,6 @@
   "compileOnSave": true,
   "include": [
     "src",
-    "test/index.test.ts" 
+    "test/index.test.ts"
   ]
 }
