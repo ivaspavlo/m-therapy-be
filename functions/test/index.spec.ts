@@ -1,24 +1,21 @@
-// import { database } from 'firebase-admin';
-import * as firebaseFunctionsTest from "firebase-functions-test";
-firebaseFunctionsTest();
+import { database } from 'firebase-admin';
+import { assert } from 'chai';
 
-const projectConfig = {
-  projectId: 'mt-stage-db6be',
+const testBase = require('firebase-functions-test')({
+  projectId: process.env.GCLOUD_PROJECT,
   databaseURL: 'https://mt-stage-db6be.firebaseio.com'
-};
-const testBase = require('firebase-functions-test')(projectConfig, '../mt-stage-db6be-a531eb8c5a6b.json');
+}, '../mt-stage-db6be-a531eb8c5a6b.json');
 
+// Should be after firebase-functions-test is initialized.
+const myFunctions = require('../index');
 
 describe('MT cloud functions', () => {
-  let myFunctions: any;
 
-  beforeAll(() => {
-    myFunctions = require('../index');
-  });
+  before(() => { });
 
-  afterAll(() => {
+  after(() => {
+    database().ref('messages').remove();
     testBase.cleanup();
-    // database().ref('messages').remove();
   });
 
   describe('register', () => {
@@ -28,7 +25,7 @@ describe('MT cloud functions', () => {
       const snap = testBase.database.makeDataSnapshot('input', 'messages/11111/original');
       console.log(snap);
       console.log(myFunctions);
-      expect(true).toBeTruthy();
+      assert.isTrue(true);
 
       // Wrap the makeUppercase function
       // const wrapped = test.wrap(myFunctions.makeUppercase);
