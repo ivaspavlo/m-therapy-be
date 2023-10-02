@@ -1,5 +1,4 @@
 import { database } from 'firebase-admin';
-import { assert } from 'chai';
 
 const testBase = require('firebase-functions-test')({
   projectId: process.env.GCLOUD_PROJECT,
@@ -11,9 +10,9 @@ const myFunctions = require('../index');
 
 describe('MT cloud functions', () => {
 
-  before(() => { });
+  beforeAll(() => { });
 
-  after(() => {
+  afterAll(() => {
     database().ref('messages').remove();
     testBase.cleanup();
   });
@@ -25,7 +24,7 @@ describe('MT cloud functions', () => {
       const snap = testBase.database.makeDataSnapshot('input', 'messages/11111/original');
       console.log(snap);
       console.log(myFunctions);
-      assert.isTrue(true);
+      expect(true).toBeTruthy();
 
       // Wrap the makeUppercase function
       // const wrapped = test.wrap(myFunctions.makeUppercase);
@@ -64,3 +63,5 @@ describe('MT cloud functions', () => {
   //   });
   // });
 })
+
+// https://medium.com/@leejh3224/testing-firebase-cloud-functions-with-jest-4156e65c7d29
