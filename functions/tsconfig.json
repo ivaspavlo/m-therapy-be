@@ -12,6 +12,6 @@
   "compileOnSave": true,
   "include": [
     "src",
-    "test/index.spec.ts"
+    "test/test.online.ts"
   ]
 }
