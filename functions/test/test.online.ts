@@ -1,30 +1,32 @@
 import { database } from 'firebase-admin';
+import { assert } from 'chai';
+
 
 const testBase = require('firebase-functions-test')({
   projectId: process.env.GCLOUD_PROJECT,
   databaseURL: 'https://mt-stage-db6be.firebaseio.com'
-}, '../mt-stage-db6be-a531eb8c5a6b.json');
+}, process.cwd() + '/mt-stage-db6be-a531eb8c5a6b.json');
 
 // Should be after firebase-functions-test is initialized.
-const myFunctions = require('../index');
+const myFunctions = require(process.cwd() + '/src/index.ts');
 
-describe('MT cloud functions', () => {
+describe('MT online test suite', () => {
 
-  beforeAll(() => { });
+  before(() => { });
 
-  afterAll(() => {
+  after(() => {
     database().ref('messages').remove();
     testBase.cleanup();
   });
 
-  describe('register', () => {
-    test('should return true', () => {
+  describe('register function', () => {
+    it('should return true', () => {
 
       // Create a DataSnapshot with the value 'input' and the reference path 'messages/11111/original'.
       const snap = testBase.database.makeDataSnapshot('input', 'messages/11111/original');
       console.log(snap);
       console.log(myFunctions);
-      expect(true).toBeTruthy();
+      assert.equal(true, true);
 
       // Wrap the makeUppercase function
       // const wrapped = test.wrap(myFunctions.makeUppercase);
