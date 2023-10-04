@@ -10,8 +10,8 @@ import { RegisterMapper } from './register.mapper';
 
 export const RegisterFunction = onRequest(
   async (req: Request, res: Response): Promise<void> => {
-    const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
     const userData: IRegisterReq = req.body;
+    const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
     let validationErrors: string[] | null = null;
 
     try {
@@ -44,8 +44,6 @@ export const RegisterFunction = onRequest(
       res.status(500).json(generalError);
       return;
     }
-
-    console.log('works');
 
     res.status(201).send(new ResponseBody({}, true));
   }
