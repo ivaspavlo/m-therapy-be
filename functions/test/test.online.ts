@@ -1,5 +1,5 @@
 import { database } from 'firebase-admin';
-import { assert } from 'chai';
+// import { assert } from 'chai';
 
 
 const testBase = require('firebase-functions-test')({
@@ -21,22 +21,24 @@ describe('MT online test suite', () => {
 
   describe('register', () => {
 
-    it('should create a user in DB', () => {
+    it('should create a user in DB', async () => {
+      debugger;
       const req = {
         body: {
           firstname: 'Test',
           lastname: 'Testovich',
-          email: 'testovichus@gmail.com',
+          email: 'testovichus@testmail.com',
           birthday: 589050238388,
           phone: '+111222333444',
           password: 'TestPass1!'
         }
       };
       const res = {
-
+        status: (value: number) => {}
       };
 
-      myFunctions.register(req, res);
+      const result = await myFunctions.register(req, res);
+      console.log(result);
     });
   
   });
