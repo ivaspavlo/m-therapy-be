@@ -9,7 +9,8 @@
     "start": "npm run shell",
     "deploy": "npm install && rm package-lock.json && firebase deploy",
     "logs": "firebase functions:log",
-    "test": "mocha --require ts-node/register --reporter spec test/test.online.ts --exit"
+    "test": "mocha --require ts-node/register --reporter spec test/test.online.ts --exit",
+    "test:debug": "mocha --debug-brk --require ts-node/register --reporter spec test/test.online.ts"
   },
   "engines": {
     "node": "18"
