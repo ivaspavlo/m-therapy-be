@@ -7,11 +7,13 @@
     "outDir": "lib",
     "sourceMap": true,
     "strict": true,
-    "target": "es2017"
+    "target": "es2017",
+    "esModuleInterop": true
   },
   "compileOnSave": true,
   "include": [
     "src",
-    "test/test.online.ts"
+    "test/test.online.ts",
+    "./**/*.ts"
   ]
 }
