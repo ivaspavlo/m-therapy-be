@@ -1,13 +1,13 @@
 // import { database } from 'firebase-admin';
 
 
-const testBase = require('firebase-functions-test')({
-  projectId: process.env.GCLOUD_PROJECT,
-  databaseURL: 'https://mt-stage-db6be.firebaseio.com'
-}, process.cwd() + '/mt-stage-db6be-a531eb8c5a6b.json');
+// const testBase = require('firebase-functions-test')({
+//   projectId: process.env.GCLOUD_PROJECT,
+//   databaseURL: 'https://mt-stage-db6be.firebaseio.com'
+// }, process.cwd() + '/mt-stage-db6be-a531eb8c5a6b.json');
 
 // Should be after firebase-functions-test is initialized.
-const myFunctions = require(process.cwd() + '/src/index.ts');
+// const myFunctions = require(process.cwd() + '/src/index.ts');
 
 describe('MT cloud functions', () => {
 

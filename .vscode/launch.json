@@ -4,8 +4,21 @@
     {
       "type": "node",
       "request": "attach",
-      "name": "Debug",
+      "name": "Debug functions",
       "port": 9229
+    }, {
+      "name": "Debug Jest Tests",
+      "type": "node",
+      "request": "launch",
+      "runtimeArgs": [
+        "--inspect-brk",
+        "${workspaceRoot}/functions/node_modules/.bin/jest",
+        "--runInBand",
+        "-c",
+        "${workspaceRoot}/functions/jest.config.js",
+      ],
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "neverOpen"
     }
   ]
 }
