@@ -1,20 +1,7 @@
 {
-  "version": "0.2.0",
+  "version": "1.0.0",
   "configurations": [
     {
-      "type": "node",
-      "request": "launch",
-      "name": "Mocha",
-      "program": "${workspaceFolder}/functions/node_modules/mocha/bin/_mocha",
-      "args": [
-        "--require",
-        "ts-node/register",
-        "--colors",
-        "${workspaceFolder}/functions/test/test.online.ts",
-      ],
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen"
-    }, {
       "type": "node",
       "request": "attach",
       "name": "Debug",

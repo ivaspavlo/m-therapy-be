@@ -12,8 +12,6 @@
   },
   "compileOnSave": true,
   "include": [
-    "src",
-    "test/test.online.ts",
-    "./**/*.ts"
+    "src"
   ]
 }
