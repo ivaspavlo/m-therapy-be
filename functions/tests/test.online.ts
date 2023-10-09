@@ -1,19 +1,22 @@
 // import { database } from 'firebase-admin';
 
 
-// const testBase = require('firebase-functions-test')({
-//   projectId: process.env.GCLOUD_PROJECT,
-//   databaseURL: 'https://mt-stage-db6be.firebaseio.com'
-// }, process.cwd() + '/mt-stage-db6be-a531eb8c5a6b.json');
+const testBase = require('firebase-functions-test')({
+  projectId: process.env.GCLOUD_PROJECT,
+  databaseURL: 'https://mt-stage-db6be.firebaseio.com'
+}, process.cwd() + '/mt-stage-db6be-a531eb8c5a6b.json');
 
 // Should be after firebase-functions-test is initialized.
-// const myFunctions = require(process.cwd() + '/src/index.ts');
+const myFunctions = require(process.cwd() + '/src/index.ts');
 
 describe('MT cloud functions', () => {
 
   describe('register', () => {
 
-    test('should create a user in DB', () => {
+    test('should create a user in db', async () => {
+
+      console.log(process.cwd() + '/src/index.ts');
+
       // const req = {
       //   body: {
       //     firstname: 'Test',
@@ -29,8 +32,11 @@ describe('MT cloud functions', () => {
       // };
   
       // const result = await myFunctions.register(req, res);
+
+      // console.log(result);
   
       expect(true).toBeTruthy();
+
     });
   
   });

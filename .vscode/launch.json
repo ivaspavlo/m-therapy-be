@@ -2,12 +2,12 @@
   "version": "1.0.0",
   "configurations": [
     {
+      "name": "Debug functions",
       "type": "node",
       "request": "attach",
-      "name": "Debug functions",
       "port": 9229
     }, {
-      "name": "Debug Jest Tests",
+      "name": "Debug tests",
       "type": "node",
       "request": "launch",
       "runtimeArgs": [
