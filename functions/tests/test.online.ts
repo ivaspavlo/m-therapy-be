@@ -1,4 +1,5 @@
-// import { database } from 'firebase-admin';
+import { database } from 'firebase-admin';
+import { COLLECTIONS } from '../src/shared/constants';
 
 
 const testBase = require('firebase-functions-test')({
@@ -14,29 +15,23 @@ describe('MT cloud functions', () => {
   describe('register', () => {
 
     test('should create a user in db', async () => {
+      const snap = testBase.database.makeDataSnapshot({
+        body: {
+          firstname: 'Test',
+          lastname: 'Testovich',
+          email: 'testovichus@testmail.com',
+          birthday: 589050238388,
+          phone: '+111222333444',
+          password: 'TestPass1!'
+        }
+      }, `${COLLECTIONS.USERS}/test`);
+      const wrapped = testBase.wrap(myFunctions.register);
 
-      console.log(process.cwd() + '/src/index.ts');
-
-      // const req = {
-      //   body: {
-      //     firstname: 'Test',
-      //     lastname: 'Testovich',
-      //     email: 'testovichus@testmail.com',
-      //     birthday: 589050238388,
-      //     phone: '+111222333444',
-      //     password: 'TestPass1!'
-      //   }
-      // };
-      // const res = {
-      //   status: (value: number) => {}
-      // };
-  
-      // const result = await myFunctions.register(req, res);
-
-      // console.log(result);
-  
-      expect(true).toBeTruthy();
-
+      return wrapped(snap).then(() => {
+        return database().ref(`${COLLECTIONS.USERS}/test`).once('value').then((createdSnap) => {
+          expect(createdSnap.val()).toBeTruthy();
+        });
+      });
     });
   
   });
@@ -46,3 +41,4 @@ describe('MT cloud functions', () => {
 // https://medium.com/@leejh3224/testing-firebase-cloud-functions-with-jest-4156e65c7d29
 // https://firebase.google.com/docs/reference/functions/test/test.database
 // https://basarat.gitbook.io/typescript/intro-1/jest
+// https://stackoverflow.com/questions/70442193/error-wrap-function-is-only-available-for-oncall-http-functions-not-onreque
