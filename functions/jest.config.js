@@ -5,6 +5,10 @@ module.exports = {
   "testMatch": [
     "**/tests/**"
   ],
+  "testPathIgnorePatterns": [
+    'lib/',
+    'node_modules/'
+  ],
   "transform": {
     "^.+\\.(ts|tsx)$": "ts-jest"
   },
