@@ -31,11 +31,9 @@ describe('MT cloud functions', () => {
     };
 
     afterAll(async () => {
-      try {
-        const usersQuery = getFirestore().collection('users').where('email', '==', MOCK_REQ.body.email);
-        const querySnapshot = await usersQuery.get();
-        querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
-      } catch (error: any) { }  
+      const usersQuery = getFirestore().collection('users').where('email', '==', MOCK_REQ.body.email);
+      const querySnapshot = await usersQuery.get();
+      querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
     });
 
     test('should create a user in db', async () => {
@@ -49,6 +47,19 @@ describe('MT cloud functions', () => {
         user = null;
       }
       expect(user?.email).toEqual(MOCK_REQ.body.email);
+    });
+
+    test('should return 400 when user exists', async () => {
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(400);
+          return {
+            send: (value: any) => {},
+            json: (value: any) => {}
+          };
+        }
+      };
+      await myFunctions.register(MOCK_REQ, res);
     });
   
   });
