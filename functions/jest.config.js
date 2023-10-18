@@ -1,4 +1,5 @@
 module.exports = {
+  "verbose": true,
   "roots": [
     "<rootDir>"
   ],
@@ -6,10 +7,13 @@ module.exports = {
     "**/tests/**"
   ],
   "testPathIgnorePatterns": [
-    'lib/',
-    'node_modules/'
+    '<rootDir>/lib/',
+    '<rootDir>/node_modules/'
   ],
   "transform": {
     "^.+\\.(ts|tsx)$": "ts-jest"
   },
+  "modulePaths": [
+    "<rootDir>"
+  ]
 }
