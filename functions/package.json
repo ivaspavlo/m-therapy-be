@@ -9,7 +9,7 @@
     "start": "npm run shell",
     "deploy": "npm install && rm package-lock.json && firebase deploy",
     "logs": "firebase functions:log",
-    "test": "jest --verbose=false"
+    "test": "jest --runInBand"
   },
   "engines": {
     "node": "18"

@@ -1,13 +1,15 @@
 import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
+import firebaseFunctionsTest from 'firebase-functions-test';
+import { register } from '../src/index';
 
 // @ts-ignore
-const testBase = require('firebase-functions-test')({
+firebaseFunctionsTest({
   projectId: process.env.GCLOUD_PROJECT,
   databaseURL: 'https://mt-stage-db6be.firebaseio.com'
 }, `${__dirname}/../mt-stage-db6be-a531eb8c5a6b.json`);
 
 // Should be after firebase-functions-test is initialized.
-const myFunctions = require(`${__dirname}/../src/index.ts`);
+// const myFunctions = require(`${__dirname}/../src/index.ts`);
 
 describe('MT cloud functions', () => {
 
@@ -30,14 +32,15 @@ describe('MT cloud functions', () => {
       })
     };
 
-    afterAll(async () => {
+    beforeAll(async () => {
       const usersQuery = getFirestore().collection('users').where('email', '==', MOCK_REQ.body.email);
       const querySnapshot = await usersQuery.get();
       querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
+      // console.log(register, remind, login, reset);
     });
 
     test('should create a user in db', async () => {
-      await myFunctions.register(MOCK_REQ, MOCK_RES);
+      await register(MOCK_REQ as any, MOCK_RES as any);
       let user: any;
       try {
         const queryByEmail = await getFirestore().collection('users').where('email', '==', MOCK_REQ.body.email).get();
@@ -59,7 +62,7 @@ describe('MT cloud functions', () => {
           };
         }
       };
-      await myFunctions.register(MOCK_REQ, res);
+      await register(MOCK_REQ as any, res as any);
     });
   
   });
