@@ -1,15 +1,14 @@
-import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
+import { describe, expect, afterAll, test } from '@jest/globals';
 import firebaseFunctionsTest from 'firebase-functions-test';
-import { register } from '../src/index';
+import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
 
-// @ts-ignore
+import * as functions from '../src/index';
+import { IUser } from '../src/shared/interfaces';
+
 firebaseFunctionsTest({
-  projectId: process.env.GCLOUD_PROJECT,
+  projectId: 'mt-stage-db6be',
   databaseURL: 'https://mt-stage-db6be.firebaseio.com'
-}, `${__dirname}/../mt-stage-db6be-a531eb8c5a6b.json`);
-
-// Should be after firebase-functions-test is initialized.
-// const myFunctions = require(`${__dirname}/../src/index.ts`);
+}, './mt-stage-db6be-a531eb8c5a6b.json');
 
 describe('MT cloud functions', () => {
 
@@ -32,7 +31,7 @@ describe('MT cloud functions', () => {
       })
     };
 
-    beforeAll(async () => {
+    afterAll(async () => {
       const usersQuery = getFirestore().collection('users').where('email', '==', MOCK_REQ.body.email);
       const querySnapshot = await usersQuery.get();
       querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
@@ -40,15 +39,14 @@ describe('MT cloud functions', () => {
     });
 
     test('should create a user in db', async () => {
-      await register(MOCK_REQ as any, MOCK_RES as any);
-      let user: any;
+      await functions.register(MOCK_REQ as any, MOCK_RES as any);
+      let user: IUser | null = null;
       try {
         const queryByEmail = await getFirestore().collection('users').where('email', '==', MOCK_REQ.body.email).get();
         const userDocumentSnapshot: QueryDocumentSnapshot | undefined = queryByEmail.docs.find((d: any) => !!d);
-        user = userDocumentSnapshot?.data();
-      } catch (error: any) {
-        user = null;
-      }
+        user = userDocumentSnapshot?.data() as IUser;
+      } catch (error: any) { }
+
       expect(user?.email).toEqual(MOCK_REQ.body.email);
     });
 
@@ -62,17 +60,9 @@ describe('MT cloud functions', () => {
           };
         }
       };
-      await register(MOCK_REQ as any, res as any);
+      await functions.register(MOCK_REQ as any, res as any);
     });
   
   });
 
 });
-
-// https://medium.com/@leejh3224/testing-firebase-cloud-functions-with-jest-4156e65c7d29
-// https://firebase.google.com/docs/reference/functions/test/test.database
-// https://basarat.gitbook.io/typescript/intro-1/jest
-// https://stackoverflow.com/questions/70442193/error-wrap-function-is-only-available-for-oncall-http-functions-not-onreque
-// https://medium.com/@leejh3224/testing-firebase-cloud-functions-with-jest-4156e65c7d29
-// https://medium.com/practical-coding/set-up-gitlab-ci-cd-for-testing-your-firebase-functions-49878b3e7764
-// https://timo-santi.medium.com/jest-testing-firebase-functions-with-emulator-suite-409907f31f39
