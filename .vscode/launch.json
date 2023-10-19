@@ -10,6 +10,7 @@
       "name": "Debug tests",
       "type": "node",
       "request": "launch",
+      "cwd": "${workspaceFolder}/functions",
       "runtimeArgs": [
         "--inspect-brk",
         "${workspaceRoot}/functions/node_modules/.bin/jest",
