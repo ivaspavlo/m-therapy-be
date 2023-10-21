@@ -1,15 +1,18 @@
 import { describe, expect, afterAll, beforeAll, test } from '@jest/globals';
-import firebaseFunctionsTest from 'firebase-functions-test';
 import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
+import firebaseFunctionsTest from 'firebase-functions-test';
+import dotenv from 'dotenv';
 
-import * as functions from '../src/index';
-import { IUser } from '../src/shared/interfaces';
+import * as functions from 'src/index';
+import { IUser } from 'src/shared/interfaces';
 
 
 firebaseFunctionsTest({
   projectId: 'mt-stage-db6be',
   databaseURL: 'https://mt-stage-db6be.firebaseio.com'
 }, './mt-stage-db6be-a531eb8c5a6b.json');
+
+dotenv.config({ path: './.env.local' });
 
 describe('MT cloud functions', () => {
 
@@ -85,16 +88,13 @@ describe('MT cloud functions', () => {
     });
 
     test('should return 200 when creds are correct', async () => {
+      console.log(process.env);
       const res = {
         status: (code: number) => {
           expect(code).toBe(200);
           return {
-            send: (value: any) => {
-              console.log(value);
-            },
-            json: (value: any) => {
-              console.log(value);
-            }
+            send: (value: any) => { },
+            json: (value: any) => { }
           };
         }
       };
