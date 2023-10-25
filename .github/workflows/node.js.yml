@@ -20,6 +20,13 @@ jobs:
         node-version: [18.x]
     steps:
     - uses: actions/checkout@v3
+    - name: Create JSON
+      uses: jsdaniell/create-json@1.1.2
+      with:
+        name: "mt-stage-db6be-a531eb8c5a6b.json"
+        json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
+      env:
+        FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
@@ -28,5 +35,3 @@ jobs:
         cache-dependency-path: "./functions/package-lock.json"
     - run: npm ci
     - run: npm test
-      env:
-        FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
