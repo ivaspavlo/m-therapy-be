@@ -10,7 +10,7 @@ import { IUser } from 'src/shared/interfaces';
 firebaseFunctionsTest({
   projectId: 'mt-stage-db6be',
   databaseURL: 'https://mt-stage-db6be.firebaseio.com'
-}, './mt-stage-db6be-a531eb8c5a6b.json');
+}, process.env.FIREBASE_SERVICE_ACCOUNT || './mt-stage-db6be-a531eb8c5a6b.json');
 
 dotenv.config({ path: './.env.local' });
 

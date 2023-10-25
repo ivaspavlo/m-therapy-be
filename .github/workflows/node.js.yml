@@ -28,3 +28,5 @@ jobs:
         cache-dependency-path: "./functions/package-lock.json"
     - run: npm ci
     - run: npm test
+      env:
+        FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}
