@@ -43,6 +43,8 @@ describe('MT cloud functions', () => {
     });
 
     test('should create a user in db', async () => {
+      console.log(process.env.FIREBASE_SERVICE_ACCOUNT);
+
       await functions.register(REGISTER_REQ as any, MOCK_RES as any);
       let user: IUser | null = null;
       try {
