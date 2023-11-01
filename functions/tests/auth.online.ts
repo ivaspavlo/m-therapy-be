@@ -43,8 +43,6 @@ describe('MT cloud functions', () => {
     });
 
     test('should create a user in db', async () => {
-      console.log(process.env.FIREBASE_SERVICE_ACCOUNT);
-
       await functions.register(REGISTER_REQ as any, MOCK_RES as any);
       let user: IUser | null = null;
       try {
@@ -89,8 +87,7 @@ describe('MT cloud functions', () => {
       querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
     });
 
-    test('should return 200 when creds are correct', async () => {
-      console.log(process.env);
+    test('should return status 200 when creds are correct', async () => {
       const res = {
         status: (code: number) => {
           expect(code).toBe(200);
@@ -101,6 +98,22 @@ describe('MT cloud functions', () => {
         }
       };
       await functions.login(MOCK_REQ as any, res as any);
+    });
+
+    test('should return status 401 when creds are incorrect', async () => {
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(401);
+          return {
+            send: (value: any) => { },
+            json: (value: any) => { }
+          }
+        }
+      }
+      await functions.login(
+        { body: { email: 'incorrect_email@testmail.com', password: 'incorrect_pwd' } } as any,
+        res as any
+      );
     });
   });
 
