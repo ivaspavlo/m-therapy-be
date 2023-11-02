@@ -5,7 +5,8 @@ export enum ERROR_MESSAGES {
   DUPLICATE = 'Instance already exists',
   NOT_FOUND = 'Instance not found',
   CREDENTIALS = 'Credentials are incorrect',
-  FIELDS_VALIDATION = 'Validation for fields failed'
+  FIELDS_VALIDATION = 'Validation for fields failed',
+  JWT = 'JWT is invalid'
 };
 
 export enum COLLECTIONS {

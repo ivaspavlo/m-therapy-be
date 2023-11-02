@@ -9,17 +9,26 @@ import { ResetValidator } from './reset.validator';
 import { ResetMapper } from './reset.mapper';
 
 
+const jwt = require('jsonwebtoken');
+
 export const ResetFunction = onRequest(
   async (req: Request, res: Response): Promise<void> => {
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
     const resetToken: string = req.query.token as string;
     const resetData: IResetReq = req.body;
 
+    try {
+      jwt.verify(resetToken);
+    } catch (e: any) {
+      res.status(401).json(new ResponseBody(null, false, [ERROR_MESSAGES.JWT]));
+      return;
+    }
+
     let parsedResetToken: { [key:string]: string, email: string };
     try {
       parsedResetToken = JSON.parse(Buffer.from(resetToken.split('.')[1], 'base64').toString());
     } catch (e: any) {
-      res.status(500).json(generalError);
+      res.status(401).json(new ResponseBody(null, false, [ERROR_MESSAGES.JWT]));
       return;
     }
 

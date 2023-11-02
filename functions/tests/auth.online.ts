@@ -117,4 +117,18 @@ describe('MT cloud functions', () => {
     });
   });
 
+  // describe('reset', () => {
+  //   beforeAll(async () => {
+  //     await functions.register(REGISTER_REQ as any, MOCK_RES as any);
+  //   });
+
+  //   afterAll(async () => {
+  //     const usersQuery = getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email);
+  //     const querySnapshot = await usersQuery.get();
+  //     querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
+  //   });
+
+
+  // });
+
 });
