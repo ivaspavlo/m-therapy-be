@@ -1,7 +1,7 @@
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
 import { QueryDocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
-import { COLLECTIONS, ERROR_MESSAGES } from '../../shared/constants';
+import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
 import { ResponseBody } from '../../shared/models';
 import { IUser } from '../../shared/interfaces';
 import { IResetReq } from './reset.interface';
@@ -12,13 +12,14 @@ import { ResetMapper } from './reset.mapper';
 const jwt = require('jsonwebtoken');
 
 export const ResetFunction = onRequest(
+  { secrets: [ENV_KEYS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
     const resetToken: string = req.query.token as string;
     const resetData: IResetReq = req.body;
 
     try {
-      jwt.verify(resetToken);
+      jwt.verify(resetToken, process.env[ENV_KEYS.JWT_SECRET]);
     } catch (e: any) {
       res.status(401).json(new ResponseBody(null, false, [ERROR_MESSAGES.JWT]));
       return;
@@ -41,7 +42,7 @@ export const ResetFunction = onRequest(
     }
 
     if (queryByEmail.empty) {
-      res.status(401).json(new ResponseBody(null, false, [ERROR_MESSAGES.CREDENTIALS]));
+      res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_FOUND]));
       return;
     }
 
