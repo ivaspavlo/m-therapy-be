@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 
 import * as functions from 'src/index';
 import { IUser } from 'src/shared/interfaces';
+import { defineString } from 'firebase-functions/params';
+import { ENV_KEYS } from 'src/shared/constants';
 
 
 firebaseFunctionsTest({
@@ -13,6 +15,10 @@ firebaseFunctionsTest({
 }, process.env.FIREBASE_SERVICE_ACCOUNT || './mt-stage-db6be-a531eb8c5a6b.json');
 
 dotenv.config({ path: './.env.local' });
+
+const jwt = require('jsonwebtoken');
+const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP).value();
+const jwtToken = defineString(ENV_KEYS.JWT_SECRET).value();
 
 describe('MT cloud functions', () => {
 
@@ -117,18 +123,67 @@ describe('MT cloud functions', () => {
     });
   });
 
-  // describe('reset', () => {
-  //   beforeAll(async () => {
-  //     await functions.register(REGISTER_REQ as any, MOCK_RES as any);
-  //   });
+  describe('reset', () => {
+    const VALID_JWT = jwt.sign({ email: REGISTER_REQ.body.email }, jwtToken, { expiresIn: resetTokenExp });
+    const JWT_INCORRECT_SIGNITURE = jwt.sign({ email: REGISTER_REQ.body.email }, 'incorrect_secret', { expiresIn: resetTokenExp });
+    const JWT_INCORRECT_EMAIL = jwt.sign({ email: 'incorrect_email@gmail.com' }, jwtToken, { expiresIn: resetTokenExp });
+    const MOCK_REQ = {
+      query: {
+        token: null
+      },
+      body: {
+        password: 'TestPass2!',
+        oldPassword: 'TestPass1!'
+      }
+    };
 
-  //   afterAll(async () => {
-  //     const usersQuery = getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email);
-  //     const querySnapshot = await usersQuery.get();
-  //     querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
-  //   });
+    beforeAll(async () => {
+      await functions.register(REGISTER_REQ as any, MOCK_RES as any);
+    });
 
+    afterAll(async () => {
+      const usersQuery = getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email);
+      const querySnapshot = await usersQuery.get();
+      querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
+    });
 
-  // });
+    test('should return 401 if the token is not valid', async () => {
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(401);
+          return {
+            send: (value: any) => { },
+            json: (value: any) => { }
+          }
+        }
+      };
+      await functions.reset({ ...MOCK_REQ, query: { token: JWT_INCORRECT_SIGNITURE } } as any, res as any);
+    });
 
+    test('should return 200 if the token is valid', async () => {
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(200);
+          return {
+            send: (value: any) => { },
+            json: (value: any) => { }
+          }
+        }
+      };
+      await functions.reset({ ...MOCK_REQ, query: { token: VALID_JWT } } as any, res as any);
+    });
+
+    test('should return 400 if the email is incorrect', async () => {
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(400);
+          return {
+            send: (value: any) => { },
+            json: (value: any) => { }
+          }
+        }
+      };
+      await functions.reset({ ...MOCK_REQ, query: { token: JWT_INCORRECT_EMAIL } } as any, res as any);
+    });
+  });
 });
