@@ -7,7 +7,7 @@ export enum ERROR_MESSAGES {
   CREDENTIALS = 'Credentials are incorrect',
   FIELDS_VALIDATION = 'Validation for fields failed',
   JWT = 'JWT is invalid'
-};
+}
 
 export enum COLLECTIONS {
   USERS = 'users',

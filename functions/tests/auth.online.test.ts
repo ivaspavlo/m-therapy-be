@@ -53,7 +53,9 @@ describe('Functions test online', () => {
         const queryByEmail = await getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email).get();
         const userDocumentSnapshot: QueryDocumentSnapshot | undefined = queryByEmail.docs.find((d: any) => !!d);
         user = userDocumentSnapshot?.data() as IUser;
-      } catch (error: any) { }
+      } catch (error: any) {
+        // no action
+      }
 
       expect(user?.email).toEqual(REGISTER_REQ.body.email);
     });
