@@ -1,11 +1,11 @@
 import { describe, expect, afterAll, beforeAll, test } from '@jest/globals';
 import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
+import { defineString } from 'firebase-functions/params';
 import firebaseFunctionsTest from 'firebase-functions-test';
 import dotenv from 'dotenv';
-
+import * as jwt from 'jsonwebtoken';
 import * as functions from 'src/index';
 import { IUser } from 'src/shared/interfaces';
-import { defineString } from 'firebase-functions/params';
 import { ENV_KEYS } from 'src/shared/constants';
 
 
@@ -16,11 +16,9 @@ firebaseFunctionsTest({
 
 dotenv.config({ path: './.env.local' });
 
-const jwt = require('jsonwebtoken');
-const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP).value();
-const jwtToken = defineString(ENV_KEYS.JWT_SECRET).value();
-
-describe('MT cloud functions', () => {
+describe('Functions test online', () => {
+  const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP).value();
+  const jwtToken = defineString(ENV_KEYS.JWT_SECRET).value();
 
   const MOCK_RES = {
     status: (code: number) => ({
