@@ -1,4 +1,5 @@
 import firebaseFunctionsTest from 'firebase-functions-test';
+import { describe, test, expect } from '@jest/globals';
 import * as sinon from 'sinon';
 import * as functions from 'src/index';
 

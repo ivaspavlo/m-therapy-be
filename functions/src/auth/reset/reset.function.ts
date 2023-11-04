@@ -1,6 +1,7 @@
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
 import { QueryDocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
+import * as jwt from 'jsonwebtoken';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
 import { ResponseBody } from '../../shared/models';
 import { IUser } from '../../shared/interfaces';
@@ -8,8 +9,6 @@ import { IResetReq } from './reset.interface';
 import { ResetValidator } from './reset.validator';
 import { ResetMapper } from './reset.mapper';
 
-
-const jwt = require('jsonwebtoken');
 
 export const ResetFunction = onRequest(
   { secrets: [ENV_KEYS.JWT_SECRET] },
@@ -19,7 +18,7 @@ export const ResetFunction = onRequest(
     const resetData: IResetReq = req.body;
 
     try {
-      jwt.verify(resetToken, process.env[ENV_KEYS.JWT_SECRET]);
+      jwt.verify(resetToken, process.env[ENV_KEYS.JWT_SECRET] as string);
     } catch (e: any) {
       res.status(401).json(new ResponseBody(null, false, [ERROR_MESSAGES.JWT]));
       return;
