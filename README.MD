@@ -1,5 +1,8 @@
 # Run instructions
 
+## Run lint
+npm run lint
+
 ## Run tests
 npm run test
 
@@ -17,3 +20,8 @@ firebase projects:list
 
 ## Switch to a specific project
 firebase use [project_id]
+
+# Additional information
+
+## Lint rules
+https://github.com/eslint/eslint/blob/main/packages/js/src/configs/eslint-recommended.js
