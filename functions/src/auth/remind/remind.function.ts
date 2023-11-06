@@ -1,6 +1,7 @@
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
 import { defineString } from 'firebase-functions/params';
+import * as logger from 'firebase-functions/logger';
 import * as jwt from 'jsonwebtoken';
 import * as nodemailer from 'nodemailer';
 import { ResponseBody } from '../../shared/models';
@@ -36,6 +37,7 @@ export const RemindFunction = onRequest(
     try {
       resetToken = jwt.sign({ email: remindReq.email }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp });
     } catch (e: any) {
+      logger.error('Signing JWT failed', e);
       res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       return;
     }
@@ -44,9 +46,12 @@ export const RemindFunction = onRequest(
 
     transporter.sendMail(mailOptions, (e: any) => {
       if (e) {
+        logger.error('Nodemailer failed to send', e);
         res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
         return;
       }
+
+      logger.info(`Remind email was sent to: ${remindReq.email}`);
       res.status(200).send(new ResponseBody({}, true));
     });
   }
