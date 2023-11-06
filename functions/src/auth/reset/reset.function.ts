@@ -1,6 +1,7 @@
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
 import { QueryDocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
+import * as logger from 'firebase-functions/logger';
 import * as jwt from 'jsonwebtoken';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
 import { ResponseBody } from '../../shared/models';
@@ -36,6 +37,7 @@ export const ResetFunction = onRequest(
     try {
       queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', parsedResetToken.email).get();
     } catch(e: any) {
+      logger.error('Querying DB by email failed', e);
       res.status(500).json(generalError);
       return;
     }
@@ -62,7 +64,8 @@ export const ResetFunction = onRequest(
     let updatedUser: IUser;
     try {
       updatedUser = await ResetMapper(resetData, user);
-    } catch (error) {
+    } catch (e: any) {
+      logger.error('Hashing of password failed', e);
       res.status(500).json(generalError);
       return;
     }
@@ -72,10 +75,12 @@ export const ResetFunction = onRequest(
         ...updatedUser
       });
     } catch (e: any) {
+      logger.error('Updating of user data failed', e);
       res.status(500).json(generalError);
       return;
     }
 
+    logger.info(`Password updated for user: ${userDocumentSnapshot.id}`);
     res.status(200).send(new ResponseBody({}, true));
   }
 );
