@@ -16,10 +16,10 @@ firebaseFunctionsTest({
 
 dotenv.config({ path: './.env.local' });
 
-describe('Functions test online', () => {
-  const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP).value();
-  const jwtToken = defineString(ENV_KEYS.JWT_SECRET).value();
+const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP).value();
+const jwtToken = defineString(ENV_KEYS.JWT_SECRET).value();
 
+describe('Functions test online', () => {
   const MOCK_RES = {
     status: (code: number) => ({
       send: (value: any) => {},
