@@ -1,8 +1,8 @@
 {
   "projects": {
     "default": "massage-therapy-v2",
-    "mt-stage": "mt-stage",
-    "mt-prod": "mt-prod-ef7f0"
+    "mt-stage": "mt-stage-db6be",
+    "mt-prod": "mt-prod-30347"
   },
   "targets": {},
   "etags": {}
