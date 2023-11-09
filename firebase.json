@@ -20,8 +20,11 @@
     }
   ],
   "emulators": {
+    "functions": {
+      "port": "5555"
+    },
     "firestore": {
-      "port": "5001"
+      "port": "5004"
     }
   }
 }
