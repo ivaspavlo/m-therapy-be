@@ -1,10 +1,7 @@
 export function validate(req: any, fieldValidators: any): string[] {
   return Object.entries(req).reduce((acc: string[], [key, value]) => {
     const currValidators = fieldValidators[key];
-    if (!currValidators) {
-      return [ ...acc, key ];
-    }
-    if (!currValidators.length) {
+    if (!currValidators?.length) {
       return acc;
     }
     const hasError = currValidators.some((validator: any) => !validator(value));
@@ -14,16 +11,22 @@ export function validate(req: any, fieldValidators: any): string[] {
   }, []);
 }
 
-// At least: 8 characters, one letter, one number, one special character.
+// At least: 8 characters, one letter, one number, one special character: #?!@$%^&*-/+//><~$%()=|;:
 export function passwordValidator(value: string): boolean {
-  return typeof value === 'string' && /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/.test(value);
+  return typeof value === 'string' && /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-/+//><~$%()=|;:]).{8,}$/.test(value);
 }
 
-export function birthdayValidator(value: number): boolean {
-  if (typeof value !== 'number') {
+export function birthdayValidator(value: string): boolean {
+  if (typeof value !== 'string') {
     return false;
   }
-  return new Date().getFullYear() - new Date(value).getFullYear() <= 90;
+  let parsedDate: Date;
+  try {
+    parsedDate = new Date(value);
+  } catch(e: any) {
+    return false;
+  }
+  return parsedDate.getFullYear() - parsedDate.getFullYear() <= 90;
 }
 
 export function minCharQty(limit: number): (v: string) => boolean {
