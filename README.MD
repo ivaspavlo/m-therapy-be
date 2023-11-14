@@ -26,5 +26,8 @@ firebase use [project_id]
 ## Lint rules
 https://github.com/eslint/eslint/blob/main/packages/js/src/configs/eslint-recommended.js
 
-## Firebase contacts
+## Firebase admins contacts
 https://firebase.google.com/support/troubleshooter/contact
+
+## Firestore usage
+https://console.cloud.google.com/firestore/databases

@@ -11,9 +11,8 @@ export function validate(req: any, fieldValidators: any): string[] {
   }, []);
 }
 
-// At least: 8 characters, one letter, one number, one special character (@$!%*#?&+)
+// At least: 8 characters, one letter, one number, one special character: #?!@$%^&*-/+//><~$%()=|;:
 export function passwordValidator(value: string): boolean {
-
   return typeof value === 'string' && /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$%^&*-/+//><~$%()=|;:]).{8,}$/.test(value);
 }
 
