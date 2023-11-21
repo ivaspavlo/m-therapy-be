@@ -132,7 +132,7 @@ export const buildTemplate = (config: IEmailTemplateConfig): string => {
       <tr>
         <td style="padding-right: 0px;padding-left: 0px;" align="center">
           
-          <img align="center" border="0" src="https://firebasestorage.googleapis.com/v0/b/mt-stage.appspot.com/o/mt-logo.png?alt=media&token=2233240d-2eb1-4765-9824-cfa9ae571397" alt="Company&#039;s logo" title="Company&#039;s logo" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 31%;max-width: 186px;" width="186"/>
+          <img align="center" border="0" src="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/mt-logo.png?alt=media&token=995a3cbe-4467-4321-bd40-9d1ea40f0197" alt="Company&#039;s logo" title="Company&#039;s logo" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 31%;max-width: 186px;" width="186"/>
           
         </td>
       </tr>
@@ -226,7 +226,7 @@ export const buildTemplate = (config: IEmailTemplateConfig): string => {
       <div style="font-size: 14px; line-height: 160%; text-align: center; word-wrap: break-word;">
         <p style="font-size: 14px; line-height: 160%;">${ config.message }</p>
         <p style="font-size: 14px; line-height: 160%;"><span style="color: #2dc26b; line-height: 25.6px; font-size: 16px;"><a rel="noopener" href="${ config.url }" target="_blank" style="color: #044e3b;">${ config.lang === 'en' ? 'Follow the link' : 'Перейти за посиланням' }</a></span></p>
-        <p style="font-size: 14px; line-height: 160%;"><span style="font-size: 12px; line-height: 19.2px;">${ config.lang === 'en' ? 'In case you have not requested the password reset please ignore this email.' : 'Якщо ви не надсилали запит на зміну пароля, проігноруйте цей електронний лист.' }</span></p>
+        <p style="font-size: 14px; line-height: 160%;"><span style="font-size: 12px; line-height: 19.2px;">${ config.lang === 'en' ? 'In case you have not interacted with the Tkachuk Massage Therapy website, please ignore this email.' : 'Якщо ви не користувались сайтом Tkachuk Massage Therapy, будь ласка, ігноруйте цей електронний лист.' }</span></p>
       </div>
     
           </td>
