@@ -1,21 +1,16 @@
-import { IRemindReq } from './remind.interface';
+import { IEmailTemplateConfig } from '../interfaces';
 
-export const GetNodemailerOptions = (req: IRemindReq, uiUrl: string, resetToken: string) => {
+
+export const GetNodemailerTemplate = (config: IEmailTemplateConfig) => {
   return {
     from: 'Tkachuk Massage Therapy <tkachuk_massage_therapy@gmail.com>',
-    to: req.email,
-    subject: GetEmailSubjectPerLanguage(req.lang),
-    html: GetEmailTemplatePerLanguage(req.lang, `${uiUrl}/reset/${resetToken}`)
+    to: config.to,
+    subject: config.subject,
+    html: buildTemplate(config)
   };
 }
 
-export const GetEmailSubjectPerLanguage = (lang: string): string => {
-  return lang === 'en'
-    ? 'Reset of password for Tkachuk Massage Therapy'
-    : 'Змінити пароль для Tkachuk Massage Therapy';
-}
-
-export const GetEmailTemplatePerLanguage = (lang: string, url: string): string => {
+export const buildTemplate = (config: IEmailTemplateConfig): string => {
   return `
     <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -196,7 +191,7 @@ export const GetEmailTemplatePerLanguage = (lang: string, url: string): string =
         <tr>
           <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:arial,helvetica,sans-serif;" align="left">
             
-            <h3 style="margin: 0px; color: #044e3b; line-height: 140%; text-align: center; word-wrap: break-word; font-family: inherit; font-size: 18px; font-weight: 700;">${ lang === 'ua' ? 'Зміна пароля' : 'Password reset' }</h3>
+            <h3 style="margin: 0px; color: #044e3b; line-height: 140%; text-align: center; word-wrap: break-word; font-family: inherit; font-size: 18px; font-weight: 700;">${ config.title }</h3>
     
           </td>
         </tr>
@@ -229,9 +224,9 @@ export const GetEmailTemplatePerLanguage = (lang: string, url: string): string =
           <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px 80px;font-family:arial,helvetica,sans-serif;" align="left">
             
       <div style="font-size: 14px; line-height: 160%; text-align: center; word-wrap: break-word;">
-        <p style="font-size: 14px; line-height: 160%;">${ lang === 'ua' ? 'Будь ласка, перейдіть за посиланням нижче для того, щоб змінити пароль:' : 'Please follow the link below in order to reset your password:'}</p>
-        <p style="font-size: 14px; line-height: 160%;"><span style="color: #2dc26b; line-height: 25.6px; font-size: 16px;"><a rel="noopener" href="${ url }" target="_blank" style="color: #044e3b;">${ url }</a></span></p>
-        <p style="font-size: 14px; line-height: 160%;"><span style="font-size: 12px; line-height: 19.2px;">${ lang === 'ua' ? 'Якщо ви не надсилали запит на зміну пароля, проігноруйте цей електронний лист.' : 'In case you have not requested the password reset please ignore this email.'}</span></p>
+        <p style="font-size: 14px; line-height: 160%;">${ config.message }</p>
+        <p style="font-size: 14px; line-height: 160%;"><span style="color: #2dc26b; line-height: 25.6px; font-size: 16px;"><a rel="noopener" href="${ config.url }" target="_blank" style="color: #044e3b;">${ config.lang === 'en' ? 'Follow the link' : 'Перейти за посиланням' }</a></span></p>
+        <p style="font-size: 14px; line-height: 160%;"><span style="font-size: 12px; line-height: 19.2px;">${ config.lang === 'en' ? 'In case you have not requested the password reset please ignore this email.' : 'Якщо ви не надсилали запит на зміну пароля, проігноруйте цей електронний лист.' }</span></p>
       </div>
     
           </td>
