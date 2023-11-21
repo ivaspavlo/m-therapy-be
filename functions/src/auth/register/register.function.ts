@@ -2,14 +2,22 @@ import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
 import { DocumentReference, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
 import * as logger from 'firebase-functions/logger';
+import * as jwt from 'jsonwebtoken';
+import * as nodemailer from 'nodemailer';
 import { ResponseBody } from '../../shared/models';
-import { COLLECTIONS, ERROR_MESSAGES } from '../../shared/constants';
+import { GetNodemailerTemplate } from '../../shared/utils';
+import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
 import { RegisterValidator } from './register.validator';
 import { IRegisterReq } from './register.interface';
 import { RegisterMapper } from './register.mapper';
+import { defineString } from 'firebase-functions/params';
 
+
+const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP).value();
+const uiUrl = defineString(ENV_KEYS.UI_URL);
 
 export const RegisterFunction = onRequest(
+  { secrets: [ENV_KEYS.MAIL_PASS, ENV_KEYS.MAIL_USER, ENV_KEYS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
     const userData: IRegisterReq = req.body;
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
@@ -54,6 +62,40 @@ export const RegisterFunction = onRequest(
 
     logger.info(`Created user: ${userDocumentReference.id}`);
 
-    res.status(201).send(new ResponseBody({}, true));
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env[ENV_KEYS.MAIL_USER],
+        pass: process.env[ENV_KEYS.MAIL_PASS]
+      }
+    });
+
+    let resetToken = null;
+    try {
+      resetToken = jwt.sign({ email: userData.email }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp });
+    } catch (e: any) {
+      logger.error('Signing JWT for register confirmation email failed', e);
+      res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+      return;
+    }
+
+    const mailOptions = GetNodemailerTemplate({
+      lang: userData.lang,
+      to: userData.email,
+      subject: userData.lang === 'en' ? 'Email confirmation for Tkachuk Massage Therapy' : 'Підтвердити електронну пошту для Tkachuk Massage Therapy',
+      title: userData.lang === 'en' ? 'Confirm email' : 'Підтвердіть email',
+      message: userData.lang === 'en' ? '' : '',
+      url: `${uiUrl.value()}/${resetToken}`
+    });
+
+    transporter.sendMail(mailOptions, (e: any) => {
+      if (e) {
+        logger.error('Nodemailer failed to send register confirmation email', e);
+        res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+        return;
+      }
+      logger.info(`Register confirmation email was sent to: ${userData.email}`);
+      res.status(201).send(new ResponseBody({}, true));
+    });
   }
 );

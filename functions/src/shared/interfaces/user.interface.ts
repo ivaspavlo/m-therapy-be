@@ -8,4 +8,5 @@ export interface IUser {
   phone: string,
   birthday: number,
   password: string,
+  isConfirmed: boolean
 }

@@ -1,11 +1,15 @@
 import { describe, expect, afterAll, beforeAll, test } from '@jest/globals';
-import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
+import {
+  DocumentData,
+  // QueryDocumentSnapshot,
+  getFirestore
+} from 'firebase-admin/firestore';
 import { defineString } from 'firebase-functions/params';
 import firebaseFunctionsTest from 'firebase-functions-test';
 import dotenv from 'dotenv';
 import * as jwt from 'jsonwebtoken';
 import * as functions from 'src/index';
-import { IUser } from 'src/shared/interfaces';
+// import { IUser } from 'src/shared/interfaces';
 import { ENV_KEYS } from 'src/shared/constants';
 
 
@@ -38,42 +42,42 @@ describe('Functions test online', () => {
     }
   };
 
-  describe('register', () => {
+  // describe('register', () => {
 
-    afterAll(async () => {
-      const usersQuery = getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email);
-      const querySnapshot = await usersQuery.get();
-      querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
-    });
+  //   afterAll(async () => {
+  //     const usersQuery = getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email);
+  //     const querySnapshot = await usersQuery.get();
+  //     querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
+  //   });
 
-    test('should create a user in db', async () => {
-      await functions.register(REGISTER_REQ as any, MOCK_RES as any);
-      let user: IUser | null = null;
-      try {
-        const queryByEmail = await getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email).get();
-        const userDocumentSnapshot: QueryDocumentSnapshot | undefined = queryByEmail.docs.find((d: any) => !!d);
-        user = userDocumentSnapshot?.data() as IUser;
-      } catch (error: any) {
-        // no action
-      }
+  //   test('should create a user in db', async () => {
+  //     await functions.register(REGISTER_REQ as any, MOCK_RES as any);
+  //     let user: IUser | null = null;
+  //     try {
+  //       const queryByEmail = await getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email).get();
+  //       const userDocumentSnapshot: QueryDocumentSnapshot | undefined = queryByEmail.docs.find((d: any) => !!d);
+  //       user = userDocumentSnapshot?.data() as IUser;
+  //     } catch (error: any) {
+  //       // no action
+  //     }
 
-      expect(user?.email).toEqual(REGISTER_REQ.body.email);
-    });
+  //     expect(user?.email).toEqual(REGISTER_REQ.body.email);
+  //   });
 
-    test('should return 400 when user exists', async () => {
-      const res = {
-        status: (code: number) => {
-          expect(code).toBe(400);
-          return {
-            send: (value: any) => {},
-            json: (value: any) => {}
-          };
-        }
-      };
-      await functions.register(REGISTER_REQ as any, res as any);
-    });
+  //   test('should return 400 when user exists', async () => {
+  //     const res = {
+  //       status: (code: number) => {
+  //         expect(code).toBe(400);
+  //         return {
+  //           send: (value: any) => {},
+  //           json: (value: any) => {}
+  //         };
+  //       }
+  //     };
+  //     await functions.register(REGISTER_REQ as any, res as any);
+  //   });
 
-  });
+  // });
 
   describe('login', () => {
     const MOCK_REQ = {

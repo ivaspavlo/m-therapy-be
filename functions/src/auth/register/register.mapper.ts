@@ -28,6 +28,7 @@ export const RegisterMapper = async (req: IRegisterReq): Promise<IUser> => {
     birthday: req.birthday,
     password: hashedPassword,
     isAdmin: false,
-    created: Date.now()
+    created: Date.now(),
+    isConfirmed: false
   };
 }
