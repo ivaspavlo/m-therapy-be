@@ -14,7 +14,7 @@ import { defineString } from 'firebase-functions/params';
 
 
 const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP).value();
-const uiUrl = defineString(ENV_KEYS.UI_URL);
+const uiUrl = defineString(ENV_KEYS.UI_URL).value();
 
 export const RegisterFunction = onRequest(
   { secrets: [ENV_KEYS.MAIL_PASS, ENV_KEYS.MAIL_USER, ENV_KEYS.JWT_SECRET] },
@@ -28,7 +28,7 @@ export const RegisterFunction = onRequest(
     try {
       existingUser = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', userData.email).get();
     } catch(e: any) {
-      logger.error('Querying DB by email failed', e);
+      logger.error('[Register] Querying DB by email failed', e);
       res.status(500).json(generalError);
       return;
     }
@@ -44,7 +44,7 @@ export const RegisterFunction = onRequest(
     try {
       prospectiveUser = await RegisterMapper(userData);
     } catch (e: any) {
-      logger.error('Hashing of password failed', e);
+      logger.error('[Register] Hashing of password failed', e);
       res.status(500).json(generalError);
       return;
     }
@@ -55,12 +55,12 @@ export const RegisterFunction = onRequest(
         .collection(COLLECTIONS.USERS)
         .add(prospectiveUser);
     } catch (e: any) {
-      logger.error('Storing of user data failed', e);
+      logger.error('[Register] Storing of user data failed', e);
       res.status(500).json(generalError);
       return;
     }
 
-    logger.info(`Created user: ${userDocumentReference.id}`);
+    logger.info(`[Register] Created user: ${userDocumentReference.id}`);
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -74,7 +74,7 @@ export const RegisterFunction = onRequest(
     try {
       resetToken = jwt.sign({ email: userData.email }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp });
     } catch (e: any) {
-      logger.error('Signing JWT for register confirmation email failed', e);
+      logger.error('[Register] Signing JWT for register confirmation email failed', e);
       res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       return;
     }
@@ -85,16 +85,16 @@ export const RegisterFunction = onRequest(
       subject: userData.lang === 'en' ? 'Email confirmation for Tkachuk Massage Therapy' : 'Підтвердити електронну пошту для Tkachuk Massage Therapy',
       title: userData.lang === 'en' ? 'Confirm email' : 'Підтвердіть email',
       message: userData.lang === 'en' ? '' : '',
-      url: `${uiUrl.value()}/${resetToken}`
+      url: `${uiUrl}auth/register-confirm/${resetToken}`
     });
 
     transporter.sendMail(mailOptions, (e: any) => {
       if (e) {
-        logger.error('Nodemailer failed to send register confirmation email', e);
+        logger.error('[Register] Nodemailer failed to send register confirmation email', e);
         res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
         return;
       }
-      logger.info(`Register confirmation email was sent to: ${userData.email}`);
+      logger.info(`[Register] Register confirmation email was sent to: ${userData.email}`);
       res.status(201).send(new ResponseBody({}, true));
     });
   }
