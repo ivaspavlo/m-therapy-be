@@ -31,3 +31,6 @@ https://firebase.google.com/support/troubleshooter/contact
 
 ## Firestore usage
 https://console.cloud.google.com/firestore/databases
+
+## Kill process
+lsof -t -i tcp:5004 | xargs kill
