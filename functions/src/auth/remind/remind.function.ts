@@ -5,13 +5,13 @@ import * as logger from 'firebase-functions/logger';
 import * as jwt from 'jsonwebtoken';
 import * as nodemailer from 'nodemailer';
 import { ResponseBody } from '../../shared/models';
-import { ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
+import { ENV_KEYS, ERROR_MESSAGES, FE_URLS, TRANSLATIONS } from '../../shared/constants';
 import { GetNodemailerTemplate } from '../../shared/utils';
 import { IRemindReq } from './remind.interface';
 import { RemindValidator } from './remind.validator';
 
 
-const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP).value();
+const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP);
 const uiUrl = defineString(ENV_KEYS.UI_URL);
 
 export const RemindFunction = onRequest(
@@ -25,6 +25,8 @@ export const RemindFunction = onRequest(
       return;
     }
 
+    const currentTranslations = TRANSLATIONS[remindReq.lang];
+
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
@@ -35,7 +37,7 @@ export const RemindFunction = onRequest(
 
     let resetToken = null;
     try {
-      resetToken = jwt.sign({ email: remindReq.email }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp });
+      resetToken = jwt.sign({ email: remindReq.email }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp.value() });
     } catch (e: any) {
       logger.error('Signing JWT for reminder email failed', e);
       res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
@@ -45,10 +47,10 @@ export const RemindFunction = onRequest(
     const mailOptions = GetNodemailerTemplate({
       lang: remindReq.lang,
       to: remindReq.email,
-      subject: remindReq.lang === 'en' ? 'Reset of password for Tkachuk Massage Therapy' : 'Змінити пароль для Tkachuk Massage Therapy',
-      title: remindReq.lang === 'en' ? 'Password reset' : 'Зміна пароля',
-      message: remindReq.lang === 'en' ? 'Please follow the link below in order to reset your password:' : 'Будь ласка, перейдіть за посиланням нижче для того, щоб змінити пароль:',
-      url: `${uiUrl}/reset/${resetToken}`
+      subject: currentTranslations.remindEmailSubject,
+      title: currentTranslations.remindEmailTitle,
+      message: currentTranslations.remindEmailMessage,
+      url: `${uiUrl}/${FE_URLS.RESET_PASSWORD}/${resetToken}`
     });
 
     transporter.sendMail(mailOptions, (e: any) => {

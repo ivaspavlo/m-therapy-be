@@ -1,3 +1,5 @@
+import { LanguageType } from "src/shared/interfaces";
+
 export interface IRegisterReq {
   firstname: string,
   lastname: string,
@@ -5,5 +7,5 @@ export interface IRegisterReq {
   birthday: number,
   phone: string,
   password: string,
-  lang: string
+  lang: LanguageType
 }

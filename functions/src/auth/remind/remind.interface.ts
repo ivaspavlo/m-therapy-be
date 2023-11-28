@@ -1,6 +1,8 @@
+import { LanguageType } from 'src/shared/interfaces';
+
 export interface IRemindReq {
   email: string,
-  lang: string
+  lang: LanguageType
 }
 
 export interface IMailingData {

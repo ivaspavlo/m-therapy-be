@@ -1,9 +1,10 @@
 import { QuerySnapshot } from 'firebase-admin/firestore';
 import { IRegisterReq } from './register.interface';
-import { ERROR_MESSAGES } from '../../shared/constants';
+import { ERROR_MESSAGES, TRANSLATIONS } from '../../shared/constants';
 import {
   birthdayValidator,
   emailValidator,
+  langFieldValidator,
   maxCharQty,
   minCharQty,
   passwordValidator,
@@ -19,7 +20,7 @@ const fieldValidators: Record<keyof IRegisterReq, Function[]> = {
   birthday: [birthdayValidator],
   phone: [minCharQty(9), maxCharQty(15)],
   password: [passwordValidator],
-  lang: [stringValidator]
+  lang: [stringValidator, langFieldValidator(TRANSLATIONS)]
 }
 
 export const RegisterValidator = (req: IRegisterReq, queryByEmail: QuerySnapshot): string[] | null => {
