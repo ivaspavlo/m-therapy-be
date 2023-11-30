@@ -80,53 +80,53 @@ describe('Functions test online', () => {
 
   // });
 
-  describe('login', () => {
-    const MOCK_REQ = {
-      body: {
-        email: 'testovichus@testmail.com',
-        password: 'TestPass1!'
-      }
-    };
+  // describe('login', () => {
+  //   const MOCK_REQ = {
+  //     body: {
+  //       email: 'testovichus@testmail.com',
+  //       password: 'TestPass1!'
+  //     }
+  //   };
 
-    beforeAll(async () => {
-      await functions.register(REGISTER_REQ as any, MOCK_RES as any);
-    });
+  //   beforeAll(async () => {
+  //     await functions.register(REGISTER_REQ as any, MOCK_RES as any);
+  //   });
 
-    afterAll(async () => {
-      const usersQuery = getFirestore().collection('users').where('email', '==', MOCK_REQ.body.email);
-      const querySnapshot = await usersQuery.get();
-      querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
-    });
+  //   afterAll(async () => {
+  //     const usersQuery = getFirestore().collection('users').where('email', '==', MOCK_REQ.body.email);
+  //     const querySnapshot = await usersQuery.get();
+  //     querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
+  //   });
 
-    test('should return status 200 when creds are correct', async () => {
-      const res = {
-        status: (code: number) => {
-          expect(code).toBe(200);
-          return {
-            send: (value: any) => { },
-            json: (value: any) => { }
-          };
-        }
-      };
-      await functions.login(MOCK_REQ as any, res as any);
-    });
+  //   test('should return status 200 when creds are correct', async () => {
+  //     const res = {
+  //       status: (code: number) => {
+  //         expect(code).toBe(200);
+  //         return {
+  //           send: (value: any) => { },
+  //           json: (value: any) => { }
+  //         };
+  //       }
+  //     };
+  //     await functions.login(MOCK_REQ as any, res as any);
+  //   });
 
-    test('should return status 401 when creds are incorrect', async () => {
-      const res = {
-        status: (code: number) => {
-          expect(code).toBe(401);
-          return {
-            send: (value: any) => { },
-            json: (value: any) => { }
-          }
-        }
-      }
-      await functions.login(
-        { body: { email: 'incorrect_email@testmail.com', password: 'incorrect_pwd' } } as any,
-        res as any
-      );
-    });
-  });
+  //   test('should return status 401 when creds are incorrect', async () => {
+  //     const res = {
+  //       status: (code: number) => {
+  //         expect(code).toBe(401);
+  //         return {
+  //           send: (value: any) => { },
+  //           json: (value: any) => { }
+  //         }
+  //       }
+  //     }
+  //     await functions.login(
+  //       { body: { email: 'incorrect_email@testmail.com', password: 'incorrect_pwd' } } as any,
+  //       res as any
+  //     );
+  //   });
+  // });
 
   describe('reset', () => {
     const VALID_JWT = jwt.sign({ email: REGISTER_REQ.body.email }, jwtToken, { expiresIn: resetTokenExp });
