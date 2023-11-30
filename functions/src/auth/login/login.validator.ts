@@ -7,6 +7,11 @@ const bcrypt = require('bcrypt');
 
 export const LoginValidator = async (req: ILoginReq, user: IUser): Promise<string[] | null> => {
   let isPasswordCorrect: boolean;
+
+  if (!user.isConfirmed) {
+    return Promise.resolve([ERROR_MESSAGES.CREDENTIALS]);
+  }
+
   try {
     isPasswordCorrect = await bcrypt.compare(req.password, user.password);
   } catch (e: any) {

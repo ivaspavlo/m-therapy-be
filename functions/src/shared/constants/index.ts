@@ -34,7 +34,7 @@ export const TRANSLATIONS = {
   en: {
     registerEmailSubject: 'Email confirmation for Tkachuk Massage Therapy',
     registerEmailTitle: 'Confirm email',
-    registerEmailMessage: 'Please follow the link below in order to reset your password:',
+    registerEmailMessage: 'Please follow the link below in order to confirm your email:',
     remindEmailSubject: 'Reset of password for Tkachuk Massage Therapy',
     remindEmailTitle: 'Password reset',
     remindEmailMessage: 'Please follow the link below in order to reset your password:'
