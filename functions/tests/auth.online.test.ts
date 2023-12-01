@@ -1,15 +1,11 @@
 import { describe, expect, afterAll, beforeAll, test } from '@jest/globals';
-import {
-  DocumentData,
-  // QueryDocumentSnapshot,
-  getFirestore
-} from 'firebase-admin/firestore';
+import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
 import { defineString } from 'firebase-functions/params';
 import firebaseFunctionsTest from 'firebase-functions-test';
 import dotenv from 'dotenv';
 import * as jwt from 'jsonwebtoken';
 import * as functions from 'src/index';
-// import { IUser } from 'src/shared/interfaces';
+import { IUser } from 'src/shared/interfaces';
 import { ENV_KEYS } from 'src/shared/constants';
 
 
@@ -43,90 +39,97 @@ describe('Functions test online', () => {
     }
   };
 
-  // describe('register', () => {
+  describe('register', () => {
 
-  //   afterAll(async () => {
-  //     const usersQuery = getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email);
-  //     const querySnapshot = await usersQuery.get();
-  //     querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
-  //   });
+    afterAll(async () => {
+      const usersQuery = getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email);
+      const querySnapshot = await usersQuery.get();
+      querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
+    });
 
-  //   test('should create a user in db', async () => {
-  //     await functions.register(REGISTER_REQ as any, MOCK_RES as any);
-  //     let user: IUser | null = null;
-  //     try {
-  //       const queryByEmail = await getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email).get();
-  //       const userDocumentSnapshot: QueryDocumentSnapshot | undefined = queryByEmail.docs.find((d: any) => !!d);
-  //       user = userDocumentSnapshot?.data() as IUser;
-  //     } catch (error: any) {
-  //       // no action
-  //     }
+    test('should create a user in db', async () => {
+      await functions.register(REGISTER_REQ as any, MOCK_RES as any);
+      let user: IUser | null = null;
+      try {
+        const queryByEmail = await getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email).get();
+        const userDocumentSnapshot: QueryDocumentSnapshot | undefined = queryByEmail.docs.find((d: any) => !!d);
+        user = userDocumentSnapshot?.data() as IUser;
+      } catch (error: any) {
+        // no action
+      }
 
-  //     expect(user?.email).toEqual(REGISTER_REQ.body.email);
-  //   });
+      expect(user?.email).toEqual(REGISTER_REQ.body.email);
+    });
 
-  //   test('should return 400 when user exists', async () => {
-  //     const res = {
-  //       status: (code: number) => {
-  //         expect(code).toBe(400);
-  //         return {
-  //           send: (value: any) => {},
-  //           json: (value: any) => {}
-  //         };
-  //       }
-  //     };
-  //     await functions.register(REGISTER_REQ as any, res as any);
-  //   });
+    test('should return 400 when user exists', async () => {
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(400);
+          return {
+            send: (value: any) => {},
+            json: (value: any) => {}
+          };
+        }
+      };
+      await functions.register(REGISTER_REQ as any, res as any);
+    });
 
-  // });
+  });
 
-  // describe('login', () => {
-  //   const MOCK_REQ = {
-  //     body: {
-  //       email: 'testovichus@testmail.com',
-  //       password: 'TestPass1!'
-  //     }
-  //   };
+  describe('login', () => {
+    const MOCK_REQ = {
+      body: {
+        email: 'testovichus@testmail.com',
+        password: 'TestPass1!'
+      }
+    };
 
-  //   beforeAll(async () => {
-  //     await functions.register(REGISTER_REQ as any, MOCK_RES as any);
-  //   });
+    beforeAll(async () => {
+      await functions.register(REGISTER_REQ as any, MOCK_RES as any);
+    });
 
-  //   afterAll(async () => {
-  //     const usersQuery = getFirestore().collection('users').where('email', '==', MOCK_REQ.body.email);
-  //     const querySnapshot = await usersQuery.get();
-  //     querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
-  //   });
+    afterAll(async () => {
+      const usersQuery = getFirestore().collection('users').where('email', '==', MOCK_REQ.body.email);
+      const querySnapshot = await usersQuery.get();
+      querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
+    });
 
-  //   test('should return status 200 when creds are correct', async () => {
-  //     const res = {
-  //       status: (code: number) => {
-  //         expect(code).toBe(200);
-  //         return {
-  //           send: (value: any) => { },
-  //           json: (value: any) => { }
-  //         };
-  //       }
-  //     };
-  //     await functions.login(MOCK_REQ as any, res as any);
-  //   });
+    test('should return status 200 when creds are correct', async () => {
+      const resetToken = jwt.sign(
+        { email: REGISTER_REQ.body.email },
+        process.env[ENV_KEYS.JWT_SECRET] as string,
+        { expiresIn: resetTokenExp }
+      );
+      // @ts-ignore
+      await functions.registerConfirm({ query: { token: resetToken } }, MOCK_RES as any);
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(200);
+          return {
+            send: (value: any) => { },
+            json: (value: any) => { }
+          };
+        }
+      };
+      await functions.login(MOCK_REQ as any, res as any);
+    });
 
-  //   test('should return status 401 when creds are incorrect', async () => {
-  //     const res = {
-  //       status: (code: number) => {
-  //         expect(code).toBe(401);
-  //         return {
-  //           send: (value: any) => { },
-  //           json: (value: any) => { }
-  //         }
-  //       }
-  //     }
-  //     await functions.login(
-  //       { body: { email: 'incorrect_email@testmail.com', password: 'incorrect_pwd' } } as any,
-  //       res as any
-  //     );
-  //   });
-  // });
+    // test('should return status 401 when creds are incorrect', async () => {
+    //   const res = {
+    //     status: (code: number) => {
+    //       expect(code).toBe(401);
+    //       return {
+    //         send: (value: any) => { },
+    //         json: (value: any) => { }
+    //       }
+    //     }
+    //   }
+    //   await functions.login(
+    //     { body: { email: 'incorrect_email@testmail.com', password: 'incorrect_pwd' } } as any,
+    //     res as any
+    //   );
+    // });
+  });
 
   describe('reset', () => {
     const VALID_JWT = jwt.sign({ email: REGISTER_REQ.body.email }, jwtToken, { expiresIn: resetTokenExp });

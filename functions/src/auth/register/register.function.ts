@@ -15,13 +15,14 @@ import { RegisterMapper } from './register.mapper';
 
 const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP);
 const uiUrl = defineString(ENV_KEYS.UI_URL);
+const isProd = defineString(ENV_KEYS.IS_PROD);
 
 export const RegisterFunction = onRequest(
   { secrets: [ENV_KEYS.MAIL_PASS, ENV_KEYS.MAIL_USER, ENV_KEYS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
     const userData: IRegisterReq = req.body;
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
-    
+
     let validationErrors: string[] | null = null;
     let existingUser: QuerySnapshot;
 
@@ -92,7 +93,10 @@ export const RegisterFunction = onRequest(
 
     transporter.sendMail(mailOptions, (e: any) => {
       if (e) {
-        logger.error('[Register] Nodemailer failed to send register confirmation email', e);
+        const test = isProd.value();
+        if (test) {
+          logger.error('[Register] Nodemailer failed to send register confirmation email', e);
+        }
         res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
         return;
       }
