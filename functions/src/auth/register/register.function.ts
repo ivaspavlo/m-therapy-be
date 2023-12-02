@@ -15,7 +15,7 @@ import { RegisterMapper } from './register.mapper';
 
 const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP);
 const uiUrl = defineString(ENV_KEYS.UI_URL);
-const isProd = defineString(ENV_KEYS.IS_PROD);
+const environment = defineString(ENV_KEYS.ENVIRONMENT);
 
 export const RegisterFunction = onRequest(
   { secrets: [ENV_KEYS.MAIL_PASS, ENV_KEYS.MAIL_USER, ENV_KEYS.JWT_SECRET] },
@@ -93,8 +93,7 @@ export const RegisterFunction = onRequest(
 
     transporter.sendMail(mailOptions, (e: any) => {
       if (e) {
-        const test = isProd.value();
-        if (test) {
+        if (environment.value() === 'PROD') {
           logger.error('[Register] Nodemailer failed to send register confirmation email', e);
         }
         res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
