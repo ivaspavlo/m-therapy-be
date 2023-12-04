@@ -100,8 +100,10 @@ describe('Functions test online', () => {
         process.env[ENV_KEYS.JWT_SECRET] as string,
         { expiresIn: resetTokenExp }
       );
+
       // @ts-ignore
       await functions.registerConfirm({ query: { token: resetToken } }, MOCK_RES as any);
+
       const res = {
         status: (code: number) => {
           expect(code).toBe(200);
@@ -112,23 +114,23 @@ describe('Functions test online', () => {
         }
       };
       await functions.login(MOCK_REQ as any, res as any);
-    });
+    }, 10000);
 
-    // test('should return status 401 when creds are incorrect', async () => {
-    //   const res = {
-    //     status: (code: number) => {
-    //       expect(code).toBe(401);
-    //       return {
-    //         send: (value: any) => { },
-    //         json: (value: any) => { }
-    //       }
-    //     }
-    //   }
-    //   await functions.login(
-    //     { body: { email: 'incorrect_email@testmail.com', password: 'incorrect_pwd' } } as any,
-    //     res as any
-    //   );
-    // });
+    test('should return status 401 when creds are incorrect', async () => {
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(401);
+          return {
+            send: (value: any) => { },
+            json: (value: any) => { }
+          }
+        }
+      }
+      await functions.login(
+        { body: { email: 'incorrect_email@testmail.com', password: 'incorrect_pwd' } } as any,
+        res as any
+      );
+    });
   });
 
   describe('reset', () => {
@@ -168,6 +170,19 @@ describe('Functions test online', () => {
       await functions.reset({ ...MOCK_REQ, query: { token: JWT_INCORRECT_SIGNITURE } } as any, res as any);
     });
 
+    test('should return 400 if the email is incorrect', async () => {
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(400);
+          return {
+            send: (value: any) => { },
+            json: (value: any) => { }
+          }
+        }
+      };
+      await functions.reset({ ...MOCK_REQ, query: { token: JWT_INCORRECT_EMAIL } } as any, res as any);
+    });
+
     test('should return 200 if the token is valid', async () => {
       const res = {
         status: (code: number) => {
@@ -180,6 +195,35 @@ describe('Functions test online', () => {
       };
       await functions.reset({ ...MOCK_REQ, query: { token: VALID_JWT } } as any, res as any);
     });
+  });
+
+  describe('registerConfirm', () => {
+    const VALID_JWT = jwt.sign({ email: REGISTER_REQ.body.email }, jwtToken, { expiresIn: resetTokenExp });
+    const JWT_INCORRECT_SIGNITURE = jwt.sign({ email: REGISTER_REQ.body.email }, 'incorrect_secret', { expiresIn: resetTokenExp });
+    const JWT_INCORRECT_EMAIL = jwt.sign({ email: 'incorrect_email@gmail.com' }, jwtToken, { expiresIn: resetTokenExp });
+
+    beforeAll(async () => {
+      await functions.register(REGISTER_REQ as any, MOCK_RES as any);
+    });
+
+    afterAll(async () => {
+      const usersQuery = getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email);
+      const querySnapshot = await usersQuery.get();
+      querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
+    });
+
+    test('should return 401 if the token is not valid', async () => {
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(401);
+          return {
+            send: (value: any) => { },
+            json: (value: any) => { }
+          }
+        }
+      };
+      await functions.registerConfirm({ query: { token: JWT_INCORRECT_SIGNITURE } } as any, res as any);
+    });
 
     test('should return 400 if the email is incorrect', async () => {
       const res = {
@@ -191,7 +235,20 @@ describe('Functions test online', () => {
           }
         }
       };
-      await functions.reset({ ...MOCK_REQ, query: { token: JWT_INCORRECT_EMAIL } } as any, res as any);
+      await functions.registerConfirm({ query: { token: JWT_INCORRECT_EMAIL } } as any, res as any);
+    });
+
+    test('should return 200 if the token is valid', async () => {
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(200);
+          return {
+            send: (value: any) => { },
+            json: (value: any) => { }
+          }
+        }
+      };
+      await functions.registerConfirm({ query: { token: VALID_JWT } } as any, res as any);
     });
   });
 });
