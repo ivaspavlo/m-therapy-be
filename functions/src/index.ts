@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase-admin/app';
 import { LoginFunction, RegisterConfirmFunction, RegisterFunction, RemindFunction, ResetFunction } from './auth';
-import { ManagerFunction } from './manager/manager.function';
+import { UserFunction } from './manager/user.function';
 
 initializeApp();
 
@@ -8,12 +8,12 @@ exports.register = RegisterFunction;
 exports.login = LoginFunction;
 exports.remind = RemindFunction;
 exports.reset = ResetFunction;
-exports.manager = ManagerFunction;
+exports.user = UserFunction;
 exports.registerConfirm = RegisterConfirmFunction;
 
 export const register = RegisterFunction;
 export const login = LoginFunction;
 export const remind = RemindFunction;
 export const reset = ResetFunction;
-export const manager = ManagerFunction;
+export const manager = UserFunction;
 export const registerConfirm = RegisterConfirmFunction;
