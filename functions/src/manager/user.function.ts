@@ -5,7 +5,7 @@ import { ResponseBody } from '../shared/models';
 import * as logger from 'firebase-functions/logger';
 import * as jwt from 'jsonwebtoken';
 
-export const ManagerFunction = onRequest(
+export const UserFunction = onRequest(
   { secrets: [ENV_KEYS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
     const clientJWT = req.headers.authorization;
