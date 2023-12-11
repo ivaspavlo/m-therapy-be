@@ -1,11 +1,11 @@
-import { onRequest } from 'firebase-functions/v2/https';
-import { Request, Response } from 'firebase-functions';
-import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../shared/constants';
-import { ResponseBody } from '../shared/models';
 import * as logger from 'firebase-functions/logger';
 import * as jwt from 'jsonwebtoken';
-import { QueryDocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
-import { IUser } from 'src/shared/interfaces';
+import { onRequest } from 'firebase-functions/v2/https';
+import { DocumentData, getFirestore } from 'firebase-admin/firestore';
+import { Request, Response } from 'firebase-functions';
+import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../shared/constants';
+import { ResponseBody, User } from '../shared/models';
+import { IUser } from '../shared/interfaces';
 
 
 export const UserFunction = onRequest(
@@ -27,37 +27,31 @@ export const UserFunction = onRequest(
       return;
     }
 
-    let parsedResetToken: { [key:string]: string, email: string };
+    let parsedClientToken: { [key:string]: string, id: string };
     try {
-      parsedResetToken = JSON.parse(Buffer.from(clientJWT!.split('.')[1], 'base64').toString());
+      parsedClientToken = JSON.parse(Buffer.from(clientJWT!.split('.')[1], 'base64').toString());
     } catch (e: any) {
       res.status(401).json(jwtError);
       return;
     }
 
-    let queryByEmail: QuerySnapshot;
+    let userDocumentData: DocumentData;
     try {
-      queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', parsedResetToken.email).get();
+      userDocumentData = (await getFirestore().collection(COLLECTIONS.USERS).doc(parsedClientToken.id).get());
     } catch(e: any) {
       logger.error('[Reset] Querying DB by email failed', e);
       res.status(500).json(generalError);
       return;
     }
 
-    if (queryByEmail.empty) {
+    if (userDocumentData.empty) {
       res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_FOUND]));
       return;
     }
 
-    const userDocumentSnapshot: QueryDocumentSnapshot | undefined = queryByEmail.docs.find(d => !!d);
-    if (!userDocumentSnapshot || !userDocumentSnapshot.data()) {
-      res.status(401).json(new ResponseBody(null, false, [ERROR_MESSAGES.CREDENTIALS]));
-      return;
-    }
-
-    const user: IUser = userDocumentSnapshot.data() as IUser;
+    const user: IUser = userDocumentData.data() as IUser;
 
     logger.info(`Retrieved user data: ${user.id}`);
-    res.status(200).send(new ResponseBody({user}, true));
+    res.status(200).send(new ResponseBody(User.fromDocumentData(user), true));
   }
 );
