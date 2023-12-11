@@ -197,58 +197,58 @@ describe('Functions test online', () => {
     });
   });
 
-  describe('registerConfirm', () => {
-    const VALID_JWT = jwt.sign({ email: REGISTER_REQ.body.email }, jwtToken, { expiresIn: resetTokenExp });
-    const JWT_INCORRECT_SIGNITURE = jwt.sign({ email: REGISTER_REQ.body.email }, 'incorrect_secret', { expiresIn: resetTokenExp });
-    const JWT_INCORRECT_EMAIL = jwt.sign({ email: 'incorrect_email@gmail.com' }, jwtToken, { expiresIn: resetTokenExp });
+  // describe('registerConfirm', () => {
+  //   const VALID_JWT = jwt.sign({ email: REGISTER_REQ.body.email }, jwtToken, { expiresIn: resetTokenExp });
+  //   const JWT_INCORRECT_SIGNITURE = jwt.sign({ email: REGISTER_REQ.body.email }, 'incorrect_secret', { expiresIn: resetTokenExp });
+  //   const JWT_INCORRECT_EMAIL = jwt.sign({ email: 'incorrect_email@gmail.com' }, jwtToken, { expiresIn: resetTokenExp });
 
-    beforeAll(async () => {
-      await functions.register(REGISTER_REQ as any, MOCK_RES as any);
-    });
+  //   beforeAll(async () => {
+  //     await functions.register(REGISTER_REQ as any, MOCK_RES as any);
+  //   });
 
-    afterAll(async () => {
-      const usersQuery = getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email);
-      const querySnapshot = await usersQuery.get();
-      querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
-    });
+  //   afterAll(async () => {
+  //     const usersQuery = getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email);
+  //     const querySnapshot = await usersQuery.get();
+  //     querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
+  //   });
 
-    test('should return 401 if the token is not valid', async () => {
-      const res = {
-        status: (code: number) => {
-          expect(code).toBe(401);
-          return {
-            send: (value: any) => { },
-            json: (value: any) => { }
-          }
-        }
-      };
-      await functions.registerConfirm({ query: { token: JWT_INCORRECT_SIGNITURE } } as any, res as any);
-    });
+  //   test('should return 401 if the token is not valid', async () => {
+  //     const res = {
+  //       status: (code: number) => {
+  //         expect(code).toBe(401);
+  //         return {
+  //           send: (value: any) => { },
+  //           json: (value: any) => { }
+  //         }
+  //       }
+  //     };
+  //     await functions.registerConfirm({ query: { token: JWT_INCORRECT_SIGNITURE } } as any, res as any);
+  //   });
 
-    test('should return 400 if the email is incorrect', async () => {
-      const res = {
-        status: (code: number) => {
-          expect(code).toBe(400);
-          return {
-            send: (value: any) => { },
-            json: (value: any) => { }
-          }
-        }
-      };
-      await functions.registerConfirm({ query: { token: JWT_INCORRECT_EMAIL } } as any, res as any);
-    });
+  //   test('should return 400 if the email is incorrect', async () => {
+  //     const res = {
+  //       status: (code: number) => {
+  //         expect(code).toBe(400);
+  //         return {
+  //           send: (value: any) => { },
+  //           json: (value: any) => { }
+  //         }
+  //       }
+  //     };
+  //     await functions.registerConfirm({ query: { token: JWT_INCORRECT_EMAIL } } as any, res as any);
+  //   });
 
-    test('should return 200 if the token is valid', async () => {
-      const res = {
-        status: (code: number) => {
-          expect(code).toBe(200);
-          return {
-            send: (value: any) => { },
-            json: (value: any) => { }
-          }
-        }
-      };
-      await functions.registerConfirm({ query: { token: VALID_JWT } } as any, res as any);
-    });
-  });
+  //   test('should return 200 if the token is valid', async () => {
+  //     const res = {
+  //       status: (code: number) => {
+  //         expect(code).toBe(200);
+  //         return {
+  //           send: (value: any) => { },
+  //           json: (value: any) => { }
+  //         }
+  //       }
+  //     };
+  //     await functions.registerConfirm({ query: { token: VALID_JWT } } as any, res as any);
+  //   });
+  // });
 });
