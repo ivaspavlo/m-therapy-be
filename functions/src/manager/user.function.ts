@@ -44,7 +44,7 @@ export const UserFunction = onRequest(
       return;
     }
 
-    if (userDocumentData.empty) {
+    if (!userDocumentData.exists) {
       res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_FOUND]));
       return;
     }
@@ -52,6 +52,6 @@ export const UserFunction = onRequest(
     const user: IUser = userDocumentData.data() as IUser;
 
     logger.info(`Retrieved user data: ${user.id}`);
-    res.status(200).send(new ResponseBody(User.fromDocumentData(user), true));
+    res.status(200).send(new ResponseBody(User.fromDocumentData({...user, id: parsedClientToken.id}), true));
   }
 );

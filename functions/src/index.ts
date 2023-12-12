@@ -15,5 +15,5 @@ export const register = RegisterFunction;
 export const login = LoginFunction;
 export const remind = RemindFunction;
 export const reset = ResetFunction;
-export const manager = UserFunction;
+export const user = UserFunction;
 export const registerConfirm = RegisterConfirmFunction;
