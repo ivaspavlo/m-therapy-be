@@ -39,16 +39,22 @@ describe('Functions test online', () => {
     }
   };
 
+  const VALID_JWT = jwt.sign({ email: REGISTER_REQ.body.email }, jwtToken, { expiresIn: resetTokenExp });
+  const JWT_INCORRECT_SIGNITURE = jwt.sign({ email: REGISTER_REQ.body.email }, 'incorrect_secret', { expiresIn: resetTokenExp });
+  const JWT_INCORRECT_EMAIL = jwt.sign({ email: 'incorrect_email@gmail.com' }, jwtToken, { expiresIn: resetTokenExp });
+
+  beforeAll(async () => {
+    await functions.register(REGISTER_REQ as any, MOCK_RES as any);
+  });
+
+  afterAll(async () => {
+    const usersQuery = getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email);
+    const querySnapshot = await usersQuery.get();
+    querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
+  });
+
   describe('register', () => {
-
-    afterAll(async () => {
-      const usersQuery = getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email);
-      const querySnapshot = await usersQuery.get();
-      querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
-    });
-
     test('should create a user in db', async () => {
-      await functions.register(REGISTER_REQ as any, MOCK_RES as any);
       let user: IUser | null = null;
       try {
         const queryByEmail = await getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email).get();
@@ -57,7 +63,6 @@ describe('Functions test online', () => {
       } catch (error: any) {
         // no action
       }
-
       expect(user?.email).toEqual(REGISTER_REQ.body.email);
     });
 
@@ -73,26 +78,15 @@ describe('Functions test online', () => {
       };
       await functions.register(REGISTER_REQ as any, res as any);
     });
-
   });
 
   describe('login', () => {
-    const MOCK_REQ = {
+    const LOGIN_MOCK_REQ = {
       body: {
-        email: 'testovichus@testmail.com',
-        password: 'TestPass1!'
+        email: REGISTER_REQ.body.email,
+        password: REGISTER_REQ.body.password
       }
     };
-
-    beforeAll(async () => {
-      await functions.register(REGISTER_REQ as any, MOCK_RES as any);
-    });
-
-    afterAll(async () => {
-      const usersQuery = getFirestore().collection('users').where('email', '==', MOCK_REQ.body.email);
-      const querySnapshot = await usersQuery.get();
-      querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
-    });
 
     test('should return status 200 when creds are correct', async () => {
       const resetToken = jwt.sign(
@@ -113,7 +107,7 @@ describe('Functions test online', () => {
           };
         }
       };
-      await functions.login(MOCK_REQ as any, res as any);
+      await functions.login(LOGIN_MOCK_REQ as any, res as any);
     }, 10000);
 
     test('should return status 401 when creds are incorrect', async () => {
@@ -134,9 +128,6 @@ describe('Functions test online', () => {
   });
 
   describe('reset', () => {
-    const VALID_JWT = jwt.sign({ email: REGISTER_REQ.body.email }, jwtToken, { expiresIn: resetTokenExp });
-    const JWT_INCORRECT_SIGNITURE = jwt.sign({ email: REGISTER_REQ.body.email }, 'incorrect_secret', { expiresIn: resetTokenExp });
-    const JWT_INCORRECT_EMAIL = jwt.sign({ email: 'incorrect_email@gmail.com' }, jwtToken, { expiresIn: resetTokenExp });
     const MOCK_REQ = {
       query: {
         token: null
@@ -146,16 +137,6 @@ describe('Functions test online', () => {
         oldPassword: 'TestPass1!'
       }
     };
-
-    beforeAll(async () => {
-      await functions.register(REGISTER_REQ as any, MOCK_RES as any);
-    });
-
-    afterAll(async () => {
-      const usersQuery = getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email);
-      const querySnapshot = await usersQuery.get();
-      querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
-    });
 
     test('should return 401 if the token is not valid', async () => {
       const res = {
@@ -197,58 +178,44 @@ describe('Functions test online', () => {
     });
   });
 
-  // describe('registerConfirm', () => {
-  //   const VALID_JWT = jwt.sign({ email: REGISTER_REQ.body.email }, jwtToken, { expiresIn: resetTokenExp });
-  //   const JWT_INCORRECT_SIGNITURE = jwt.sign({ email: REGISTER_REQ.body.email }, 'incorrect_secret', { expiresIn: resetTokenExp });
-  //   const JWT_INCORRECT_EMAIL = jwt.sign({ email: 'incorrect_email@gmail.com' }, jwtToken, { expiresIn: resetTokenExp });
+  describe('registerConfirm', () => {
+    test('should return 401 if the token is not valid', async () => {
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(401);
+          return {
+            send: (value: any) => { },
+            json: (value: any) => { }
+          }
+        }
+      };
+      await functions.registerConfirm({ query: { token: JWT_INCORRECT_SIGNITURE } } as any, res as any);
+    });
 
-  //   beforeAll(async () => {
-  //     await functions.register(REGISTER_REQ as any, MOCK_RES as any);
-  //   });
+    test('should return 400 if the email is incorrect', async () => {
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(400);
+          return {
+            send: (value: any) => { },
+            json: (value: any) => { }
+          }
+        }
+      };
+      await functions.registerConfirm({ query: { token: JWT_INCORRECT_EMAIL } } as any, res as any);
+    });
 
-  //   afterAll(async () => {
-  //     const usersQuery = getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email);
-  //     const querySnapshot = await usersQuery.get();
-  //     querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
-  //   });
-
-  //   test('should return 401 if the token is not valid', async () => {
-  //     const res = {
-  //       status: (code: number) => {
-  //         expect(code).toBe(401);
-  //         return {
-  //           send: (value: any) => { },
-  //           json: (value: any) => { }
-  //         }
-  //       }
-  //     };
-  //     await functions.registerConfirm({ query: { token: JWT_INCORRECT_SIGNITURE } } as any, res as any);
-  //   });
-
-  //   test('should return 400 if the email is incorrect', async () => {
-  //     const res = {
-  //       status: (code: number) => {
-  //         expect(code).toBe(400);
-  //         return {
-  //           send: (value: any) => { },
-  //           json: (value: any) => { }
-  //         }
-  //       }
-  //     };
-  //     await functions.registerConfirm({ query: { token: JWT_INCORRECT_EMAIL } } as any, res as any);
-  //   });
-
-  //   test('should return 200 if the token is valid', async () => {
-  //     const res = {
-  //       status: (code: number) => {
-  //         expect(code).toBe(200);
-  //         return {
-  //           send: (value: any) => { },
-  //           json: (value: any) => { }
-  //         }
-  //       }
-  //     };
-  //     await functions.registerConfirm({ query: { token: VALID_JWT } } as any, res as any);
-  //   });
-  // });
+    test('should return 200 if the token is valid', async () => {
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(200);
+          return {
+            send: (value: any) => { },
+            json: (value: any) => { }
+          }
+        }
+      };
+      await functions.registerConfirm({ query: { token: VALID_JWT } } as any, res as any);
+    });
+  });
 });
