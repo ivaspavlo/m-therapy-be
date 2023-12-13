@@ -31,7 +31,7 @@ describe('Functions test online', () => {
     body: {
       firstname: 'Test',
       lastname: 'Testovich',
-      email: 'testovichus@testmail.com',
+      email: 'test@testmail.com',
       birthday: '1990-08-08',
       phone: '+111222333444',
       password: 'TestPass1!',
