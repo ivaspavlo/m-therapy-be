@@ -50,7 +50,7 @@ export const RemindFunction = onRequest(
       subject: currentTranslations.remindEmailSubject,
       title: currentTranslations.remindEmailTitle,
       message: currentTranslations.remindEmailMessage,
-      url: `${uiUrl}/${FE_URLS.RESET_PASSWORD}/${resetToken}`
+      url: `${uiUrl.value()}/${FE_URLS.RESET_PASSWORD}/${resetToken}`
     });
 
     transporter.sendMail(mailOptions, (e: any) => {
