@@ -25,6 +25,12 @@ export const ResetFunction = onRequest(
       return;
     }
 
+    const validationErrors: string[] | null = await ResetValidator(resetData);
+    if (validationErrors) {
+      res.status(401).json(new ResponseBody(null, false, validationErrors));
+      return;
+    }
+
     let parsedResetToken: { [key:string]: string, email: string };
     try {
       parsedResetToken = JSON.parse(Buffer.from(resetToken.split('.')[1], 'base64').toString());
@@ -54,12 +60,6 @@ export const ResetFunction = onRequest(
     }
 
     const user: IUser = userDocumentSnapshot.data() as IUser;
-
-    const validationErrors: string[] | null = await ResetValidator(resetData, user);
-    if (validationErrors) {
-      res.status(401).json(new ResponseBody(null, false, validationErrors));
-      return;
-    }
 
     let updatedUser: IUser;
     try {
