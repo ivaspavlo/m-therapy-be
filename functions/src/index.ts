@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase-admin/app';
 import { LoginFunction, RegisterConfirmFunction, RegisterFunction, RemindFunction, ResetFunction } from './auth';
-import { UserFunction } from './manager/user.function';
+import { UserFunction } from './user/user.function';
 
 initializeApp();
 
