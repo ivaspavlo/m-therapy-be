@@ -3,12 +3,12 @@ import * as jwt from 'jsonwebtoken';
 import { onRequest } from 'firebase-functions/v2/https';
 import { DocumentData, getFirestore } from 'firebase-admin/firestore';
 import { Request, Response } from 'firebase-functions';
-import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../shared/constants';
-import { ResponseBody, User } from '../shared/models';
-import { IUser } from '../shared/interfaces';
+import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
+import { ResponseBody, User } from '../../shared/models';
+import { IUser } from '../../shared/interfaces';
 
 
-export const UserFunction = onRequest(
+export const ProfileFunction = onRequest(
   { secrets: [ENV_KEYS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
@@ -51,7 +51,7 @@ export const UserFunction = onRequest(
 
     const user: IUser = userDocumentData.data() as IUser;
 
-    logger.info(`Retrieved user data: ${user.id}`);
+    logger.info(`Retrieved user data: ${userDocumentData.id}`);
     res.status(200).send(new ResponseBody(User.fromDocumentData({...user, id: parsedClientToken.id}), true));
   }
 );
