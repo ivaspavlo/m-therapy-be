@@ -1,10 +1,10 @@
+import * as jwt from 'jsonwebtoken';
+import * as functions from 'src/index';
+import firebaseFunctionsTest from 'firebase-functions-test';
+import dotenv from 'dotenv';
 import { describe, expect, afterAll, beforeAll, test } from '@jest/globals';
 import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
 import { defineString } from 'firebase-functions/params';
-import firebaseFunctionsTest from 'firebase-functions-test';
-import dotenv from 'dotenv';
-import * as jwt from 'jsonwebtoken';
-import * as functions from 'src/index';
 import { IUser } from 'src/shared/interfaces';
 import { ENV_KEYS } from 'src/shared/constants';
 
@@ -247,7 +247,7 @@ describe('Functions test online', () => {
           }
         }
       };
-      await functions.user({ headers: { authorization: VALID_AUTH_TOKEN as string } } as any, res as any);
+      await functions.userGet({ headers: { authorization: VALID_AUTH_TOKEN as string } } as any, res as any);
     });
 
     test('should return 400 if user was not found', async () => {
@@ -260,7 +260,7 @@ describe('Functions test online', () => {
           }
         }
       };
-      await functions.user({ headers: { authorization: INVALID_AUTH_TOKEN as string } } as any, res as any);
+      await functions.userGet({ headers: { authorization: INVALID_AUTH_TOKEN as string } } as any, res as any);
     });
   });
 });

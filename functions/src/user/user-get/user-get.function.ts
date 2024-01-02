@@ -8,7 +8,7 @@ import { ResponseBody, User } from '../../shared/models';
 import { IUser } from '../../shared/interfaces';
 
 
-export const ProfileFunction = onRequest(
+export const UserGetFunction = onRequest(
   { secrets: [ENV_KEYS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);

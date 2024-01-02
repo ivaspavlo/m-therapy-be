@@ -1,1 +1,1 @@
-export * from './profile/profile.function';
+export * from './user-get/user-get.function';
