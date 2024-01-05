@@ -1,6 +1,6 @@
 import { onRequest } from 'firebase-functions/v2/https';
-import { ENV_KEYS } from 'src/shared/constants';
 import { Request, Response } from 'firebase-functions';
+import { ENV_KEYS } from '../../shared/constants';
 
 
 export const ProductCreateFunction = onRequest(

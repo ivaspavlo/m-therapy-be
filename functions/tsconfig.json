@@ -9,7 +9,8 @@
     "strict": true,
     "target": "es2017",
     "esModuleInterop": true,
-    "types": ["jest", "node"]
+    "types": ["jest", "node"],
+    "resolveJsonModule": true
   },
   "compileOnSave": true,
   "include": [
