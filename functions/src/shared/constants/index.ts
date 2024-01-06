@@ -19,6 +19,12 @@ export enum COLLECTIONS {
   ADMIN = 'admin'
 }
 
+export enum ENV {
+  LOCAL = 'LOCAL',
+  STAGE = 'STAGE',
+  PROD = 'PROD'
+}
+
 export enum ENV_KEYS {
   SALT_ROUNDS = 'SALT_ROUNDS',
   JWT_SECRET = 'JWT_SECRET',

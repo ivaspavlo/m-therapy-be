@@ -2,7 +2,7 @@ import { initializeApp } from 'firebase-admin/app';
 import { LoginFunction, RegisterConfirmFunction, RegisterFunction, RemindFunction, ResetFunction } from './auth';
 import { UserGetFunction } from './user';
 import { ProductCreateFunction, ProductGetFunction } from './product';
-import { Seed } from './scripts/seed/seed';
+import { Seed } from './shared/utils';
 
 initializeApp();
 
