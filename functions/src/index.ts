@@ -1,6 +1,6 @@
 import { initializeApp } from 'firebase-admin/app';
 import { LoginFunction, RegisterConfirmFunction, RegisterFunction, RemindFunction, ResetFunction } from './auth';
-import { UserGetFunction } from './user';
+import { UserFunction } from './user';
 import { ProductCreateFunction, ProductGetFunction } from './product';
 import { Seed } from './shared/utils';
 
@@ -12,7 +12,7 @@ exports.login = LoginFunction;
 exports.remind = RemindFunction;
 exports.reset = ResetFunction;
 exports.registerConfirm = RegisterConfirmFunction;
-exports.profile = UserGetFunction;
+exports.profile = UserFunction;
 export const register = RegisterFunction;
 export const login = LoginFunction;
 export const remind = RemindFunction;
@@ -20,8 +20,8 @@ export const reset = ResetFunction;
 export const registerConfirm = RegisterConfirmFunction;
 
 // User
-exports.userGet = UserGetFunction;
-export const userGet = UserGetFunction;
+exports.userGet = UserFunction;
+export const userGet = UserFunction;
 
 // Product
 exports.productCreate = ProductCreateFunction;
