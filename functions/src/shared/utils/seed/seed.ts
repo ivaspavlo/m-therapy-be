@@ -1,6 +1,7 @@
 import { defineString } from 'firebase-functions/params';
 import { getFirestore } from 'firebase-admin/firestore';
 import { COLLECTIONS, ENV, ENV_KEYS } from '../../constants';
+import * as logger from 'firebase-functions/logger';
 import localSeeds from './json/seed.local.json';
 
 
@@ -27,7 +28,12 @@ async function populateLocal(): Promise<void> {
     if (!seeds) {
       return;
     }
-    seeds.forEach(async (item: any) => await collection.add(item));
+    try {
+      seeds.forEach(async (item: any) => await collection.add(item));
+      logger.info(`Successfully seeded in env.: ${ENV.LOCAL}`);
+    } catch (e: any) {
+      logger.error(`Error occured when seeding in env.: ${ENV.LOCAL}`);
+    }
   });
 }
 

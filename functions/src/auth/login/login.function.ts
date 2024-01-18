@@ -58,7 +58,7 @@ export const LoginFunction = onRequest(
       return;
     }
 
-    logger.info(`Logged in user: ${userDocumentSnapshot.id}`)
+    logger.info(`Logged in user: ${userDocumentSnapshot.id}`);
 
     res.status(200).send(new ResponseBody({ jwtToken, id: userDocumentSnapshot.id }, true));
   }
