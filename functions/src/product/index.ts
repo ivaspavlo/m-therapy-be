@@ -1,2 +1,2 @@
-export * from './product-create/product-create.function';
-export * from './product-get/product-get.function';
+export * from './product.function';
+export * from './ad.function';
