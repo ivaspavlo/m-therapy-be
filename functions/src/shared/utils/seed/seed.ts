@@ -17,14 +17,14 @@ export const Seed = async (): Promise<void> => {
 async function populateLocal(): Promise<void> {
   const db = getFirestore();
 
-  Object.values(COLLECTIONS).forEach(async (collName: string) => {
-    const collection = db.collection(collName);
-    const docs = await db.collection(collName).listDocuments();
+  Object.values(COLLECTIONS).forEach(async (name: string) => {
+    const collection = db.collection(name);
+    const docs = await db.collection(name).listDocuments();
     if (docs.length) {
       return;
     }
     // @ts-ignore
-    const seeds: any[] = localSeeds[collName];
+    const seeds: any[] = localSeeds[name];
     if (!seeds) {
       return;
     }

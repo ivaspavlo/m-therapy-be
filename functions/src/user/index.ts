@@ -1,1 +1,1 @@
-export * from './user/user.function';
+export * from './user.function';

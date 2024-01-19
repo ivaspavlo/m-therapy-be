@@ -3,9 +3,9 @@ import * as jwt from 'jsonwebtoken';
 import { onRequest } from 'firebase-functions/v2/https';
 import { DocumentData, getFirestore } from 'firebase-admin/firestore';
 import { Request, Response } from 'firebase-functions';
-import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
-import { ResponseBody, User } from '../../shared/models';
-import { IUser } from '../../shared/interfaces';
+import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../shared/constants';
+import { ResponseBody, User } from '../shared/models';
+import { IUser } from '../shared/interfaces';
 
 
 export const UserFunction = onRequest(
@@ -39,7 +39,7 @@ export const UserFunction = onRequest(
     try {
       userDocumentData = (await getFirestore().collection(COLLECTIONS.USERS).doc(parsedClientToken.id).get());
     } catch(e: any) {
-      logger.error('[Reset] Querying DB by email failed', e);
+      logger.error('[User] Querying DB by email failed', e);
       res.status(500).json(generalError);
       return;
     }
@@ -51,7 +51,14 @@ export const UserFunction = onRequest(
 
     const user: IUser = userDocumentData.data() as IUser;
 
-    logger.info(`Retrieved user data: ${userDocumentData.id}`);
-    res.status(200).send(new ResponseBody(User.fromDocumentData({...user, id: parsedClientToken.id}), true));
+    switch(req.method) {
+    case('GET'): return getUser(res, userDocumentData.id, user);
+      // update and delete methods to be implemented
+    }
   }
 );
+
+async function getUser(res: Response, id: string, user: IUser): Promise<any> {
+  logger.info(`[User] Retrieved user data: ${id}`);
+  res.status(200).send(new ResponseBody(User.fromDocumentData({...user, id}), true));
+}

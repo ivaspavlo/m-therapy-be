@@ -247,7 +247,7 @@ describe('Functions test online', () => {
           }
         }
       };
-      await functions.userGet({ headers: { authorization: VALID_AUTH_TOKEN as string } } as any, res as any);
+      await functions.user({ headers: { authorization: VALID_AUTH_TOKEN as string } } as any, res as any);
     });
 
     test('should return 400 if user was not found', async () => {
@@ -260,7 +260,7 @@ describe('Functions test online', () => {
           }
         }
       };
-      await functions.userGet({ headers: { authorization: INVALID_AUTH_TOKEN as string } } as any, res as any);
+      await functions.user({ headers: { authorization: INVALID_AUTH_TOKEN as string } } as any, res as any);
     });
   });
 });

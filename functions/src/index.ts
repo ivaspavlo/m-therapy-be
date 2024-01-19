@@ -1,7 +1,7 @@
 import { initializeApp } from 'firebase-admin/app';
 import { LoginFunction, RegisterConfirmFunction, RegisterFunction, RemindFunction, ResetFunction } from './auth';
 import { UserFunction } from './user';
-import { ProductCreateFunction, ProductGetFunction } from './product';
+import { AdFunction, ProductFunction } from './product';
 import { Seed } from './shared/utils';
 
 initializeApp();
@@ -13,21 +13,22 @@ exports.remind = RemindFunction;
 exports.reset = ResetFunction;
 exports.registerConfirm = RegisterConfirmFunction;
 exports.profile = UserFunction;
+
+// User
+exports.user = UserFunction;
+
+// Product
+exports.product = ProductFunction;
+exports.ad = AdFunction;
+
+// Exports for unit-tests
 export const register = RegisterFunction;
 export const login = LoginFunction;
 export const remind = RemindFunction;
 export const reset = ResetFunction;
 export const registerConfirm = RegisterConfirmFunction;
+export const product = ProductFunction;
+export const user = UserFunction;
 
-// User
-exports.userGet = UserFunction;
-export const userGet = UserFunction;
-
-// Product
-exports.productCreate = ProductCreateFunction;
-exports.productGet = ProductGetFunction;
-export const productGet = ProductGetFunction;
-export const productCreate = ProductCreateFunction;
-
-// Seed database
+// Seed DB
 Seed();
