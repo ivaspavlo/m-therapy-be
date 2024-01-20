@@ -21,6 +21,7 @@ exports.user = UserFunction;
 exports.product = ProductFunction;
 exports.ad = AdFunction;
 
+
 // Exports for unit-tests
 export const register = RegisterFunction;
 export const login = LoginFunction;

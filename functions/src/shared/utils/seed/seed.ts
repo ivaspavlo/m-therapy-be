@@ -17,26 +17,26 @@ export const Seed = async (): Promise<void> => {
 async function populateLocal(): Promise<void> {
   const db = getFirestore();
 
-  Object.values(COLLECTIONS).forEach(async (name: string) => {
-    const collection = db.collection(name);
-    const docs = await db.collection(name).listDocuments();
-    if (docs.length) {
-      return;
-    }
-    // @ts-ignore
-    const seeds: any[] = localSeeds[name];
-    if (!seeds) {
-      return;
-    }
-    try {
+  try {
+    Object.values(COLLECTIONS).forEach(async (name: string) => {
+      const collection = db.collection(name);
+      const docs = await db.collection(name).listDocuments();
+      if (docs.length) {
+        return;
+      }
+      // @ts-ignore
+      const seeds: any[] = localSeeds[name];
+      if (!seeds) {
+        return;
+      }
       seeds.forEach(async (item: any) => await collection.add(item));
-      logger.info(`Successfully seeded in env.: ${ENV.LOCAL}`);
-    } catch (e: any) {
-      logger.error(`Error occured when seeding in env.: ${ENV.LOCAL}`);
-    }
-  });
+    });
+    logger.info(`Successfully seeded in env.: ${ENV.LOCAL}`);
+  } catch (error: any) {
+    logger.error(`Error occured when seeding in env.: ${ENV.LOCAL}`);
+  }
 }
 
 function populateStage(): void {
-  
+  // to be implemented on demand
 }
