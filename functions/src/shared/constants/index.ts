@@ -37,6 +37,11 @@ export enum ENV_KEYS {
   UI_URL = 'UI_URL'
 }
 
+export enum AD_TYPE {
+  COUNTDOWN,
+  FOOTER
+}
+
 export const TRANSLATIONS = {
   en: {
     registerEmailSubject: 'Email confirmation for Tkachuk Massage Therapy',

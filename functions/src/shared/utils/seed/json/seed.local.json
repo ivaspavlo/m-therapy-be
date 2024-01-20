@@ -11,5 +11,16 @@
       "lang": "en"
     }
   ],
-  "ads": []
+  "ads": [
+    {
+      "type": "COUNTDOWN",
+      "title": "Test",
+      "content": "Test test test test test test test test test test test test",
+      "endDate": 1708427169311
+    }, {
+      "type": "FOOTER",
+      "title": "Test Footer",
+      "content": "Test test test test test test test test test test test test"
+    }
+  ]
 }
