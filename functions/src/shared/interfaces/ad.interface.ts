@@ -7,3 +7,11 @@ export interface IAd {
   endDate?: Date,
   link?: string
 }
+
+export interface IAdDB {
+  type: AD_TYPE,
+  title: string,
+  content: string,
+  endDate?: number,
+  link?: string
+}

@@ -6,7 +6,7 @@ import { describe, expect, afterAll, beforeAll, test } from '@jest/globals';
 import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
 import { defineString } from 'firebase-functions/params';
 import { IUser } from 'src/shared/interfaces';
-import { ENV_KEYS } from 'src/shared/constants';
+import { ENV_KEYS, COLLECTIONS } from 'src/shared/constants';
 
 
 firebaseFunctionsTest({
@@ -48,7 +48,7 @@ describe('Functions test online', () => {
   });
 
   afterAll(async () => {
-    const usersQuery = getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email);
+    const usersQuery = getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTER_REQ.body.email);
     const querySnapshot = await usersQuery.get();
     querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
   });
@@ -57,7 +57,7 @@ describe('Functions test online', () => {
     test('should create a user in db', async () => {
       let user: IUser | null = null;
       try {
-        const queryByEmail = await getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email).get();
+        const queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTER_REQ.body.email).get();
         const userDocumentSnapshot: QueryDocumentSnapshot | undefined = queryByEmail.docs.find((d: any) => !!d);
         user = userDocumentSnapshot?.data() as IUser;
       } catch (error: any) {
@@ -226,7 +226,7 @@ describe('Functions test online', () => {
 
     beforeAll(async () => {
       try {
-        const queryByEmail = await getFirestore().collection('users').where('email', '==', REGISTER_REQ.body.email).get();
+        const queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTER_REQ.body.email).get();
         const userDocumentSnapshot: QueryDocumentSnapshot | undefined = queryByEmail.docs.find((d: any) => !!d);
         USER_ID = userDocumentSnapshot!.id;
         VALID_AUTH_TOKEN = jwt.sign({ id: USER_ID }, jwtSecret, { expiresIn: resetTokenExp });
@@ -263,4 +263,14 @@ describe('Functions test online', () => {
       await functions.user({ headers: { authorization: INVALID_AUTH_TOKEN as string } } as any, res as any);
     });
   });
+
+  // describe('ads', () => {
+  //   beforeAll(async () => {
+  //     try {
+  //       await getFirestore().collection(COLLECTIONS.ADS).add({ });
+  //     } catch (error: any) {
+  //       // no action
+  //     }
+  //   });
+  // });
 });
