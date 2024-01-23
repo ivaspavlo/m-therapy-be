@@ -30,6 +30,7 @@ export const reset = ResetFunction;
 export const registerConfirm = RegisterConfirmFunction;
 export const product = ProductFunction;
 export const user = UserFunction;
+export const ad = AdFunction;
 
 // Seed DB
 Seed();
