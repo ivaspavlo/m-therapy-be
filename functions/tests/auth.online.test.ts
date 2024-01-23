@@ -236,7 +236,7 @@ describe('Functions test online', () => {
       INVALID_AUTH_TOKEN = jwt.sign({ id: 'incorrect_user_id' }, jwtSecret, { expiresIn: resetTokenExp });
     });
 
-    test('should return correct user by id', async () => {
+    test('[GET USER] should return correct user by id', async () => {
       const res = {
         status: (code: number) => {
           return {
@@ -250,7 +250,7 @@ describe('Functions test online', () => {
       await functions.user({ headers: { authorization: VALID_AUTH_TOKEN as string } } as any, res as any);
     });
 
-    test('should return 400 if user was not found', async () => {
+    test('[GET USER] should return 400 if user was not found', async () => {
       const res = {
         status: (code: number) => {
           expect(code).toBe(400);
@@ -264,13 +264,33 @@ describe('Functions test online', () => {
     });
   });
 
-  // describe('ads', () => {
-  //   beforeAll(async () => {
-  //     try {
-  //       await getFirestore().collection(COLLECTIONS.ADS).add({ });
-  //     } catch (error: any) {
-  //       // no action
-  //     }
-  //   });
-  // });
+  describe('ad', () => {
+    const testAd = {
+      type: 'FOOTER',
+      title: 'Test Footer',
+      content: 'Test test test test test test test test test test test test'
+    };
+
+    beforeAll(async () => {
+      try {
+        await getFirestore().collection(COLLECTIONS.ADS).add(testAd);
+      } catch (error: any) {
+        // no action
+      }
+    });
+
+    test('[GET AD] should return correct response', async () => {
+      const res = {
+        status: (code: number) => {
+          return {
+            send: (value: any) => {
+              expect(Array.isArray(value.data) && value.data[0].title).toBe('testAd.title');
+            },
+            json: (value: any) => { }
+          }
+        }
+      };
+      await functions.ad({ method: 'GET' } as any, res as any);
+    });
+  });
 });
