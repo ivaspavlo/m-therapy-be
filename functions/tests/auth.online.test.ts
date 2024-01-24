@@ -5,8 +5,9 @@ import dotenv from 'dotenv';
 import { describe, expect, afterAll, beforeAll, test } from '@jest/globals';
 import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
 import { defineString } from 'firebase-functions/params';
-import { IUser } from 'src/shared/interfaces';
+import { IAd, IUser } from 'src/shared/interfaces';
 import { ENV_KEYS, COLLECTIONS } from 'src/shared/constants';
+import { ResponseBody } from 'src/shared/models';
 
 
 firebaseFunctionsTest({
@@ -54,7 +55,7 @@ describe('Functions test online', () => {
   });
 
   describe('register', () => {
-    test('should create a user in db', async () => {
+    test('[REGISTER] should create a user in db', async () => {
       let user: IUser | null = null;
       try {
         const queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTER_REQ.body.email).get();
@@ -66,7 +67,7 @@ describe('Functions test online', () => {
       expect(user?.email).toEqual(REGISTER_REQ.body.email);
     });
 
-    test('should return 400 when user exists', async () => {
+    test('[REGISTER] should return 400 when user exists', async () => {
       const res = {
         status: (code: number) => {
           expect(code).toBe(400);
@@ -88,7 +89,7 @@ describe('Functions test online', () => {
       }
     };
 
-    test('should return status 200 when creds are correct', async () => {
+    test('[LOGIN] should return status 200 when creds are correct', async () => {
       const resetToken = jwt.sign(
         { email: REGISTER_REQ.body.email },
         process.env[ENV_KEYS.JWT_SECRET] as string,
@@ -110,7 +111,7 @@ describe('Functions test online', () => {
       await functions.login(LOGIN_MOCK_REQ as any, res as any);
     }, 10000);
 
-    test('should return status 401 when creds are incorrect', async () => {
+    test('[LOGIN] should return status 401 when creds are incorrect', async () => {
       const res = {
         status: (code: number) => {
           expect(code).toBe(401);
@@ -138,7 +139,7 @@ describe('Functions test online', () => {
       }
     };
 
-    test('should return 401 if the token is not valid', async () => {
+    test('[RESET] should return 401 if the token is not valid', async () => {
       const res = {
         status: (code: number) => {
           expect(code).toBe(401);
@@ -151,7 +152,7 @@ describe('Functions test online', () => {
       await functions.reset({ ...MOCK_REQ, query: { token: INVALID_CONFIRM_TOKEN_1 } } as any, res as any);
     });
 
-    test('should return 400 if the email is incorrect', async () => {
+    test('[RESET] should return 400 if the email is incorrect', async () => {
       const res = {
         status: (code: number) => {
           expect(code).toBe(400);
@@ -164,7 +165,7 @@ describe('Functions test online', () => {
       await functions.reset({ ...MOCK_REQ, query: { token: INVALID_CONFIRM_TOKEN_2 } } as any, res as any);
     });
 
-    test('should return 200 if the token is valid', async () => {
+    test('[RESET] should return 200 if the token is valid', async () => {
       const res = {
         status: (code: number) => {
           expect(code).toBe(200);
@@ -179,7 +180,7 @@ describe('Functions test online', () => {
   });
 
   describe('registerConfirm', () => {
-    test('should return 401 if the token is not valid', async () => {
+    test('[REGISTER_CONFIRM] should return 401 if the token is not valid', async () => {
       const res = {
         status: (code: number) => {
           expect(code).toBe(401);
@@ -192,7 +193,7 @@ describe('Functions test online', () => {
       await functions.registerConfirm({ query: { token: INVALID_CONFIRM_TOKEN_1 } } as any, res as any);
     });
 
-    test('should return 400 if the email is incorrect', async () => {
+    test('[REGISTER_CONFIRM] should return 400 if the email is incorrect', async () => {
       const res = {
         status: (code: number) => {
           expect(code).toBe(400);
@@ -205,7 +206,7 @@ describe('Functions test online', () => {
       await functions.registerConfirm({ query: { token: INVALID_CONFIRM_TOKEN_2 } } as any, res as any);
     });
 
-    test('should return 200 if the token is valid', async () => {
+    test('[REGISTER_CONFIRM] should return 200 if the token is valid', async () => {
       const res = {
         status: (code: number) => {
           expect(code).toBe(200);
@@ -283,10 +284,9 @@ describe('Functions test online', () => {
       const res = {
         status: (code: number) => {
           return {
-            send: (value: any) => {
-              expect(Array.isArray(value.data) && value.data[0].title).toBe('testAd.title');
-            },
-            json: (value: any) => { }
+            json: (resBody: ResponseBody<IAd[]>) => {
+              expect(Array.isArray(resBody.data) && resBody.data[0].title).toBe(testAd.title);
+            }
           }
         }
       };

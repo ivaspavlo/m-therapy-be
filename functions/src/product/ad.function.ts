@@ -22,10 +22,10 @@ async function getAds(res: Response): Promise<void> {
     const ads: IAd[] = (await getFirestore().collection(COLLECTIONS.ADS).get()).docs.map(
       d => Ad.of(d.data() as IAdDB)
     ) as IAd[];
-    logger.info('[Ads] Retrieval data for ads successful');
-    res.status(200).send(new ResponseBody(ads, true));
+    logger.info('[GET AD] Retrieval data for ads successful');
+    res.status(200).json(new ResponseBody(ads, true));
   } catch (e: any) {
-    logger.error('[Ads] Retrieval data for ads failed: ', e);
+    logger.error('[GET AD] Retrieval data for ads failed: ', e);
     res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
   }
 }
