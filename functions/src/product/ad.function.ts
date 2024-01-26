@@ -4,7 +4,7 @@ import { Request, Response } from 'firebase-functions';
 import { getFirestore } from 'firebase-admin/firestore';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../shared/constants';
 import { Ad, ResponseBody } from '../shared/models';
-import { IAd, IAdDB } from '../shared/interfaces';
+import { IAd } from '../shared/interfaces';
 
 
 export const AdFunction = onRequest(
@@ -20,7 +20,7 @@ export const AdFunction = onRequest(
 async function getAds(res: Response): Promise<void> {
   try {
     const ads: IAd[] = (await getFirestore().collection(COLLECTIONS.ADS).get()).docs.map(
-      d => Ad.of(d.data() as IAdDB)
+      d => Ad.of(d.data() as IAd)
     ) as IAd[];
     logger.info('[GET AD] Retrieval data for ads successful');
     res.status(200).json(new ResponseBody(ads, true));

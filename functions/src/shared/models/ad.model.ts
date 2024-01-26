@@ -1,5 +1,5 @@
 import { AD_TYPE } from '../constants';
-import { IAd, IAdDB } from '../interfaces';
+import { IAd } from '../interfaces';
 
 export class Ad implements IAd {
 
@@ -12,7 +12,7 @@ export class Ad implements IAd {
   constructor() {}
 
   public static of(
-    value: IAdDB
+    value: IAd
   ): Ad {
     const ad = new Ad();
     ad.type = value.type;
