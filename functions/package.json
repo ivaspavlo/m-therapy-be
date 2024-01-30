@@ -4,10 +4,9 @@
     "lint": "eslint --ext .js,.ts .",
     "build": "tsc",
     "build:watch": "tsc --watch",
-    "debug": "npm run build && firebase emulators:start --inspect-functions",
+    "start": "npm run build && firebase emulators:start --inspect-functions",
     "serve": "npm run build && firebase emulators:start --only functions",
     "shell": "npm run build && firebase functions:shell",
-    "start": "npm run shell",
     "deploy": "npm install && rm package-lock.json && firebase deploy",
     "logs": "firebase functions:log",
     "test": "jest --runInBand"

@@ -14,25 +14,32 @@
   "ads": [
     {
       "type": "COUNTDOWN",
-      "title": {
-        "en": "Grand Opening",
-        "ua": "Велике відкриття"
-      },
-      "content": {
-        "en": "Up to 25% discount for new members",
-        "ua": "Для нових користувачів знижки до 25%"
-      },
+      "title": { "en": "Grand Opening", "ua": "Велике відкриття" },
+      "content": { "en": "Up to 25% discount for new members", "ua": "Для нових користувачів знижки до 25%" },
       "endDate": 1708427169311
-    }, {
+    },
+    {
       "type": "FOOTER",
-      "title": {
-        "en": "Test Footer",
-        "ua": "Тест футер"
-      },
-      "content": {
-        "en": "Test test test test test test test test test test test test",
-        "ua": "Тест контент"
-      }
+      "title": { "en": "Test Footer", "ua": "Тест футер" },
+      "content": { "en": "Test test test test test test test test test test test test", "ua": "Тест контент" }
+    }
+  ],
+  "products": [
+    {
+      "id": "1",
+      "title": "Test1",
+      "price": 1000,
+      "createdAt": 1708427169311,
+      "desc": "Test test test test test test test test test test test test",
+      "imgUrl": ""
+    },
+    {
+      "id": "2",
+      "title": "Test2",
+      "price": 2000,
+      "createdAt": 1708427169311,
+      "desc": "Test test test test test test test test test test test test",
+      "imgUrl": ""
     }
   ]
 }
