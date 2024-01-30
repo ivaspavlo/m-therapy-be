@@ -17,7 +17,8 @@ export enum ERROR_MESSAGES {
 export enum COLLECTIONS {
   USERS = 'users',
   ADMIN = 'admin',
-  ADS = 'ads'
+  ADS = 'ads',
+  PRODUCTS = 'products'
 }
 
 export enum ENV {
