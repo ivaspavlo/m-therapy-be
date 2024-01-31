@@ -31,7 +31,7 @@
       "price": 1000,
       "createdAt": 1708427169311,
       "desc": "Test test test test test test test test test test test test",
-      "imgUrl": ""
+      "imgUrl": "https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/test.png?alt=media&token=738df6d7-4b6f-4bb5-bf1a-d683dac512dc"
     },
     {
       "id": "2",
@@ -39,7 +39,7 @@
       "price": 2000,
       "createdAt": 1708427169311,
       "desc": "Test test test test test test test test test test test test",
-      "imgUrl": ""
+      "imgUrl": "https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/test.png?alt=media&token=738df6d7-4b6f-4bb5-bf1a-d683dac512dc"
     }
   ]
 }
