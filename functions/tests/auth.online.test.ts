@@ -293,4 +293,36 @@ describe('Functions test online', () => {
       await functions.ad({ method: 'GET' } as any, res as any);
     });
   });
+
+  describe('product', () => {
+    const testProduct = {
+      id: "1",
+      title: "Test1",
+      price: 1000,
+      createdAt: 1708427169311,
+      desc: "Test test test test test test test test test test test test",
+      imgUrl: ""
+    }
+
+    beforeAll(async () => {
+      try {
+        await getFirestore().collection(COLLECTIONS.PRODUCTS).add(testProduct);
+      } catch (error: any) {
+        // no action
+      }
+    });
+
+    test('[GET PRODUCT] should return correct response', async () => {
+      const res = {
+        status: (code: number) => {
+          return {
+            json: (resBody: ResponseBody<IAd[]>) => {
+              expect(Array.isArray(resBody.data) && resBody.data[0].title).toBe(testProduct.title);
+            }
+          }
+        }
+      };
+      await functions.product({ method: 'GET' } as any, res as any);
+    });
+  });
 });
