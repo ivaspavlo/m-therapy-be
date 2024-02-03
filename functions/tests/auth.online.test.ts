@@ -5,7 +5,7 @@ import dotenv from 'dotenv';
 import { describe, expect, afterAll, beforeAll, test } from '@jest/globals';
 import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
 import { defineString } from 'firebase-functions/params';
-import { IAd, IUser } from 'src/shared/interfaces';
+import { IContent, IUser } from 'src/shared/interfaces';
 import { ENV_KEYS, COLLECTIONS } from 'src/shared/constants';
 import { ResponseBody } from 'src/shared/models';
 
@@ -265,36 +265,13 @@ describe('Functions test online', () => {
     });
   });
 
-  describe('ad', () => {
+  describe('content', () => {
     const testAd = {
       type: 'FOOTER',
       title: 'Test Footer',
       content: 'Test test test test test test test test test test test test'
     };
 
-    beforeAll(async () => {
-      try {
-        await getFirestore().collection(COLLECTIONS.ADS).add(testAd);
-      } catch (error: any) {
-        // no action
-      }
-    });
-
-    test('[GET AD] should return correct response', async () => {
-      const res = {
-        status: (code: number) => {
-          return {
-            json: (resBody: ResponseBody<IAd[]>) => {
-              expect(Array.isArray(resBody.data) && resBody.data[0].title).toBe(testAd.title);
-            }
-          }
-        }
-      };
-      await functions.ad({ method: 'GET' } as any, res as any);
-    });
-  });
-
-  describe('product', () => {
     const testProduct = {
       id: "1",
       title: "Test1",
@@ -306,23 +283,25 @@ describe('Functions test online', () => {
 
     beforeAll(async () => {
       try {
+        await getFirestore().collection(COLLECTIONS.ADS).add(testAd);
         await getFirestore().collection(COLLECTIONS.PRODUCTS).add(testProduct);
       } catch (error: any) {
         // no action
       }
     });
 
-    test('[GET PRODUCT] should return correct response', async () => {
+    test('[GET CONTENT] should return correct response', async () => {
       const res = {
         status: (code: number) => {
           return {
-            json: (resBody: ResponseBody<IAd[]>) => {
-              expect(Array.isArray(resBody.data) && resBody.data[0].title).toBe(testProduct.title);
+            json: (resBody: ResponseBody<IContent>) => {
+              expect(resBody.data[COLLECTIONS.ADS][0].title).toBe(testAd.title);
+              expect(resBody.data[COLLECTIONS.PRODUCTS][0].title).toBe(testProduct.title);
             }
           }
         }
       };
-      await functions.product({ method: 'GET' } as any, res as any);
+      await functions.content({ method: 'GET' } as any, res as any);
     });
   });
 });
