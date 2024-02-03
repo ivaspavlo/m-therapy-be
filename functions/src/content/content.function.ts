@@ -3,24 +3,26 @@ import { Request, Response, logger } from 'firebase-functions';
 import { getFirestore } from 'firebase-admin/firestore';
 import { IProduct } from '../shared/interfaces/product.interface';
 import { COLLECTIONS, ERROR_MESSAGES } from '../shared/constants';
-import { ResponseBody } from '../shared/models';
+import { Ad, ResponseBody } from '../shared/models';
+import { IAd } from '../shared/interfaces';
 
-export const ProductFunction = onRequest(
+export const ContentFunction = onRequest(
   async (req: Request, res: Response): Promise<void> => {
     switch(req.method) {
-    case('GET'): return getProducts(res);
+    case('GET'): return getContent(res);
     // update and delete methods to be implemented
     }
   }
 );
 
-async function getProducts(res: Response): Promise<void> {
+async function getContent(res: Response): Promise<void> {
   try {
     const products: IProduct[] = (await getFirestore().collection(COLLECTIONS.PRODUCTS).get()).docs.map(d => d.data() as IProduct);
-    logger.info('[GET PRODUCTS] Retrieval data for products successful');
-    res.status(200).json(new ResponseBody(products, true));
+    const ads: IAd[] = (await getFirestore().collection(COLLECTIONS.ADS).get()).docs.map(d => Ad.of(d.data() as IAd)) as IAd[];
+    logger.info('[GET CONTENT] Retrieved successfully');
+    res.status(200).json(new ResponseBody({products, ads}, true));
   } catch (e: any) {
-    logger.error('[GET PRODUCTS] Retrieval data for products failed: ', e);
+    logger.error('[GET CONTENT] Retrieval failed: ', e);
     res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
   }
 }
