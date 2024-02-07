@@ -41,5 +41,19 @@
       "desc": "Test test test test test test test test test test test test",
       "imgUrl": "https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/test.png?alt=media&token=738df6d7-4b6f-4bb5-bf1a-d683dac512dc"
     }
+  ],
+  "contacts": [
+    {
+      "value": "+380 11 222 333 44",
+      "type": "MOBILE"
+    },
+    {
+      "value": "+380 11 222 333 44",
+      "type": "VIBER"
+    },
+    {
+      "value": "@sometelegram",
+      "type": "TELEGRAM"
+    }
   ]
 }

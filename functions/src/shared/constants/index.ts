@@ -18,7 +18,8 @@ export enum COLLECTIONS {
   USERS = 'users',
   ADMIN = 'admin',
   ADS = 'ads',
-  PRODUCTS = 'products'
+  PRODUCTS = 'products',
+  CONTACTS = 'contacts'
 }
 
 export enum ENV {
@@ -41,6 +42,12 @@ export enum ENV_KEYS {
 export enum AD_TYPE {
   COUNTDOWN,
   FOOTER
+}
+
+export enum CONTACT_TYPE {
+  MOBILE,
+  VIBER,
+  TELEGRAM
 }
 
 export const TRANSLATIONS = {

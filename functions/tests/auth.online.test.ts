@@ -271,7 +271,6 @@ describe('Functions test online', () => {
       title: 'Test Footer',
       content: 'Test test test test test test test test test test test test'
     };
-
     const testProduct = {
       id: "1",
       title: "Test1",
@@ -279,12 +278,17 @@ describe('Functions test online', () => {
       createdAt: 1708427169311,
       desc: "Test test test test test test test test test test test test",
       imgUrl: ""
-    }
+    };
+    const testContact = {
+      type: "MOBILE",
+      value: "test"
+    };
 
     beforeAll(async () => {
       try {
         await getFirestore().collection(COLLECTIONS.ADS).add(testAd);
         await getFirestore().collection(COLLECTIONS.PRODUCTS).add(testProduct);
+        await getFirestore().collection(COLLECTIONS.CONTACTS).add(testContact);
       } catch (error: any) {
         // no action
       }
@@ -295,8 +299,10 @@ describe('Functions test online', () => {
         status: (code: number) => {
           return {
             json: (resBody: ResponseBody<IContent>) => {
+              console.log(resBody);
               expect(resBody.data[COLLECTIONS.ADS][0].title).toBe(testAd.title);
               expect(resBody.data[COLLECTIONS.PRODUCTS][0].title).toBe(testProduct.title);
+              expect(resBody.data[COLLECTIONS.CONTACTS][0].value).toBe(testContact.value);
             }
           }
         }
