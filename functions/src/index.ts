@@ -2,6 +2,7 @@ import { initializeApp } from 'firebase-admin/app';
 import { LoginFunction, RegisterConfirmFunction, RegisterFunction, RemindFunction, ResetFunction } from './auth';
 import { UserFunction } from './user';
 import { ContentFunction } from './content';
+import { ManagerFunction } from './manager';
 import { Seed } from './shared/utils';
 
 initializeApp();
@@ -13,6 +14,7 @@ exports.remind = RemindFunction;
 exports.reset = ResetFunction;
 exports.registerConfirm = RegisterConfirmFunction;
 exports.profile = UserFunction;
+exports.manager = ManagerFunction;
 
 // User
 exports.user = UserFunction;
