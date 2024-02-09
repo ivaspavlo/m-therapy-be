@@ -8,7 +8,8 @@
       "password": "$2b$04$RVuWq562FPT1XTnrRybGA.NXJj1hUg2rzxXYQcInpCYY6ut9c1RjK",
       "birthday": "1999-11-11",
       "isConfirmed": true,
-      "lang": "en"
+      "lang": "en",
+      "isAdmin": true
     }
   ],
   "ads": [
