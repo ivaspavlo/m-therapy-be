@@ -21,6 +21,7 @@ firebase projects:list
 ## Switch to a specific project
 firebase use [project_id]
 
+
 # Additional information
 
 ## Lint rules
