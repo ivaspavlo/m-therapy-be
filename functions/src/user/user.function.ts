@@ -14,11 +14,14 @@ export const UserFunction = onRequest(
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
     const jwtError = new ResponseBody(null, false, [ERROR_MESSAGES.JWT]);
 
-    const clientJWT = req.headers.authorization;
+    const authData = req.headers.authorization;
 
-    if (!clientJWT) {
+    if (!authData || typeof authData !== 'string') {
       res.status(401).json(jwtError);
     }
+
+    // Strip 'Bearer'
+    const clientJWT = authData!.split(' ')[1];
 
     try {
       jwt.verify(clientJWT as string, process.env[ENV_KEYS.JWT_SECRET] as string);
