@@ -230,11 +230,11 @@ describe('Functions test online', () => {
         const queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTER_REQ.body.email).get();
         const userDocumentSnapshot: QueryDocumentSnapshot | undefined = queryByEmail.docs.find((d: any) => !!d);
         USER_ID = userDocumentSnapshot!.id;
-        VALID_AUTH_TOKEN = jwt.sign({ id: USER_ID }, jwtSecret, { expiresIn: resetTokenExp });
+        VALID_AUTH_TOKEN = 'Bearer ' + jwt.sign({ id: USER_ID }, jwtSecret, { expiresIn: resetTokenExp });
       } catch (error: any) {
         // no action
       }
-      INVALID_AUTH_TOKEN = jwt.sign({ id: 'incorrect_user_id' }, jwtSecret, { expiresIn: resetTokenExp });
+      INVALID_AUTH_TOKEN = 'Bearer ' + jwt.sign({ id: 'incorrect_user_id' }, jwtSecret, { expiresIn: resetTokenExp });
     });
 
     test('[GET USER] should return correct user by id', async () => {

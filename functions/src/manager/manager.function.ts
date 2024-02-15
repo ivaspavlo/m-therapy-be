@@ -60,13 +60,16 @@ export const ManagerFunction = onRequest(
     }
 
     switch(req.method) {
-    case('GET'): return getTest(res, userDocumentData.id, user);
-      // update and delete methods to be implemented
+    case('GET'): return getManagerData(req, res, userDocumentData.id, user);
     }
   }
 );
 
-async function getTest(res: Response, id: string, user: IUser): Promise<any> {
-  logger.info(`[Test] Retrieved user data: ${id}`);
-  res.status(200).send(new ResponseBody(User.fromDocumentData({...user, id}), true));
+async function getManagerData(req: Request, res: Response, id: string, user: IUser): Promise<any> {
+  switch(req.url) {
+    case('email'): {
+      logger.info('[MANAGER GET] Retrieved emails list');
+      res.status(200).send(new ResponseBody(User.fromDocumentData({...user, id}), true));
+    }
+  }
 }

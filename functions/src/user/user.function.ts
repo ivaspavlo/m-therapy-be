@@ -42,7 +42,7 @@ export const UserFunction = onRequest(
     try {
       userDocumentData = (await getFirestore().collection(COLLECTIONS.USERS).doc(parsedClientToken.id).get());
     } catch(e: any) {
-      logger.error('[User] Querying DB by email failed', e);
+      logger.error('[GET USER] Querying DB by email failed', e);
       res.status(500).json(generalError);
       return;
     }
@@ -62,6 +62,6 @@ export const UserFunction = onRequest(
 );
 
 async function getUser(res: Response, id: string, user: IUser): Promise<any> {
-  logger.info(`[User] Retrieved user data: ${id}`);
+  logger.info(`[GET USER] Retrieved user data: ${id}`);
   res.status(200).send(new ResponseBody(User.fromDocumentData({...user, id}), true));
 }
