@@ -67,9 +67,11 @@ export const ManagerFunction = onRequest(
 
 async function getManagerData(req: Request, res: Response, id: string, user: IUser): Promise<any> {
   switch(req.url) {
-    case('email'): {
-      logger.info('[MANAGER GET] Retrieved emails list');
-      res.status(200).send(new ResponseBody(User.fromDocumentData({...user, id}), true));
-    }
+  case('email'): {
+    logger.info('[MANAGER GET] Retrieved emails list');
+    const emails = (await getFirestore().collection(COLLECTIONS.USERS).get()).docs.map((doc: any) => doc.email);
+    console.log(emails);
+    res.status(200).send(new ResponseBody(User.fromDocumentData({...user, id}), true));
+  }
   }
 }
