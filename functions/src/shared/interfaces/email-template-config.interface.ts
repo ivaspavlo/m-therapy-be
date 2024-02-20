@@ -4,5 +4,6 @@ export interface IEmailTemplateConfig {
   subject: string,
   title: string,
   message: string,
-  url: string
+  url: string,
+  img?: string
 }
