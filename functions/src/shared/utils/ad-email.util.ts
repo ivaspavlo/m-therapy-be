@@ -281,6 +281,6 @@ export const buildTemplate = (config: any): string => {
       <!--[if IE]></div><![endif]-->
     </body>
     
-    </html>      
+    </html>
   `;
 }
