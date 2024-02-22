@@ -6,6 +6,8 @@ import { Request, Response } from 'firebase-functions';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../shared/constants';
 import { ResponseBody, User } from '../shared/models';
 import { IUser } from '../shared/interfaces';
+import { AdEmailReq } from 'src/auth/remind/remind.interface';
+import { ManagerValidator } from './manager.validator';
 
 
 export const ManagerFunction = onRequest(
@@ -60,15 +62,23 @@ export const ManagerFunction = onRequest(
     }
 
     switch(req.method) {
-    case('GET'): return getManagerData(req, res, userDocumentData.id, user);
+    case('POST'): return postManagerData(req, res, userDocumentData.id, user);
     }
   }
 );
 
-async function getManagerData(req: Request, res: Response, id: string, user: IUser): Promise<any> {
+async function postManagerData(req: Request, res: Response, id: string, user: IUser): Promise<any> {
   switch(req.url) {
   case('email'): {
-    logger.info('[MANAGER GET] Retrieved emails list');
+    const reqBody: AdEmailReq = req.body;
+
+    const validationErrors: string[] | null = ManagerValidator(req.body);
+    if (validationErrors) {
+      res.status(400).send(new ResponseBody(null, false, [ERROR_MESSAGES.FIELDS_VALIDATION]));
+      return;
+    }
+
+    logger.info('[MANAGER POST] Retrieved emails list');
     const emails = (await getFirestore().collection(COLLECTIONS.USERS).get()).docs.map((doc: any) => doc.email);
     console.log(emails);
     res.status(200).send(new ResponseBody(User.fromDocumentData({...user, id}), true));
