@@ -1,13 +1,14 @@
 import * as logger from 'firebase-functions/logger';
-import * as jwt from 'jsonwebtoken';
+// import * as jwt from 'jsonwebtoken';
 import { onRequest } from 'firebase-functions/v2/https';
 import { DocumentData, getFirestore } from 'firebase-admin/firestore';
 import { Request, Response } from 'firebase-functions';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../shared/constants';
 import { ResponseBody, User } from '../shared/models';
 import { IUser } from '../shared/interfaces';
-import { AdEmailReq } from 'src/auth/remind/remind.interface';
+// import { AdEmailReq } from 'src/auth/remind/remind.interface';
 import { ManagerValidator } from './manager.validator';
+import { IAdEmailReq } from './manager.interface';
 
 
 export const ManagerFunction = onRequest(
@@ -25,12 +26,12 @@ export const ManagerFunction = onRequest(
     // Strip 'Bearer'
     const clientJWT = authData!.split(' ')[1];
 
-    try {
-      jwt.verify(clientJWT as string, process.env[ENV_KEYS.JWT_SECRET] as string);
-    } catch (e: any) {
-      res.status(401).json(jwtError);
-      return;
-    }
+    // try {
+    //   jwt.verify(clientJWT as string, process.env[ENV_KEYS.JWT_SECRET] as string);
+    // } catch (e: any) {
+    //   res.status(401).json(jwtError);
+    //   return;
+    // }
 
     let parsedClientToken: { [key:string]: string, id: string };
     try {
@@ -70,7 +71,9 @@ export const ManagerFunction = onRequest(
 async function postManagerData(req: Request, res: Response, id: string, user: IUser): Promise<any> {
   switch(req.url) {
   case('email'): {
-    const reqBody: AdEmailReq = req.body;
+    const reqBody: IAdEmailReq = req.body;
+
+    console.log(reqBody);
 
     const validationErrors: string[] | null = ManagerValidator(req.body);
     if (validationErrors) {
