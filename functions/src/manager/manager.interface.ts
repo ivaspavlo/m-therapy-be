@@ -1,5 +1,7 @@
+import { LanguageType } from "src/shared/interfaces";
+
 export interface IAdEmailReq {
-  lang: string,
+  lang: LanguageType,
   subject: string,
   title: string,
   message: string,
