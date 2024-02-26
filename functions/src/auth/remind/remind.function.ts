@@ -1,9 +1,9 @@
-import { onRequest } from 'firebase-functions/v2/https';
-import { Request, Response } from 'firebase-functions';
-import { defineString } from 'firebase-functions/params';
 import * as logger from 'firebase-functions/logger';
 import * as jwt from 'jsonwebtoken';
 import * as nodemailer from 'nodemailer';
+import { onRequest } from 'firebase-functions/v2/https';
+import { Request, Response } from 'firebase-functions';
+import { defineString } from 'firebase-functions/params';
 import { ResponseBody } from '../../shared/models';
 import { ENV_KEYS, ERROR_MESSAGES, FE_URLS, TRANSLATIONS } from '../../shared/constants';
 import { GetNodemailerTemplate } from '../../shared/utils';
