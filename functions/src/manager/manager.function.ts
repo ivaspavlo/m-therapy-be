@@ -110,9 +110,9 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
       const mailOptions = GetNodemailerTemplate({
         lang: reqBody.lang,
         to: email,
-        subject: currentTranslations.remindEmailSubject,
-        title: currentTranslations.remindEmailTitle,
-        message: currentTranslations.remindEmailMessage,
+        subject: reqBody.subject || currentTranslations.adEmailSubject,
+        title: reqBody.title,
+        message: reqBody.message,
         url: reqBody.url
       });
       return new Promise((resolve, reject) => {

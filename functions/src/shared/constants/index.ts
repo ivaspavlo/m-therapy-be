@@ -58,7 +58,8 @@ export const TRANSLATIONS = {
     registerEmailMessage: 'Please follow the link below in order to confirm your email:',
     remindEmailSubject: 'Reset of password for Tkachuk Massage Therapy',
     remindEmailTitle: 'Password reset',
-    remindEmailMessage: 'Please follow the link below in order to reset your password:'
+    remindEmailMessage: 'Please follow the link below in order to reset your password:',
+    adEmailSubject: 'New offers from Tkachuk Massage Therapy!'
   },
   ua: {
     registerEmailSubject: 'Підтвердити електронну пошту для Tkachuk Massage Therapy',
@@ -66,6 +67,7 @@ export const TRANSLATIONS = {
     registerEmailMessage: 'Будь ласка, перейдіть за посиланням нижче, щоб підтвердити електронну пошту:',
     remindEmailSubject: 'Змінити пароль для Tkachuk Massage Therapy',
     remindEmailTitle: 'Зміна пароля',
-    remindEmailMessage: 'Будь ласка, перейдіть за посиланням нижче для того, щоб змінити пароль:'
+    remindEmailMessage: 'Будь ласка, перейдіть за посиланням нижче для того, щоб змінити пароль:',
+    adEmailSubject: 'Нові пропозиції від Tkachuk Massage Therapy'
   }
 }
