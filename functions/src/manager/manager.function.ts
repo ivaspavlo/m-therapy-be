@@ -17,17 +17,23 @@ export const ManagerFunction = onRequest(
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
     const jwtError = new ResponseBody(null, false, [ERROR_MESSAGES.JWT]);
 
-    const jwtToken: string | null = jwtParser(req.headers.authorization as string);
-    if (!jwtToken || jwtValidator(jwtToken, process.env[ENV_KEYS.JWT_SECRET] as string)) {
+    const authData = req.headers.authorization as string;
+
+    if (jwtValidator(authData, process.env[ENV_KEYS.JWT_SECRET] as string)) {
       res.status(401).json(jwtError);
     }
 
-    // continue
+    const jwtToken: { [key:string]: string, id: string } | null = jwtParser(req.headers.authorization as string);
+
+    if (!jwtToken) {
+      res.status(401).json(jwtError);
+    }
+
     let userDocumentData: DocumentData;
     try {
       userDocumentData = (await getFirestore().collection(COLLECTIONS.USERS).doc('jwtToken.id').get());
     } catch(e: any) {
-      logger.error('[Manager] Querying DB by email failed', e);
+      logger.error('[MANAGER] Querying DB by email failed', e);
       res.status(500).json(generalError);
       return;
     }
@@ -75,16 +81,16 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
     try {
       emails = (await getFirestore().collection(COLLECTIONS.USERS).get()).docs.map(d => d.data().email);
     } catch (e) {
-      logger.error('[MANAGER POST EMAILS] Error while retrieving user emails');
+      logger.error('[POST MANAGER EMAILS] Error while retrieving user emails');
       res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
     }
 
     if (!Array.isArray(emails) || !emails.length) {
       res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
-      logger.error('[MANAGER POST EMAILS] No user emails found');
+      logger.error('[POST MANAGER EMAILS] No user emails found');
     }
 
-    logger.info('[MANAGER POST EMAILS] Retrieved emails list');
+    logger.info('[POST MANAGER EMAILS] Retrieved emails list');
 
     const transporterArr = emails!.map(email => {
       const mailOptions = GetNodemailerTemplate({
@@ -98,18 +104,18 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
       return new Promise((resolve, reject) => {
         transporter.sendMail(mailOptions, (e: any) => {
           if (e) {
-            logger.error(`[MANAGER POST EMAILS] Ad email failed to send to: ${email}. Error: ${e}`);
+            logger.error(`[POST MANAGER EMAILS] Ad email failed to send to: ${email}. Error: ${e}`);
             resolve(email);
           }
           resolve(null);
-          logger.info(`[MANAGER POST EMAILS] Ad email was sent to: ${email}`);
+          logger.info(`[POST MANAGER EMAILS] Ad email was sent to: ${email}`);
         });
       });
     });
 
     Promise.all(transporterArr).then((result: any) => {
       const failedToSend = result.filter((i: any) => i !== null);
-      logger.info(`[MANAGER POST EMAILS] All ad emails were sent`);
+      logger.info(`[POST MANAGER EMAILS] All ad emails were sent`);
       res.status(200).send(new ResponseBody({ failedToSend }, true));
     });
   }
