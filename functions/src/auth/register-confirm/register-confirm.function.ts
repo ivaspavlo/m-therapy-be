@@ -1,8 +1,8 @@
+import * as logger from 'firebase-functions/logger';
+import * as jwt from 'jsonwebtoken';
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
 import { QueryDocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
-import * as logger from 'firebase-functions/logger';
-import * as jwt from 'jsonwebtoken';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
 import { ResponseBody } from '../../shared/models';
 import { IUser } from '../../shared/interfaces';
@@ -33,7 +33,7 @@ export const RegisterConfirmFunction = onRequest(
     try {
       queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', parsedResetToken.email).get();
     } catch(e: any) {
-      logger.error('[RegisterConfirm] Querying DB by email failed', e);
+      logger.error('[REGISTER_CONFIRM] Querying DB by email failed', e);
       res.status(500).json(generalError);
       return;
     }
@@ -57,12 +57,12 @@ export const RegisterConfirmFunction = onRequest(
         isConfirmed: true
       });
     } catch (e: any) {
-      logger.error('[RegisterConfirm] Registration confirm failed for user: ', user.id);
+      logger.error('[REGISTER_CONFIRM] Registration confirm failed for user: ', user.id);
       res.status(500).json(generalError);
       return;
     }
 
-    logger.info(`[RegisterConfirm] Registration confirmed for a user: ${userDocumentSnapshot.id}`);
+    logger.info(`[REGISTER_CONFIRM] Registration confirmed for a user: ${userDocumentSnapshot.id}`);
     res.status(200).send(new ResponseBody({}, true));
   }
 );

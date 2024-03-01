@@ -39,7 +39,7 @@ export const RemindFunction = onRequest(
     try {
       resetToken = jwt.sign({ email: remindReq.email }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp.value() });
     } catch (e: any) {
-      logger.error('Signing JWT for reminder email failed', e);
+      logger.error('[REMIND] Signing JWT for reminder email failed', e);
       res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       return;
     }
@@ -55,12 +55,12 @@ export const RemindFunction = onRequest(
 
     transporter.sendMail(mailOptions, (e: any) => {
       if (e) {
-        logger.error('Nodemailer failed to send reminder email', e);
+        logger.error('[REMIND] Nodemailer failed to send reminder email', e);
         res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
         return;
       }
 
-      logger.info(`Remind email was sent to: ${remindReq.email}`);
+      logger.info(`[REMIND] Remind email was sent to: ${remindReq.email}`);
       res.status(200).send(new ResponseBody({}, true));
     });
   }

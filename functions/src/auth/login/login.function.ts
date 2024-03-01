@@ -1,9 +1,9 @@
+import * as logger from 'firebase-functions/logger';
+import * as jwt from 'jsonwebtoken';
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
 import { defineString } from 'firebase-functions/params';
 import { QueryDocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
-import * as logger from 'firebase-functions/logger';
-import * as jwt from 'jsonwebtoken';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
 import { ResponseBody } from '../../shared/models';
 import { IUser } from '../../shared/interfaces';
@@ -25,7 +25,7 @@ export const LoginFunction = onRequest(
     try {
       queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', loginData.email).get();
     } catch(e: any) {
-      logger.error('Querying DB by email failed', e);
+      logger.error('[LOGIN] Querying DB by email failed', e);
       res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       return;
     }
@@ -58,12 +58,12 @@ export const LoginFunction = onRequest(
         { expiresIn: user.isAdmin ? jwtExpAdmin.value() : jwtExp.value() }
       );
     } catch (e: any) {
-      logger.error('Signing JWT failed', e);
+      logger.error('[LOGIN] Signing JWT failed', e);
       res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       return;
     }
 
-    logger.info(`Logged in user: ${userDocumentSnapshot.id}`);
+    logger.info(`[LOGIN] Logged in user: ${userDocumentSnapshot.id}`);
 
     res.status(200).send(new ResponseBody({ jwtToken, id: userDocumentSnapshot.id }, true));
   }

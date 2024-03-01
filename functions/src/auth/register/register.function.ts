@@ -29,7 +29,7 @@ export const RegisterFunction = onRequest(
     try {
       existingUser = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', userData.email).get();
     } catch(e: any) {
-      logger.error('[Register] Querying DB by email failed', e);
+      logger.error('[REGISTER] Querying DB by email failed', e);
       res.status(500).json(generalError);
       return;
     }
@@ -47,7 +47,7 @@ export const RegisterFunction = onRequest(
     try {
       prospectiveUser = await RegisterMapper(userData);
     } catch (e: any) {
-      logger.error('[Register] Hashing of password failed', e);
+      logger.error('[REGISTER] Hashing of password failed', e);
       res.status(500).json(generalError);
       return;
     }
@@ -58,12 +58,12 @@ export const RegisterFunction = onRequest(
         .collection(COLLECTIONS.USERS)
         .add(prospectiveUser);
     } catch (e: any) {
-      logger.error('[Register] Storing of user data failed', e);
+      logger.error('[REGISTER] Storing of user data failed', e);
       res.status(500).json(generalError);
       return;
     }
 
-    logger.info(`[Register] Created user: ${userDocumentReference.id}`);
+    logger.info(`[REGISTER] Created user: ${userDocumentReference.id}`);
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -77,7 +77,7 @@ export const RegisterFunction = onRequest(
     try {
       resetToken = jwt.sign({ email: userData.email }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp.value() });
     } catch (e: any) {
-      logger.error('[Register] Signing JWT for register confirmation email failed', e);
+      logger.error('[REGISTER] Signing JWT for register confirmation email failed', e);
       res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       return;
     }
@@ -94,12 +94,12 @@ export const RegisterFunction = onRequest(
     transporter.sendMail(mailOptions, (e: any) => {
       if (e) {
         if (environment.value() === 'PROD') {
-          logger.error('[Register] Nodemailer failed to send register confirmation email', e);
+          logger.error('[REGISTER] Nodemailer failed to send register confirmation email', e);
         }
         res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
         return;
       }
-      logger.info(`[Register] Register confirmation email was sent to: ${userData.email}`);
+      logger.info(`[REGISTER] Register confirmation email was sent to: ${userData.email}`);
       res.status(201).send(new ResponseBody({}, true));
     });
   }

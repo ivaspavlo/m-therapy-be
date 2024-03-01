@@ -1,8 +1,8 @@
+import * as logger from 'firebase-functions/logger';
+import * as jwt from 'jsonwebtoken';
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
 import { QueryDocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
-import * as logger from 'firebase-functions/logger';
-import * as jwt from 'jsonwebtoken';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
 import { ResponseBody } from '../../shared/models';
 import { IUser } from '../../shared/interfaces';
@@ -43,7 +43,7 @@ export const ResetFunction = onRequest(
     try {
       queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', parsedResetToken.email).get();
     } catch(e: any) {
-      logger.error('[Reset] Querying DB by email failed', e);
+      logger.error('[RESET] Querying DB by email failed', e);
       res.status(500).json(generalError);
       return;
     }
@@ -65,7 +65,7 @@ export const ResetFunction = onRequest(
     try {
       updatedUser = await ResetMapper(resetData, user);
     } catch (e: any) {
-      logger.error('[Reset] Hashing of password failed', e);
+      logger.error('[RESET] Hashing of password failed', e);
       res.status(500).json(generalError);
       return;
     }
@@ -75,12 +75,12 @@ export const ResetFunction = onRequest(
         ...updatedUser
       });
     } catch (e: any) {
-      logger.error('[Reset] Updating of user data failed', e);
+      logger.error('[RESET] Updating of user data failed', e);
       res.status(500).json(generalError);
       return;
     }
 
-    logger.info(`[Reset] Password updated for user: ${userDocumentSnapshot.id}`);
+    logger.info(`[RESET] Password updated for user: ${userDocumentSnapshot.id}`);
     res.status(200).send(new ResponseBody({}, true));
   }
 );
