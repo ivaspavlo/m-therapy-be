@@ -1,6 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 
-export function jwtParser(authData: string): { [key:string]: string, id: string } | null {
+
+export function jwtParser(authData: string): { [key:string]: string } | null {
   if (!authData || typeof authData !== 'string') {
     return null;
   }
