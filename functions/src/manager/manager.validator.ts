@@ -1,9 +1,9 @@
 import { langFieldValidator, stringValidator, validate } from '../shared/utils';
 import { ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
-import { IAdEmailReq } from './manager.interface';
+import { IAdEmailsReq } from './manager.interface';
 
 
-const fieldValidators: Record<keyof IAdEmailReq, Function[]> = {
+const fieldValidators: Record<keyof IAdEmailsReq, Function[]> = {
   lang: [langFieldValidator(TRANSLATIONS)],
   subject: [stringValidator],
   title: [stringValidator],
@@ -12,7 +12,7 @@ const fieldValidators: Record<keyof IAdEmailReq, Function[]> = {
   img: [stringValidator]
 }
 
-export const ManagerValidator = (req: IAdEmailReq): string[] | null => {
+export const ManagerValidator = (req: IAdEmailsReq): string[] | null => {
   const errors = validate(req, fieldValidators);
 
   if (errors.length) {

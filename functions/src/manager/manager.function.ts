@@ -8,7 +8,7 @@ import { ResponseBody } from '../shared/models';
 import { GetNodemailerTemplate, jwtParser, jwtValidator } from '../shared/utils';
 import { IUser } from '../shared/interfaces';
 import { ManagerValidator } from './manager.validator';
-import { IAdEmailReq } from './manager.interface';
+import { IAdEmailsReq } from './manager.interface';
 
 
 export const ManagerFunction = onRequest(
@@ -23,7 +23,7 @@ export const ManagerFunction = onRequest(
       res.status(401).json(jwtError);
     }
 
-    const jwtToken: { [key:string]: string, id: string } | null = jwtParser(req.headers.authorization as string);
+    const jwtToken: { [key:string]: string } | null = jwtParser(req.headers.authorization as string);
 
     if (!jwtToken) {
       res.status(401).json(jwtError);
@@ -31,7 +31,7 @@ export const ManagerFunction = onRequest(
 
     let userDocumentData: DocumentData;
     try {
-      userDocumentData = (await getFirestore().collection(COLLECTIONS.USERS).doc('jwtToken.id').get());
+      userDocumentData = (await getFirestore().collection(COLLECTIONS.USERS).doc(jwtToken!.id).get());
     } catch(e: any) {
       logger.error('[MANAGER] Querying DB by email failed', e);
       res.status(500).json(generalError);
@@ -59,7 +59,7 @@ export const ManagerFunction = onRequest(
 async function postManagerData(req: Request, res: Response): Promise<any> {
   switch(req.url) {
   case('/emails'): {
-    const reqBody: IAdEmailReq = req.body;
+    const reqBody: IAdEmailsReq = req.body;
 
     const validationErrors: string[] | null = ManagerValidator(reqBody);
     if (validationErrors) {
@@ -114,9 +114,14 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
     });
 
     Promise.all(transporterArr).then((result: any) => {
-      const failedToSend = result.filter((i: any) => i !== null);
+      const notSent = result.filter((i: any) => i !== null);
       logger.info(`[POST MANAGER EMAILS] All ad emails were sent`);
-      res.status(200).send(new ResponseBody({ failedToSend }, true));
+      res.status(200).send(
+        new ResponseBody(
+          { allSent: !notSent.length, notSent },
+          true
+        )
+      );
     });
   }
   }
