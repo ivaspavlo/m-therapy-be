@@ -1,37 +1,34 @@
 import * as logger from 'firebase-functions/logger';
-import * as jwt from 'jsonwebtoken';
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
 import { QueryDocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
 import { ResponseBody } from '../../shared/models';
 import { IUser } from '../../shared/interfaces';
+import { jwtParser, jwtValidator } from '../../shared/utils';
 
 
 export const RegisterConfirmFunction = onRequest(
   { secrets: [ENV_KEYS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
-    const resetToken: string = req.query.token as string;
+    const jwtError = new ResponseBody(null, false, [ERROR_MESSAGES.JWT]);
 
-    try {
-      jwt.verify(resetToken, process.env[ENV_KEYS.JWT_SECRET] as string);
-    } catch (e: any) {
-      res.status(401).json(new ResponseBody(null, false, [ERROR_MESSAGES.JWT]));
-      return;
+    const authData = req.query.token as string;
+
+    if (jwtValidator(authData, process.env[ENV_KEYS.JWT_SECRET] as string)) {
+      res.status(401).json(jwtError);
     }
 
-    let parsedResetToken: { [key:string]: string, email: string };
-    try {
-      parsedResetToken = JSON.parse(Buffer.from(resetToken.split('.')[1], 'base64').toString());
-    } catch (e: any) {
-      res.status(401).json(new ResponseBody(null, false, [ERROR_MESSAGES.JWT]));
-      return;
+    const resetToken: { [key:string]: string } | null = jwtParser(authData);
+
+    if (!resetToken) {
+      res.status(401).json(jwtError);
     }
 
     let queryByEmail: QuerySnapshot;
     try {
-      queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', parsedResetToken.email).get();
+      queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', resetToken!.email).get();
     } catch(e: any) {
       logger.error('[REGISTER_CONFIRM] Querying DB by email failed', e);
       res.status(500).json(generalError);

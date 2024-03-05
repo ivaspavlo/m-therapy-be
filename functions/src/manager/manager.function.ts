@@ -5,7 +5,7 @@ import { DocumentData, getFirestore } from 'firebase-admin/firestore';
 import { Request, Response } from 'firebase-functions';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
-import { GetNodemailerTemplate, jwtParser, jwtValidator } from '../shared/utils';
+import { GetNodemailerTemplate, extractJwt } from '../shared/utils';
 import { IUser } from '../shared/interfaces';
 import { ManagerValidator } from './manager.validator';
 import { IAdEmailsReq } from './manager.interface';
@@ -17,13 +17,10 @@ export const ManagerFunction = onRequest(
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
     const jwtError = new ResponseBody(null, false, [ERROR_MESSAGES.JWT]);
 
-    const authData = req.headers.authorization as string;
-
-    if (jwtValidator(authData, process.env[ENV_KEYS.JWT_SECRET] as string)) {
-      res.status(401).json(jwtError);
-    }
-
-    const jwtToken: { [key:string]: string } | null = jwtParser(req.headers.authorization as string);
+    const jwtToken = extractJwt<{ [key:string]: string } | null>(
+      req.headers.authorization as string,
+      process.env[ENV_KEYS.JWT_SECRET] as string
+    );
 
     if (!jwtToken) {
       res.status(401).json(jwtError);
@@ -33,7 +30,7 @@ export const ManagerFunction = onRequest(
     try {
       userDocumentData = (await getFirestore().collection(COLLECTIONS.USERS).doc(jwtToken!.id).get());
     } catch(e: any) {
-      logger.error('[MANAGER] Querying DB by email failed', e);
+      logger.error('[MANAGER] Querying DB failed', e);
       res.status(500).json(generalError);
       return;
     }
