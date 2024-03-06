@@ -3,9 +3,9 @@ import * as functions from 'src/index';
 import firebaseFunctionsTest from 'firebase-functions-test';
 import dotenv from 'dotenv';
 import { describe, expect, afterAll, beforeAll, test } from '@jest/globals';
-import { DocumentData, getFirestore } from 'firebase-admin/firestore';
+import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
 import { defineString } from 'firebase-functions/params';
-import { IContent } from 'src/shared/interfaces';
+import { IContent, IUser } from 'src/shared/interfaces';
 import { ENV_KEYS, COLLECTIONS } from 'src/shared/constants';
 import { ResponseBody } from 'src/shared/models';
 
@@ -54,32 +54,32 @@ describe('Functions test online', () => {
     querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
   });
 
-  // describe('register', () => {
-  //   test('[REGISTER] should create a user in db', async () => {
-  //     let user: IUser | null = null;
-  //     try {
-  //       const queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTER_REQ.body.email).get();
-  //       const userDocumentSnapshot: QueryDocumentSnapshot | undefined = queryByEmail.docs.find((d: any) => !!d);
-  //       user = userDocumentSnapshot?.data() as IUser;
-  //     } catch (error: any) {
-  //       // no action
-  //     }
-  //     expect(user?.email).toEqual(REGISTER_REQ.body.email);
-  //   });
+  describe('register', () => {
+    test('[REGISTER] should create a user in db', async () => {
+      let user: IUser | null = null;
+      try {
+        const queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTER_REQ.body.email).get();
+        const userDocumentSnapshot: QueryDocumentSnapshot | undefined = queryByEmail.docs.find((d: any) => !!d);
+        user = userDocumentSnapshot?.data() as IUser;
+      } catch (error: any) {
+        // no action
+      }
+      expect(user?.email).toEqual(REGISTER_REQ.body.email);
+    });
 
-  //   test('[REGISTER] should return 400 when user exists', async () => {
-  //     const res = {
-  //       status: (code: number) => {
-  //         expect(code).toBe(400);
-  //         return {
-  //           send: (value: any) => {},
-  //           json: (value: any) => {}
-  //         };
-  //       }
-  //     };
-  //     await functions.register(REGISTER_REQ as any, res as any);
-  //   });
-  // });
+    test('[REGISTER] should return 400 when user exists', async () => {
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(400);
+          return {
+            send: (value: any) => {},
+            json: (value: any) => {}
+          };
+        }
+      };
+      await functions.register(REGISTER_REQ as any, res as any);
+    });
+  });
 
   // describe('login', () => {
   //   const LOGIN_MOCK_REQ = {
