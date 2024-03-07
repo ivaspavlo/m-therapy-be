@@ -13,12 +13,13 @@ export const UserFunction = onRequest(
   async (req: Request, res: Response): Promise<void> => {
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
 
-    const jwtToken = extractJwt<{ [key:string]: string, id: string } | null>(
+    const jwtToken = extractJwt<{[key:string]: string, id: string} | null>(
       req.headers.authorization as string,
       process.env[ENV_KEYS.JWT_SECRET] as string
     );
     if (!jwtToken) {
       res.status(401).json(new ResponseBody(null, false, [ERROR_MESSAGES.JWT]));
+      return;
     }
 
     let userDocumentData: DocumentData;

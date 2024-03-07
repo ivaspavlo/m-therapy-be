@@ -17,13 +17,14 @@ export const ManagerFunction = onRequest(
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
     const jwtError = new ResponseBody(null, false, [ERROR_MESSAGES.JWT]);
 
-    const jwtToken = extractJwt<{ [key:string]: string } | null>(
+    const jwtToken = extractJwt<{[key:string]: string} | null>(
       req.headers.authorization as string,
       process.env[ENV_KEYS.JWT_SECRET] as string
     );
 
     if (!jwtToken) {
       res.status(401).json(jwtError);
+      return;
     }
 
     let userDocumentData: DocumentData;

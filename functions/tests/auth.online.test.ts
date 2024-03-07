@@ -299,7 +299,6 @@ describe('Functions test online', () => {
         status: (code: number) => {
           return {
             json: (resBody: ResponseBody<IContent>) => {
-              console.log(resBody);
               expect(resBody.data[COLLECTIONS.ADS][0].title).toBe(testAd.title);
               expect(resBody.data[COLLECTIONS.PRODUCTS][0].title).toBe(testProduct.title);
               expect(resBody.data[COLLECTIONS.CONTACTS][0].value).toBe(testContact.value);

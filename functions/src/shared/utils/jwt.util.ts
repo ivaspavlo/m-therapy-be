@@ -1,6 +1,6 @@
 import * as jwt from 'jsonwebtoken';
 
-export function jwtParser(authData: string): { [key:string]: string } | null {
+export function parseJwt(authData: string): { [key:string]: string } | null {
   if (!authData || typeof authData !== 'string') {
     return null;
   }
@@ -12,7 +12,7 @@ export function jwtParser(authData: string): { [key:string]: string } | null {
   }
 }
 
-export function jwtValidator(authData: string, secret: string): boolean {
+export function validateJwt(authData: string, secret: string): boolean {
   try {
     jwt.verify(authData, secret);
     return true;
@@ -21,8 +21,15 @@ export function jwtValidator(authData: string, secret: string): boolean {
   }
 }
 
+export function stripBearer(authData: string): string {
+  return authData.includes('Bearer ')
+    ? authData.split(' ')[1]
+    : '';
+}
+
 export function extractJwt<T>(authData: string, secret: string): T | null {
-  return jwtValidator(authData, secret)
-    ? jwtParser(authData) as T
+  const rawJwt = stripBearer(authData);
+  return validateJwt(rawJwt, secret)
+    ? parseJwt(rawJwt) as T
     : null;
 }
