@@ -5,7 +5,7 @@ import { QueryDocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-adm
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
 import { ResponseBody } from '../../shared/models';
 import { IUser } from '../../shared/interfaces';
-import { jwtParser, jwtValidator } from '../../shared/utils';
+import { parseJwt, validateJwt } from '../../shared/utils';
 
 
 export const RegisterConfirmFunction = onRequest(
@@ -16,11 +16,11 @@ export const RegisterConfirmFunction = onRequest(
 
     const authData = req.query.token as string;
 
-    if (jwtValidator(authData, process.env[ENV_KEYS.JWT_SECRET] as string)) {
+    if (validateJwt(authData, process.env[ENV_KEYS.JWT_SECRET] as string)) {
       res.status(401).json(jwtError);
     }
 
-    const resetToken: { [key:string]: string } | null = jwtParser(authData);
+    const resetToken: { [key:string]: string } | null = parseJwt(authData);
 
     if (!resetToken) {
       res.status(401).json(jwtError);
