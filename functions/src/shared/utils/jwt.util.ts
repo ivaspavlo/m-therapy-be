@@ -1,10 +1,9 @@
 import * as jwt from 'jsonwebtoken';
 
-export function parseJwt(authData: string): { [key:string]: string } | null {
-  if (!authData || typeof authData !== 'string') {
+export function parseJwt(rawJwt: string): { [key:string]: string } | null {
+  if (!rawJwt || typeof rawJwt !== 'string') {
     return null;
   }
-  const rawJwt = authData.split(' ')[1];
   try {
     return JSON.parse(Buffer.from(rawJwt!.split('.')[1], 'base64').toString());
   } catch (e: any) {
