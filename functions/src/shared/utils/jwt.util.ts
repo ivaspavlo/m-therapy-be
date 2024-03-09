@@ -23,7 +23,7 @@ export function validateJwt(authData: string, secret: string): boolean {
 export function stripBearer(authData: string): string {
   return authData.includes('Bearer ')
     ? authData.split(' ')[1]
-    : '';
+    : authData;
 }
 
 export function extractJwt<T>(authData: string, secret: string): T | null {

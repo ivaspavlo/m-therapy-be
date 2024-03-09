@@ -5,7 +5,7 @@ import { QueryDocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-adm
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
 import { ResponseBody } from '../../shared/models';
 import { IUser } from '../../shared/interfaces';
-import { parseJwt, validateJwt } from '../../shared/utils';
+import { extractJwt } from '../../shared/utils';
 
 
 export const RegisterConfirmFunction = onRequest(
@@ -14,21 +14,19 @@ export const RegisterConfirmFunction = onRequest(
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
     const jwtError = new ResponseBody(null, false, [ERROR_MESSAGES.JWT]);
 
-    const authData = req.query.token as string;
+    const jwtToken = extractJwt<{[key:string]: string} | null>(
+      req.query.token as string,
+      process.env[ENV_KEYS.JWT_SECRET] as string
+    );
 
-    if (validateJwt(authData, process.env[ENV_KEYS.JWT_SECRET] as string)) {
+    if (!jwtToken) {
       res.status(401).json(jwtError);
-    }
-
-    const resetToken: { [key:string]: string } | null = parseJwt(authData);
-
-    if (!resetToken) {
-      res.status(401).json(jwtError);
+      return;
     }
 
     let queryByEmail: QuerySnapshot;
     try {
-      queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', resetToken!.email).get();
+      queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', jwtToken!.email).get();
     } catch(e: any) {
       logger.error('[REGISTER_CONFIRM] Querying DB by email failed', e);
       res.status(500).json(generalError);
