@@ -81,52 +81,52 @@ describe('Functions test online', () => {
     });
   });
 
-  // describe('login', () => {
-  //   const LOGIN_MOCK_REQ = {
-  //     body: {
-  //       email: REGISTER_REQ.body.email,
-  //       password: REGISTER_REQ.body.password
-  //     }
-  //   };
+  describe('login', () => {
+    const LOGIN_MOCK_REQ = {
+      body: {
+        email: REGISTER_REQ.body.email,
+        password: REGISTER_REQ.body.password
+      }
+    };
 
-  //   test('[LOGIN] should return status 200 when creds are correct', async () => {
-  //     const resetToken = jwt.sign(
-  //       { email: REGISTER_REQ.body.email },
-  //       process.env[ENV_KEYS.JWT_SECRET] as string,
-  //       { expiresIn: resetTokenExp }
-  //     );
+    test('[LOGIN] should return status 200 when creds are correct', async () => {
+      const resetToken = jwt.sign(
+        { email: REGISTER_REQ.body.email },
+        process.env[ENV_KEYS.JWT_SECRET] as string,
+        { expiresIn: resetTokenExp }
+      );
 
-  //     // @ts-ignore
-  //     await functions.registerConfirm({ query: { token: resetToken } }, MOCK_RES as any);
+      // @ts-ignore
+      await functions.registerConfirm({ query: { token: resetToken } }, MOCK_RES as any);
 
-  //     const res = {
-  //       status: (code: number) => {
-  //         expect(code).toBe(200);
-  //         return {
-  //           send: (value: any) => { },
-  //           json: (value: any) => { }
-  //         };
-  //       }
-  //     };
-  //     await functions.login(LOGIN_MOCK_REQ as any, res as any);
-  //   }, 10000);
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(200);
+          return {
+            send: (value: any) => { },
+            json: (value: any) => { }
+          };
+        }
+      };
+      await functions.login(LOGIN_MOCK_REQ as any, res as any);
+    }, 10000);
 
-  //   test('[LOGIN] should return status 401 when creds are incorrect', async () => {
-  //     const res = {
-  //       status: (code: number) => {
-  //         expect(code).toBe(401);
-  //         return {
-  //           send: (value: any) => { },
-  //           json: (value: any) => { }
-  //         }
-  //       }
-  //     }
-  //     await functions.login(
-  //       { body: { email: 'incorrect_email@testmail.com', password: 'incorrect_pwd' } } as any,
-  //       res as any
-  //     );
-  //   });
-  // });
+    test('[LOGIN] should return status 401 when creds are incorrect', async () => {
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(401);
+          return {
+            send: (value: any) => { },
+            json: (value: any) => { }
+          }
+        }
+      }
+      await functions.login(
+        { body: { email: 'incorrect_email@testmail.com', password: 'incorrect_pwd' } } as any,
+        res as any
+      );
+    });
+  });
 
   describe('reset', () => {
     const MOCK_REQ = {
@@ -179,46 +179,46 @@ describe('Functions test online', () => {
     });
   });
 
-  // describe('registerConfirm', () => {
-  //   test('[REGISTER_CONFIRM] should return 401 if the token is not valid', async () => {
-  //     const res = {
-  //       status: (code: number) => {
-  //         expect(code).toBe(401);
-  //         return {
-  //           send: (value: any) => { },
-  //           json: (value: any) => { }
-  //         }
-  //       }
-  //     };
-  //     await functions.registerConfirm({ query: { token: INVALID_CONFIRM_TOKEN_1 } } as any, res as any);
-  //   });
+  describe('registerConfirm', () => {
+    test('[REGISTER_CONFIRM] should return 401 if the token is not valid', async () => {
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(401);
+          return {
+            send: (value: any) => { },
+            json: (value: any) => { }
+          }
+        }
+      };
+      await functions.registerConfirm({ query: { token: INVALID_CONFIRM_TOKEN_1 } } as any, res as any);
+    });
 
-  //   test('[REGISTER_CONFIRM] should return 400 if the email is incorrect', async () => {
-  //     const res = {
-  //       status: (code: number) => {
-  //         expect(code).toBe(400);
-  //         return {
-  //           send: (value: any) => { },
-  //           json: (value: any) => { }
-  //         }
-  //       }
-  //     };
-  //     await functions.registerConfirm({ query: { token: INVALID_CONFIRM_TOKEN_2 } } as any, res as any);
-  //   });
+    test('[REGISTER_CONFIRM] should return 400 if the email is incorrect', async () => {
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(400);
+          return {
+            send: (value: any) => { },
+            json: (value: any) => { }
+          }
+        }
+      };
+      await functions.registerConfirm({ query: { token: INVALID_CONFIRM_TOKEN_2 } } as any, res as any);
+    });
 
-  //   test('[REGISTER_CONFIRM] should return 200 if the token is valid', async () => {
-  //     const res = {
-  //       status: (code: number) => {
-  //         expect(code).toBe(200);
-  //         return {
-  //           send: (value: any) => { },
-  //           json: (value: any) => { }
-  //         }
-  //       }
-  //     };
-  //     await functions.registerConfirm({ query: { token: VALID_CONFIRM_TOKEN } } as any, res as any);
-  //   });
-  // });
+    test('[REGISTER_CONFIRM] should return 200 if the token is valid', async () => {
+      const res = {
+        status: (code: number) => {
+          expect(code).toBe(200);
+          return {
+            send: (value: any) => { },
+            json: (value: any) => { }
+          }
+        }
+      };
+      await functions.registerConfirm({ query: { token: VALID_CONFIRM_TOKEN } } as any, res as any);
+    });
+  });
 
   describe('user', () => {
     let USER_ID: string;
