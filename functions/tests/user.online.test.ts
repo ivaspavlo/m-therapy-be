@@ -7,6 +7,7 @@ import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admi
 import { defineString } from 'firebase-functions/params';
 import { ENV_KEYS, COLLECTIONS } from 'src/shared/constants';
 
+
 firebaseFunctionsTest({
   projectId: 'mt-stage-db6be',
   databaseURL: 'https://mt-stage-db6be.firebaseio.com'
@@ -18,14 +19,6 @@ const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP).value();
 const jwtSecret = defineString(ENV_KEYS.JWT_SECRET).value();
 
 describe('user', () => {
-
-  const MOCK_RES = {
-    status: (code: number) => ({
-      send: (value: any) => {},
-      json: (value: any) => {}
-    })
-  };
-
   const REGISTER_REQ = {
     body: {
       firstname: 'Test',
@@ -37,22 +30,18 @@ describe('user', () => {
       lang: 'en'
     }
   };
-
-  beforeAll(async () => {
-    await functions.register(REGISTER_REQ as any, MOCK_RES as any);
-  });
-
-  afterAll(async () => {
-    const usersQuery = getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTER_REQ.body.email);
-    const querySnapshot = await usersQuery.get();
-    querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
-  });
-
+  const MOCK_RES = {
+    status: (code: number) => ({
+      send: (value: any) => {},
+      json: (value: any) => {}
+    })
+  };
   let USER_ID: string;
   let VALID_AUTH_TOKEN: string;
   let INVALID_AUTH_TOKEN: string;
 
   beforeAll(async () => {
+    await functions.register(REGISTER_REQ as any, MOCK_RES as any);
     try {
       const queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTER_REQ.body.email).get();
       const userDocumentSnapshot: QueryDocumentSnapshot | undefined = queryByEmail.docs.find((d: any) => !!d);
@@ -62,6 +51,12 @@ describe('user', () => {
       // no action
     }
     INVALID_AUTH_TOKEN = 'Bearer ' + jwt.sign({ id: 'incorrect_user_id' }, jwtSecret, { expiresIn: resetTokenExp });
+  });
+
+  afterAll(async () => {
+    const usersQuery = getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTER_REQ.body.email);
+    const querySnapshot = await usersQuery.get();
+    querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
   });
 
   test('[GET USER] should return correct user by id', async () => {
