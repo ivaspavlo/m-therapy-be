@@ -1,12 +1,11 @@
 import * as logger from 'firebase-functions/logger';
-import * as jwt from 'jsonwebtoken';
 import * as nodemailer from 'nodemailer';
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
 import { DocumentReference, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
 import { defineString } from 'firebase-functions/params';
 import { ResponseBody } from '../../shared/models';
-import { GetNodemailerTemplate } from '../../shared/utils';
+import { GetNodemailerTemplate, generateJwt } from '../../shared/utils';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES, FE_URLS, TRANSLATIONS } from '../../shared/constants';
 import { RegisterValidator } from './register.validator';
 import { IRegisterReq } from './register.interface';
@@ -73,11 +72,13 @@ export const RegisterFunction = onRequest(
       }
     });
 
-    let resetToken = null;
-    try {
-      resetToken = jwt.sign({ email: userData.email }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp.value() });
-    } catch (e: any) {
-      logger.error('[REGISTER] Signing JWT for register confirmation email failed', e);
+    const resetToken = generateJwt(
+      { email: userData.email },
+      process.env[ENV_KEYS.JWT_SECRET] as string,
+      { expiresIn: resetTokenExp.value() }
+    );
+    if (!resetToken) {
+      logger.error('[REGISTER] Signing JWT for register confirmation email failed');
       res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       return;
     }

@@ -32,3 +32,11 @@ export function extractJwt<T>(authData: string, secret: string): T | null {
     ? parseJwt(rawJwt) as T
     : null;
 }
+
+export function generateJwt(data: object, secret: string, options: object = {}): string | null {
+  try {
+    return jwt.sign(data, secret, options);
+  } catch (e: any) {
+    return null;
+  }
+}

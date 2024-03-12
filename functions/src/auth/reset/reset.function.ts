@@ -1,11 +1,11 @@
 import * as logger from 'firebase-functions/logger';
-import * as jwt from 'jsonwebtoken';
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
 import { QueryDocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
 import { ResponseBody } from '../../shared/models';
 import { IUser } from '../../shared/interfaces';
+import { extractJwt } from '../../shared/utils';
 import { IResetReq } from './reset.interface';
 import { ResetValidator } from './reset.validator';
 import { ResetMapper } from './reset.mapper';
@@ -15,12 +15,13 @@ export const ResetFunction = onRequest(
   { secrets: [ENV_KEYS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
-    const resetToken: string = req.query.token as string;
     const resetData: IResetReq = req.body;
 
-    try {
-      jwt.verify(resetToken, process.env[ENV_KEYS.JWT_SECRET] as string);
-    } catch (e: any) {
+    const resetToken = extractJwt<{[key:string]: any, email: string}>(
+      req.query.token as string,
+      process.env[ENV_KEYS.JWT_SECRET] as string
+    );
+    if (!resetToken) {
       res.status(401).json(new ResponseBody(null, false, [ERROR_MESSAGES.JWT]));
       return;
     }
@@ -31,17 +32,9 @@ export const ResetFunction = onRequest(
       return;
     }
 
-    let parsedResetToken: { [key:string]: string, email: string };
-    try {
-      parsedResetToken = JSON.parse(Buffer.from(resetToken.split('.')[1], 'base64').toString());
-    } catch (e: any) {
-      res.status(401).json(new ResponseBody(null, false, [ERROR_MESSAGES.JWT]));
-      return;
-    }
-
     let queryByEmail: QuerySnapshot;
     try {
-      queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', parsedResetToken.email).get();
+      queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', resetToken.email).get();
     } catch(e: any) {
       logger.error('[RESET] Querying DB by email failed', e);
       res.status(500).json(generalError);
