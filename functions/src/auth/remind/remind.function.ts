@@ -1,12 +1,11 @@
 import * as logger from 'firebase-functions/logger';
-import * as jwt from 'jsonwebtoken';
 import * as nodemailer from 'nodemailer';
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'firebase-functions';
 import { defineString } from 'firebase-functions/params';
 import { ResponseBody } from '../../shared/models';
 import { ENV_KEYS, ERROR_MESSAGES, FE_URLS, TRANSLATIONS } from '../../shared/constants';
-import { GetNodemailerTemplate } from '../../shared/utils';
+import { GetNodemailerTemplate, generateJwt } from '../../shared/utils';
 import { IRemindReq } from './remind.interface';
 import { RemindValidator } from './remind.validator';
 
@@ -35,11 +34,9 @@ export const RemindFunction = onRequest(
       }
     });
 
-    let resetToken = null;
-    try {
-      resetToken = jwt.sign({ email: remindReq.email }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp.value() });
-    } catch (e: any) {
-      logger.error('[REMIND] Signing JWT for reminder email failed', e);
+    const resetToken = generateJwt({ email: remindReq.email }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp.value() });
+    if (!resetToken) {
+      logger.error('[REMIND] Signing JWT for reminder email failed');
       res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       return;
     }
