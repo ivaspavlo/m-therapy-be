@@ -56,7 +56,7 @@ export const ManagerFunction = onRequest(
 
 async function postManagerData(req: Request, res: Response): Promise<any> {
   switch(req.url) {
-  case('/emails'): {
+  case('/promo-emails'): {
     const reqBody: IAdEmailsReq = req.body;
 
     const validationErrors: string[] | null = ManagerValidator(reqBody);

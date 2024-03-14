@@ -1,6 +1,6 @@
 import * as logger from 'firebase-functions/logger';
 import { onRequest } from 'firebase-functions/v2/https';
-import { DocumentData, getFirestore } from 'firebase-admin/firestore';
+import { DocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
 import { Request, Response } from 'firebase-functions';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../shared/constants';
 import { ResponseBody, User } from '../shared/models';
@@ -11,7 +11,6 @@ import { extractJwt } from '../shared/utils';
 export const UserFunction = onRequest(
   { secrets: [ENV_KEYS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
-    const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
 
     const jwtToken = extractJwt<{[key:string]: string, id: string} | null>(
       req.headers.authorization as string,
@@ -22,35 +21,49 @@ export const UserFunction = onRequest(
       return;
     }
 
-    let userDocumentData: DocumentData;
+    let userDocumentSnapshot: DocumentSnapshot;
     try {
-      userDocumentData = (await getFirestore().collection(COLLECTIONS.USERS).doc(jwtToken!.id).get());
+      userDocumentSnapshot = (await getFirestore().collection(COLLECTIONS.USERS).doc(jwtToken!.id).get());
     } catch(e: any) {
-      logger.error('[GET USER] Querying DB by email failed', e);
-      res.status(500).json(generalError);
+      logger.error('[GET USER] Querying DB user id failed', e);
+      res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       return;
     }
 
-    if (!userDocumentData.exists) {
+    if (!userDocumentSnapshot.exists) {
       res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_FOUND]));
       return;
     }
 
-    const user: IUser = userDocumentData.data() as IUser;
-
     switch(req.method) {
-    case('GET'): return getUser(res, userDocumentData.id, user);
-    case('PUT'): return updateUser(res, userDocumentData.id, user);
+    case('GET'): return getUser(res, userDocumentSnapshot);
+    case('PUT'): return updateUser(req, res, userDocumentSnapshot);
     }
   }
 );
 
-async function getUser(res: Response, id: string, user: IUser): Promise<any> {
-  logger.info(`[GET USER] Retrieved user data: ${id}`);
-  res.status(200).send(new ResponseBody(User.fromDocumentData({...user, id}), true));
+async function getUser(res: Response, documentSnapshot: DocumentSnapshot): Promise<any> {
+  const user: IUser = documentSnapshot.data() as IUser;
+  logger.info(`[GET USER] Retrieved user with id: ${documentSnapshot.id}`);
+  res.status(200).send(new ResponseBody(User.fromDocumentData({...user, id: documentSnapshot.id}), true));
 }
 
-async function updateUser(res: Response, id: string, user: IUser): Promise<any> {
-  logger.info(`[PUT USER] Retrieved user data: ${id}`);
-  res.status(200).send(new ResponseBody(User.fromDocumentData({...user, id}), true));
+async function updateUser(
+  req: Request,
+  res: Response,
+  documentSnapshot: DocumentSnapshot
+): Promise<any> {
+  const reqBody: any = req.body;
+  try {
+    documentSnapshot.ref.update({
+      ...documentSnapshot.data() as IUser,
+      ...reqBody
+    });
+  } catch (e: any) {
+    logger.error('[PUT USER] Update of user data failed', e);
+    res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+    return;
+  }
+  logger.info(`[PUT USER] Updated user with id: ${documentSnapshot.id}`);
+  res.status(200).send(new ResponseBody(User.fromDocumentData({...documentSnapshot.data() as IUser}), true));
 }
