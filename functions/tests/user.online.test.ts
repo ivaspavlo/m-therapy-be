@@ -27,7 +27,8 @@ describe('user', () => {
       birthday: '1990-08-08',
       phone: '+111222333444',
       password: 'TestPass1!',
-      lang: 'en'
+      lang: 'en',
+      hasUserConsent: true
     }
   };
   const MOCK_RES = {

@@ -3,6 +3,7 @@ import { IRegisterReq } from './register.interface';
 import { ERROR_MESSAGES, TRANSLATIONS } from '../../shared/constants';
 import {
   birthdayValidator,
+  booleanValidator,
   emailValidator,
   langFieldValidator,
   maxCharQty,
@@ -20,7 +21,8 @@ const fieldValidators: Record<keyof IRegisterReq, Function[]> = {
   birthday: [birthdayValidator],
   phone: [minCharQty(9), maxCharQty(15)],
   password: [passwordValidator],
-  lang: [stringValidator, langFieldValidator(TRANSLATIONS)]
+  lang: [stringValidator, langFieldValidator(TRANSLATIONS)],
+  hasEmailConsent: [booleanValidator]
 }
 
 export const RegisterValidator = (req: IRegisterReq, queryByEmail: QuerySnapshot): string[] | null => {

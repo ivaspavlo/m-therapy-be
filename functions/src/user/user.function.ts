@@ -54,8 +54,11 @@ async function updateUser(
   documentSnapshot: DocumentSnapshot
 ): Promise<any> {
   const reqBody: any = req.body;
+
+  // validation to be added
+
   try {
-    documentSnapshot.ref.update({
+    await documentSnapshot.ref.update({
       ...documentSnapshot.data() as IUser,
       ...reqBody
     });
@@ -65,5 +68,5 @@ async function updateUser(
     return;
   }
   logger.info(`[PUT USER] Updated user with id: ${documentSnapshot.id}`);
-  res.status(200).send(new ResponseBody(User.fromDocumentData({...documentSnapshot.data() as IUser}), true));
+  res.status(200).send(new ResponseBody({}, true));
 }
