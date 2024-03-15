@@ -55,3 +55,7 @@ export function langFieldValidator(
 export function stringValidator(value: any): boolean {
   return typeof value === 'string';
 }
+
+export function booleanValidator(value: any): boolean {
+  return typeof value === 'boolean';
+}

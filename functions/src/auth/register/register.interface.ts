@@ -7,5 +7,6 @@ export interface IRegisterReq {
   birthday: number,
   phone: string,
   password: string,
-  lang: LanguageType
+  lang: LanguageType,
+  hasEmailConsent: boolean
 }
