@@ -11,7 +11,6 @@ import { extractJwt } from '../shared/utils';
 export const UserFunction = onRequest(
   { secrets: [ENV_KEYS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
-
     const jwtToken = extractJwt<{[key:string]: string, id: string} | null>(
       req.headers.authorization as string,
       process.env[ENV_KEYS.JWT_SECRET] as string

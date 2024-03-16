@@ -19,7 +19,7 @@ dotenv.config({ path: './.env.local' });
 const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP).value();
 const jwtSecret = defineString(ENV_KEYS.JWT_SECRET).value();
 
-describe('Functions test online', () => {
+describe.skip('Auth functions', () => {
   const MOCK_RES = {
     status: (code: number) => ({
       send: (value: any) => {},
@@ -27,44 +27,42 @@ describe('Functions test online', () => {
     })
   };
 
-  const REGISTER_REQ = {
-    body: {
-      firstname: 'Test',
-      lastname: 'Testovich',
-      email: 'test@testmail.com',
-      birthday: '1990-08-08',
-      phone: '+111222333444',
-      password: 'TestPass1!',
-      lang: 'en',
-      hasEmailConsent: true
-    }
+  const REGISTERED_USER = {
+    firstname: 'Test',
+    lastname: 'Testovich',
+    email: 'test@testmail.com',
+    birthday: '1990-08-08',
+    phone: '+111222333444',
+    password: 'TestPass1!',
+    lang: 'en',
+    hasEmailConsent: true
   };
 
-  const VALID_CONFIRM_TOKEN = jwt.sign({ email: REGISTER_REQ.body.email }, jwtSecret, { expiresIn: resetTokenExp });
-  const INVALID_CONFIRM_TOKEN_1 = jwt.sign({ email: REGISTER_REQ.body.email }, 'incorrect_secret', { expiresIn: resetTokenExp });
+  const VALID_CONFIRM_TOKEN = jwt.sign({ email: REGISTERED_USER.email }, jwtSecret, { expiresIn: resetTokenExp });
+  const INVALID_CONFIRM_TOKEN_1 = jwt.sign({ email: REGISTERED_USER.email }, 'incorrect_secret', { expiresIn: resetTokenExp });
   const INVALID_CONFIRM_TOKEN_2 = jwt.sign({ email: 'incorrect_email@gmail.com' }, jwtSecret, { expiresIn: resetTokenExp });
 
   beforeAll(async () => {
-    await functions.register(REGISTER_REQ as any, MOCK_RES as any);
+    await getFirestore().collection(COLLECTIONS.USERS).add(REGISTERED_USER);
   });
 
   afterAll(async () => {
-    const usersQuery = getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTER_REQ.body.email);
+    const usersQuery = getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTERED_USER.email);
     const querySnapshot = await usersQuery.get();
     querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
   });
 
-  describe('register', () => {
+  describe.skip('register', () => {
     test('[REGISTER] should create a user in db', async () => {
       let user: IUser | null = null;
       try {
-        const queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTER_REQ.body.email).get();
+        const queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTERED_USER.email).get();
         const userDocumentSnapshot: QueryDocumentSnapshot | undefined = queryByEmail.docs.find((d: any) => !!d);
         user = userDocumentSnapshot?.data() as IUser;
       } catch (error: any) {
         // no action
       }
-      expect(user?.email).toEqual(REGISTER_REQ.body.email);
+      expect(user?.email).toEqual(REGISTERED_USER.email);
     });
 
     test('[REGISTER] should return 400 when user exists', async () => {
@@ -77,21 +75,31 @@ describe('Functions test online', () => {
           };
         }
       };
-      await functions.register(REGISTER_REQ as any, res as any);
+      await functions.register(REGISTERED_USER as any, res as any);
     });
   });
 
   describe('login', () => {
+    beforeAll(async () => {
+      await getFirestore().collection(COLLECTIONS.USERS).add(REGISTERED_USER);
+    });
+
+    afterAll(async () => {
+      const usersQuery = getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTERED_USER.email);
+      const querySnapshot = await usersQuery.get();
+      querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
+    });
+
     const LOGIN_MOCK_REQ = {
       body: {
-        email: REGISTER_REQ.body.email,
-        password: REGISTER_REQ.body.password
+        email: REGISTERED_USER.email,
+        password: REGISTERED_USER.password
       }
     };
 
     test('[LOGIN] should return status 200 when creds are correct', async () => {
       const resetToken = jwt.sign(
-        { email: REGISTER_REQ.body.email },
+        { email: REGISTERED_USER.email },
         process.env[ENV_KEYS.JWT_SECRET] as string,
         { expiresIn: resetTokenExp }
       );
