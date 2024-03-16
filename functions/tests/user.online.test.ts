@@ -1,10 +1,10 @@
 import * as jwt from 'jsonwebtoken';
 import * as functions from 'src/index';
-import firebaseFunctionsTest from 'firebase-functions-test';
 import dotenv from 'dotenv';
-import { describe, expect, afterAll, beforeAll, test } from '@jest/globals';
-import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
+import firebaseFunctionsTest from 'firebase-functions-test';
 import { defineString } from 'firebase-functions/params';
+import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
+import { describe, expect, afterAll, beforeAll, test } from '@jest/globals';
 import { ENV_KEYS, COLLECTIONS } from 'src/shared/constants';
 
 
@@ -19,32 +19,25 @@ const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP).value();
 const jwtSecret = defineString(ENV_KEYS.JWT_SECRET).value();
 
 describe('user', () => {
-  const REGISTER_REQ = {
-    body: {
-      firstname: 'Test',
-      lastname: 'Testovich',
-      email: 'test@testmail.com',
-      birthday: '1990-08-08',
-      phone: '+111222333444',
-      password: 'TestPass1!',
-      lang: 'en',
-      hasUserConsent: true
-    }
+  const REGISTERED_USER = {
+    firstname: 'Test',
+    lastname: 'Testovich',
+    email: 'test@testmail.com',
+    birthday: '1990-08-08',
+    phone: '+111222333444',
+    password: 'TestPass1!',
+    lang: 'en',
+    hasUserConsent: true
   };
-  const MOCK_RES = {
-    status: (code: number) => ({
-      send: (value: any) => {},
-      json: (value: any) => {}
-    })
-  };
+
   let USER_ID: string;
   let VALID_AUTH_TOKEN: string;
   let INVALID_AUTH_TOKEN: string;
 
   beforeAll(async () => {
-    await functions.register(REGISTER_REQ as any, MOCK_RES as any);
+    await getFirestore().collection(COLLECTIONS.USERS).add(REGISTERED_USER);
     try {
-      const queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTER_REQ.body.email).get();
+      const queryByEmail = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTERED_USER.email).get();
       const userDocumentSnapshot: QueryDocumentSnapshot | undefined = queryByEmail.docs.find((d: any) => !!d);
       USER_ID = userDocumentSnapshot!.id;
       VALID_AUTH_TOKEN = 'Bearer ' + jwt.sign({ id: USER_ID }, jwtSecret, { expiresIn: resetTokenExp });
@@ -55,7 +48,7 @@ describe('user', () => {
   });
 
   afterAll(async () => {
-    const usersQuery = getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTER_REQ.body.email);
+    const usersQuery = getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTERED_USER  .email);
     const querySnapshot = await usersQuery.get();
     querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
   });
