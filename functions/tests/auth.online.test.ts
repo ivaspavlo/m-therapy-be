@@ -27,15 +27,18 @@ describe('Auth functions', () => {
     })
   };
 
+  const PASSWORD = 'TestPass1!';
+
   const REGISTERED_USER = {
     firstname: 'Test',
     lastname: 'Testovich',
     email: 'test@testmail.com',
     birthday: '1990-08-08',
     phone: '+111222333444',
-    password: 'TestPass1!',
+    password: '$2b$04$.BloZCekJL3F3NXyileOL.wsTEYZeBkqhWExSnCB3CVbnXOeUQ0nm',
     lang: 'en',
-    hasEmailConsent: true
+    hasEmailConsent: true,
+    isConfirmed: true
   };
 
   const VALID_CONFIRM_TOKEN = jwt.sign({ email: REGISTERED_USER.email }, jwtSecret, { expiresIn: resetTokenExp });
@@ -69,11 +72,11 @@ describe('Auth functions', () => {
     });
   });
 
-  describe.skip('login', () => {
+  describe('login', () => {
     const LOGIN_MOCK_REQ = {
       body: {
         email: REGISTERED_USER.email,
-        password: REGISTERED_USER.password
+        password: PASSWORD
       }
     };
 
