@@ -72,12 +72,12 @@ export const RegisterFunction = onRequest(
       }
     });
 
-    const resetToken = generateJwt(
+    const confirmToken = generateJwt(
       { email: userData.email },
       process.env[ENV_KEYS.JWT_SECRET] as string,
       { expiresIn: resetTokenExp.value() }
     );
-    if (!resetToken) {
+    if (!confirmToken) {
       logger.error('[REGISTER] Signing JWT for register confirmation email failed');
       res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       return;
@@ -89,7 +89,7 @@ export const RegisterFunction = onRequest(
       subject: currentTranslations.registerEmailSubject,
       title: currentTranslations.registerEmailTitle,
       message: currentTranslations.registerEmailMessage,
-      url: `${uiUrl.value()}/${FE_URLS.CONFIRM_REGISTER}/${resetToken}`
+      url: `${uiUrl.value()}/${FE_URLS.CONFIRM_REGISTER}/${confirmToken}`
     });
 
     transporter.sendMail(mailOptions, (e: any) => {
