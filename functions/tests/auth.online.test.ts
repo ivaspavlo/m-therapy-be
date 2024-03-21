@@ -45,7 +45,17 @@ describe('Auth functions', () => {
   const INVALID_CONFIRM_TOKEN_1 = jwt.sign({ email: REGISTERED_USER.email }, 'incorrect_secret', { expiresIn: resetTokenExp });
   const INVALID_CONFIRM_TOKEN_2 = jwt.sign({ email: 'incorrect_email@gmail.com' }, jwtSecret, { expiresIn: resetTokenExp });
 
-  describe.skip('register', () => {
+  describe('register', () => {
+    beforeAll(async () => {
+      await functions.register({body: REGISTERED_USER} as any, MOCK_RES as any);
+    });
+
+    afterAll(async () => {
+      const usersQuery = getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTERED_USER.email);
+      const querySnapshot = await usersQuery.get();
+      querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
+    });
+
     test('[REGISTER] should create a user in db', async () => {
       let user: IUser | null = null;
       try {
@@ -68,7 +78,7 @@ describe('Auth functions', () => {
           };
         }
       };
-      await functions.register(REGISTERED_USER as any, res as any);
+      await functions.register({body: REGISTERED_USER} as any, res as any);
     });
   });
 
@@ -112,7 +122,7 @@ describe('Auth functions', () => {
       await functions.login(LOGIN_MOCK_REQ as any, res as any);
     }, 10000);
 
-    test.skip('[LOGIN] should return status 401 when creds are incorrect', async () => {
+    test('[LOGIN] should return status 401 when creds are incorrect', async () => {
       const res = {
         status: (code: number) => {
           expect(code).toBe(401);
@@ -129,7 +139,7 @@ describe('Auth functions', () => {
     });
   });
 
-  describe.skip('reset', () => {
+  describe('reset', () => {
     const MOCK_REQ = {
       query: {
         token: null
@@ -190,7 +200,7 @@ describe('Auth functions', () => {
     });
   });
 
-  describe.skip('registerConfirm', () => {
+  describe('registerConfirm', () => {
     beforeAll(async () => {
       await getFirestore().collection(COLLECTIONS.USERS).add(REGISTERED_USER);
     });

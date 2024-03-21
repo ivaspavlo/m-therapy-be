@@ -15,7 +15,7 @@ firebaseFunctionsTest({
 
 dotenv.config({ path: './.env.local' });
 
-describe.skip('content', () => {
+describe('content', () => {
   const testAd = {
     type: 'FOOTER',
     title: 'Test Footer',
