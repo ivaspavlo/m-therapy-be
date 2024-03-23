@@ -1,12 +1,17 @@
-export function validate(req: any, fieldValidators: any): string[] {
+import { IValidatorSet } from "../interfaces/validator-set.interface";
+
+export function validate(req: any, fieldValidators: {[key:string]: IValidatorSet}): string[] {
   return Object.entries(req).reduce((acc: string[], [key, value]) => {
-    const currValidators = fieldValidators[key];
-    if (!currValidators?.length) {
+    const currValidatorSet = fieldValidators[key];
+    if (currValidatorSet.isOptional && value === undefined) {
       return acc;
     }
-    const hasError = currValidators.some((validator: any) => !validator(value));
+    if (!currValidatorSet.validators?.length) {
+      return acc;
+    }
+    const hasError = currValidatorSet.validators.some((validator: any) => !validator(value));
     return hasError
-      ? [ ...acc, key ]
+      ? [...acc, key]
       : acc;
   }, []);
 }
@@ -58,4 +63,8 @@ export function stringValidator(value: any): boolean {
 
 export function booleanValidator(value: any): boolean {
   return typeof value === 'boolean';
+}
+
+export function requiredValidator(value: any): boolean {
+  return value !== undefined;
 }

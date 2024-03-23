@@ -12,17 +12,18 @@ import {
   stringValidator,
   validate
 } from '../../shared/utils';
+import { IValidatorSet } from '../../shared/interfaces';
 
 
-const fieldValidators: Record<keyof IRegisterReq, Function[]> = {
-  firstname: [minCharQty(3), maxCharQty(20)],
-  lastname: [minCharQty(3), maxCharQty(20)],
-  email: [emailValidator],
-  birthday: [birthdayValidator],
-  phone: [minCharQty(9), maxCharQty(15)],
-  password: [passwordValidator],
-  lang: [stringValidator, langFieldValidator(TRANSLATIONS)],
-  hasEmailConsent: [booleanValidator]
+const fieldValidators: Record<keyof IRegisterReq, IValidatorSet> = {
+  firstname: {validators: [minCharQty(3), maxCharQty(20)]},
+  lastname: {validators: [minCharQty(3), maxCharQty(20)]},
+  email: {validators: [emailValidator]},
+  birthday: {validators: [birthdayValidator]},
+  phone: {validators: [minCharQty(9), maxCharQty(15)]},
+  password: {validators: [passwordValidator]},
+  lang: {validators: [stringValidator, langFieldValidator(TRANSLATIONS)]},
+  hasEmailConsent: {validators: [booleanValidator]}
 }
 
 export const RegisterValidator = (req: IRegisterReq, queryByEmail: QuerySnapshot): string[] | null => {

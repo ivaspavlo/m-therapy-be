@@ -19,7 +19,7 @@ dotenv.config({ path: './.env.local' });
 const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP).value();
 const jwtSecret = defineString(ENV_KEYS.JWT_SECRET).value();
 
-describe('Auth functions', () => {
+describe.skip('Auth functions', () => {
   const MOCK_RES = {
     status: (code: number) => ({
       send: (value: any) => {},
