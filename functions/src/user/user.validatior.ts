@@ -1,15 +1,14 @@
 import { stringValidator, validate } from '../shared/utils';
 import { ERROR_MESSAGES } from '../shared/constants';
 import { ISubscriber } from './user.interface';
-import { IUser } from 'src/shared/interfaces';
+import { IUser, IValidatorSet } from '../shared/interfaces';
 
 
-const subscriberValidators: Record<keyof ISubscriber, Function[]> = {
-  email: [stringValidator]
+const subscriberValidators: Record<keyof ISubscriber, IValidatorSet> = {
+  email: {validators: [stringValidator]}
 }
 
-export const UserUpdateValidator = (data: Partial<IUser> = {}): string[] | null => {
-  console.log(data);
+export const UserUpdateValidator = (data: Partial<IUser> = {}, user: IUser): string[] | null => {
   return null;
 }
 
