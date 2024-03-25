@@ -13,6 +13,5 @@ export const ResetValidator = async (req: IResetReq): Promise<string[] | null> =
   if (errors.length) {
     return Promise.resolve([`${ERROR_MESSAGES.FIELDS_VALIDATION}: ${errors.join(',')}`]);
   }
-
   return null;
 }
