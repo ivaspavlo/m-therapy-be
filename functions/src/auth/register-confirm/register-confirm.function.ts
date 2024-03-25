@@ -14,6 +14,8 @@ export const RegisterConfirmFunction = onRequest(
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
     const jwtError = new ResponseBody(null, false, [ERROR_MESSAGES.JWT]);
 
+    // start from here
+
     const jwtToken = extractJwt<{[key:string]: string} | null>(
       req.query.token as string,
       process.env[ENV_KEYS.JWT_SECRET] as string

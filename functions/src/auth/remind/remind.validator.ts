@@ -11,10 +11,8 @@ const fieldValidators: Record<keyof IRemindReq, IValidatorSet> = {
 
 export const RemindValidator = (req: IRemindReq): string[] | null => {
   const errors = validate(req, fieldValidators);
-
   if (errors.length) {
     return [`${ERROR_MESSAGES.FIELDS_VALIDATION}: ${errors.join(',')}`];
   }
-
   return null;
 }

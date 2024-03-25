@@ -13,7 +13,6 @@ exports.login = LoginFunction;
 exports.remind = RemindFunction;
 exports.reset = ResetFunction;
 exports.registerConfirm = RegisterConfirmFunction;
-exports.profile = UserFunction;
 exports.manager = ManagerFunction;
 
 // User
