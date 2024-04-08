@@ -1,10 +1,10 @@
 import { stringValidator, validate } from '../shared/utils';
 import { ERROR_MESSAGES } from '../shared/constants';
 import { ISubscriber } from './user.interface';
-import { IUser, IValidatorSet } from '../shared/interfaces';
+import { IUser, IValidationConfig } from '../shared/interfaces';
 
 
-const subscriberValidators: Record<keyof ISubscriber, IValidatorSet> = {
+const subscriberValidators: Record<keyof ISubscriber, IValidationConfig> = {
   email: {validators: [stringValidator]}
 }
 

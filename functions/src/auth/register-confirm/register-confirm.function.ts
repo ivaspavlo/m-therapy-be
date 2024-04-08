@@ -12,9 +12,9 @@ export const RegisterConfirmFunction = onRequest(
   { secrets: [ENV_KEYS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
-    const jwtError = new ResponseBody(null, false, [ERROR_MESSAGES.JWT]);
+    
 
-    // start from here
+    const jwtError = new ResponseBody(null, false, [ERROR_MESSAGES.JWT]);
 
     const jwtToken = extractJwt<{[key:string]: string} | null>(
       req.query.token as string,
