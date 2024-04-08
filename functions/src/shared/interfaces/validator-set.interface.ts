@@ -1,4 +1,4 @@
-export interface IValidatorSet {
+export interface IValidationConfig {
   isOptional?: boolean;
   validators: Function[];
 }

@@ -1,10 +1,10 @@
-import { IValidatorSet } from '../../shared/interfaces';
+import { IValidationConfig } from '../../shared/interfaces';
 import { ERROR_MESSAGES } from '../../shared/constants';
 import { passwordValidator, validate } from '../../shared/utils';
 import { IResetReq } from './reset.interface';
 
 
-const fieldValidators: Record<keyof IResetReq, IValidatorSet> = {
+const fieldValidators: Record<keyof IResetReq, IValidationConfig> = {
   password: {validators: [passwordValidator]}
 }
 

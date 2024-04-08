@@ -1,15 +1,17 @@
-import { IValidatorSet } from "../interfaces/validator-set.interface";
+import { IValidationConfig } from '../interfaces/validator-set.interface';
 
-export function validate(req: any, fieldValidators: {[key:string]: IValidatorSet}): string[] {
-  return Object.entries(req).reduce((acc: string[], [key, value]) => {
-    const currValidatorSet = fieldValidators[key];
-    if (currValidatorSet.isOptional && value === undefined) {
+export function validate(data: any, fieldValidators: {[key:string]: IValidationConfig}): string[] {
+  return Object.entries(fieldValidators).reduce((
+    acc: string[],
+    [key, validationConfig]: [string, IValidationConfig]
+  ) => {
+    const currentValue = data[key];
+
+    if (currentValue === undefined && validationConfig.isOptional) {
       return acc;
     }
-    if (!currValidatorSet.validators?.length) {
-      return acc;
-    }
-    const hasError = currValidatorSet.validators.some((validator: any) => !validator(value));
+
+    const hasError = validationConfig.validators.some((validator: Function) => !validator(currentValue));
     return hasError
       ? [...acc, key]
       : acc;

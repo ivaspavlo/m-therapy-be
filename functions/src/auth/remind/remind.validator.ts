@@ -1,10 +1,10 @@
 import { IRemindReq } from './remind.interface';
 import { emailValidator, langFieldValidator, validate } from '../../shared/utils';
 import { ERROR_MESSAGES, TRANSLATIONS } from '../../shared/constants';
-import { IValidatorSet } from '../../shared/interfaces';
+import { IValidationConfig } from '../../shared/interfaces';
 
 
-const fieldValidators: Record<keyof IRemindReq, IValidatorSet> = {
+const fieldValidators: Record<keyof IRemindReq, IValidationConfig> = {
   email: {validators: [emailValidator]},
   lang: {validators: [langFieldValidator(TRANSLATIONS)]}
 }

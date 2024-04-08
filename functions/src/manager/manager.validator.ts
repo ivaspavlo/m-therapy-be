@@ -1,10 +1,10 @@
 import { langFieldValidator, stringValidator, validate } from '../shared/utils';
 import { ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
 import { IAdEmailsReq } from './manager.interface';
-import { IValidatorSet } from '../shared/interfaces';
+import { IValidationConfig } from '../shared/interfaces';
 
 
-const fieldValidators: Record<keyof IAdEmailsReq, IValidatorSet> = {
+const fieldValidators: Record<keyof IAdEmailsReq, IValidationConfig> = {
   lang: {validators: [langFieldValidator(TRANSLATIONS)]},
   subject: {validators: [stringValidator]},
   title: {validators: [stringValidator]},
