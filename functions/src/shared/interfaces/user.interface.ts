@@ -9,5 +9,6 @@ export interface IUser {
   password: string,
   isAdmin: boolean,
   isConfirmed: boolean,
-  hasEmailConsent: boolean
+  hasEmailConsent: boolean,
+  lang: string
 }

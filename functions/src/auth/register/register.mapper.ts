@@ -30,6 +30,7 @@ export const RegisterMapper = async (req: IRegisterReq): Promise<IUser> => {
     hasEmailConsent: req.hasEmailConsent,
     isAdmin: false,
     isConfirmed: false,
+    lang: req.lang,
     created: Date.now()
   };
 }

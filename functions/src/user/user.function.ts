@@ -6,6 +6,8 @@ import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../shared/constants';
 import { ResponseBody, User } from '../shared/models';
 import { IUser } from '../shared/interfaces';
 import { extractJwt } from '../shared/utils';
+import { IUpdateUser } from './user.interface';
+import { UserUpdateValidator } from './user.validatior';
 
 
 export const UserFunction = onRequest(
@@ -13,8 +15,8 @@ export const UserFunction = onRequest(
   async (req: Request, res: Response): Promise<void> => {
     switch(req.method) {
     case('GET'): return getUser(req, res);
-    case('PUT'): return updateUser(req, res);
-    case('POST'): return createSubscriber(req, res);
+    case('PUT'): return putUser(req, res);
+    case('POST'): return postUser(req, res);
     }
   }
 );
@@ -48,7 +50,7 @@ async function getUser(
   res.status(200).send(new ResponseBody(User.fromDocumentData({...user, id: userDocumentSnapshot.id}), true));
 }
 
-async function updateUser(
+async function putUser(
   req: Request,
   res: Response
 ): Promise<any> {
@@ -72,14 +74,20 @@ async function updateUser(
     res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_FOUND]));
     return;
   }
-  const reqBody: any = req.body;
+  const userUpdateData: IUpdateUser = req.body;
 
-  // validation to be added
+  const validationErrors = UserUpdateValidator(userUpdateData);
+  if (validationErrors) {
+    res.status(400).json(new ResponseBody(null, false, validationErrors));
+    return;
+  }
+
+  // to do mapper
 
   try {
     await userDocumentSnapshot.ref.update({
       ...userDocumentSnapshot.data() as IUser,
-      ...reqBody
+      ...userUpdateData
     });
   } catch (e: any) {
     logger.error('[PUT USER] Update of user data failed', e);
@@ -90,7 +98,7 @@ async function updateUser(
   res.status(200).send(new ResponseBody({}, true));
 }
 
-async function createSubscriber(
+async function postUser(
   req: Request,
   res: Response
 ): Promise<any> {

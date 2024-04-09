@@ -1,14 +1,37 @@
-import { stringValidator, validate } from '../shared/utils';
-import { ERROR_MESSAGES } from '../shared/constants';
-import { ISubscriber } from './user.interface';
-import { IUser, IValidationConfig } from '../shared/interfaces';
+import { ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
+import { IValidationConfig } from '../shared/interfaces';
+import {
+  birthdayValidator,
+  booleanValidator,
+  emailValidator,
+  langFieldValidator,
+  maxCharQty,
+  minCharQty,
+  stringValidator,
+  validate
+} from '../shared/utils';
+import { ISubscriber, IUpdateUser } from './user.interface';
 
 
 const subscriberValidators: Record<keyof ISubscriber, IValidationConfig> = {
   email: {validators: [stringValidator]}
 }
 
-export const UserUpdateValidator = (data: Partial<IUser> = {}, user: IUser): string[] | null => {
+const userUpdateValidators: Record<keyof IUpdateUser, IValidationConfig> = {
+  firstname: {isOptional: true, validators: [minCharQty(3), maxCharQty(20)]},
+  lastname: {isOptional: true, validators: [minCharQty(3), maxCharQty(20)]},
+  email: {isOptional: true, validators: [emailValidator]},
+  birthday: {isOptional: true, validators: [birthdayValidator]},
+  phone: {isOptional: true, validators: [minCharQty(9), maxCharQty(15)]},
+  lang: {isOptional: true, validators: [stringValidator, langFieldValidator(TRANSLATIONS)]},
+  hasEmailConsent: {isOptional: true, validators: [booleanValidator]}
+}
+
+export const UserUpdateValidator = (data: IUpdateUser): string[] | null => {
+  const errors = validate(data, userUpdateValidators);
+  if (errors.length) {
+    return [`${ERROR_MESSAGES.FIELDS_VALIDATION}: ${errors.join(',')}`];
+  }
   return null;
 }
 
