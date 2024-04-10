@@ -11,6 +11,7 @@ export class User {
   public birthday!: number;
   public hasEmailConsent!: boolean;
   public isConfirmed!: boolean;
+  public lang!: string;
 
   constructor(
     id: string,
@@ -21,7 +22,8 @@ export class User {
     phone: string,
     birthday: number,
     hasEmailConsent: boolean,
-    isConfirmed: boolean
+    isConfirmed: boolean,
+    lang: string
   ) {
     this.id = id;
     this.created = created;
@@ -32,6 +34,7 @@ export class User {
     this.birthday = birthday;
     this.hasEmailConsent = hasEmailConsent;
     this.isConfirmed = isConfirmed;
+    this.lang = lang;
   }
 
   public static fromDocumentData(userDocumentData: IUser): User {
@@ -44,7 +47,8 @@ export class User {
       userDocumentData.phone,
       userDocumentData.birthday,
       userDocumentData.hasEmailConsent,
-      userDocumentData.isConfirmed
+      userDocumentData.isConfirmed,
+      userDocumentData.lang
     );
   }
 }
