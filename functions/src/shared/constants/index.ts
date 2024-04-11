@@ -19,7 +19,8 @@ export enum COLLECTIONS {
   ADMIN = 'admin',
   ADS = 'ads',
   PRODUCTS = 'products',
-  CONTACTS = 'contacts'
+  CONTACTS = 'contacts',
+  SUBSCRIBERS = 'subscribers'
 }
 
 export enum ENV {
