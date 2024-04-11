@@ -7,8 +7,8 @@ import { ResponseBody, User } from '../shared/models';
 import { IUser } from '../shared/interfaces';
 import { extractJwt } from '../shared/utils';
 import { IUpdateUser } from './user.interface';
-import { UserUpdateValidator } from './user.validatior';
-import { UpdateUserMapper } from './user.mapper';
+import { SubscriberValidator, UserUpdateValidator } from './user.validatior';
+import { SubscriberMapper, UpdateUserMapper } from './user.mapper';
 
 
 export const UserFunction = onRequest(
@@ -75,6 +75,7 @@ async function putUser(
     res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_FOUND]));
     return;
   }
+
   const rawUpdateData: IUpdateUser = req.body;
 
   const validationErrors = UserUpdateValidator(rawUpdateData);
@@ -95,6 +96,7 @@ async function putUser(
     res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
     return;
   }
+
   logger.info(`[PUT USER] Updated user with id: ${userDocumentSnapshot.id}`);
   res.status(200).send(new ResponseBody({}, true));
 }
@@ -104,6 +106,14 @@ async function postUser(
   res: Response
 ): Promise<any> {
   const reqBody: any = req.body;
-  console.log(reqBody);
-  res.status(200).send(new ResponseBody({}, true));
+
+  const validationErrors = SubscriberValidator(reqBody);
+  if (validationErrors) {
+    res.status(400).json(new ResponseBody(null, false, validationErrors));
+    return;
+  }
+
+  const subscriber = SubscriberMapper(reqBody);
+
+  res.status(200).send(new ResponseBody(subscriber, true));
 }

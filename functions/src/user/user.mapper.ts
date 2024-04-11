@@ -19,3 +19,7 @@ export const UpdateUserMapper = (updateData: IUpdateUser, user: User): Partial<U
     ...filteredUpdateData
   };
 }
+
+export const SubscriberMapper = (data: any): any => {
+  return {};
+}
