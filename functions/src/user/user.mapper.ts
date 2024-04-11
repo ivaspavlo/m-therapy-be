@@ -2,22 +2,20 @@ import { User } from '../shared/models';
 import { IUpdateUser } from './user.interface';
 
 /**
- * Fields available for update: firstname, lastname, email, phone, birthday, hasEmailConsent, lang.
+ * Remove undefined values and not intended values.
  * @param {IUpdateUser} updateData
  * @param {User} user 
- * @returns {User}
+ * @returns {Partial<User>}
  */
-export const UpdateUserMapper = (updateData: IUpdateUser, user: User): User => {
-  return new User(
-    user.id,
-    user.created,
-    updateData.firstname || user.firstname,
-    updateData.lastname || user.lastname,
-    updateData.email || user.email,
-    updateData.phone || user.phone,
-    updateData.birthday || user.birthday,
-    updateData.hasEmailConsent || user.hasEmailConsent,
-    user.isConfirmed,
-    updateData.lang || user.lang
-  );
+export const UpdateUserMapper = (updateData: IUpdateUser, user: User): Partial<User> => {
+  const allowedUpdateUserKeys = ['firstname', 'lastname', 'email', 'phone', 'birthday', 'hasEmailConsent', 'lang'];
+  const filteredUpdateData = Object.entries(updateData).reduce((acc, [key, value]) => {
+    return !allowedUpdateUserKeys.includes(key) || value === undefined
+      ? acc
+      : {...acc, [key]: value};
+  }, {});
+  return {
+    ...user,
+    ...filteredUpdateData
+  };
 }
