@@ -8,7 +8,7 @@ import { IUser } from '../shared/interfaces';
 import { extractJwt } from '../shared/utils';
 import { IUpdateUser } from './user.interface';
 import { UserUpdateValidator } from './user.validatior';
-// import { UpdateUserMapper } from './user.mapper';
+import { UpdateUserMapper } from './user.mapper';
 
 
 export const UserFunction = onRequest(
@@ -83,20 +83,13 @@ async function putUser(
     return;
   }
 
-  // to be continued
-
-  // const formattedUpdateData: User = UpdateUserMapper(
-  //   rawUpdateData,
-  //   userDocumentSnapshot.data() as User
-  // );
+  const formattedUpdateData: Partial<User> = UpdateUserMapper(
+    rawUpdateData,
+    userDocumentSnapshot.data() as User
+  );
 
   try {
-    // spreading is needed because update takes the format {[key:string]: any}
-    // await userDocumentSnapshot.ref.update({...formattedUpdateData});
-    await userDocumentSnapshot.ref.update({
-      ...userDocumentSnapshot.data() as IUser,
-      ...rawUpdateData
-    });
+    await userDocumentSnapshot.ref.update(formattedUpdateData);
   } catch (e: any) {
     logger.error('[PUT USER] Update of user data failed', e);
     res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
