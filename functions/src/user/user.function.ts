@@ -1,6 +1,6 @@
 import * as logger from 'firebase-functions/logger';
 import { onRequest } from 'firebase-functions/v2/https';
-import { DocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
+import { DocumentReference, DocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
 import { Request, Response } from 'firebase-functions';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../shared/constants';
 import { ResponseBody, User } from '../shared/models';
@@ -67,7 +67,7 @@ async function putUser(
   try {
     userDocumentSnapshot = (await getFirestore().collection(COLLECTIONS.USERS).doc(jwtToken!.id).get());
   } catch(e: any) {
-    logger.error('[GET USER] Querying DB user id failed', e);
+    logger.error('[PUT USER] Querying DB user id failed', e);
     res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
     return;
   }
@@ -105,15 +105,33 @@ async function postUser(
   req: Request,
   res: Response
 ): Promise<any> {
-  const reqBody: any = req.body;
+  switch(req.url) {
+  case('/subscribe'): {
+    const reqBody: any = req.body;
 
-  const validationErrors = SubscriberValidator(reqBody);
-  if (validationErrors) {
-    res.status(400).json(new ResponseBody(null, false, validationErrors));
-    return;
+    const validationErrors = SubscriberValidator(reqBody);
+    if (validationErrors) {
+      res.status(400).json(new ResponseBody(null, false, validationErrors));
+      return;
+    }
+
+    const subscriber = SubscriberMapper(reqBody);
+
+    let subscriberReference: DocumentReference;
+    try {
+      subscriberReference = await getFirestore()
+        .collection(COLLECTIONS.SUBSCRIBERS)
+        .add(subscriber);
+    } catch (e: any) {
+      logger.error('[POST USER SUBSCRIBE] Storing of subscriber data failed', e);
+      res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+      return;
+    }
+
+    logger.info(`[POST USER SUBSCRIBE] Created subscriber: ${subscriberReference.id}`);
+
+    res.status(200).send(new ResponseBody(subscriber, true));
+  }
   }
 
-  const subscriber = SubscriberMapper(reqBody);
-
-  res.status(200).send(new ResponseBody(subscriber, true));
 }

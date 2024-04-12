@@ -1,8 +1,8 @@
 import { User } from '../shared/models';
-import { IUpdateUser } from './user.interface';
+import { ISubscriber, IUpdateUser } from './user.interface';
 
 /**
- * Remove undefined values and not intended values.
+ * Remove undefined and not intended values.
  * @param {IUpdateUser} updateData
  * @param {User} user 
  * @returns {Partial<User>}
@@ -20,6 +20,13 @@ export const UpdateUserMapper = (updateData: IUpdateUser, user: User): Partial<U
   };
 }
 
-export const SubscriberMapper = (data: any): any => {
-  return {};
+/**
+ * Remove undefined and not intended values.
+ * @param {email: string, [key:string]: any} data
+ * @returns {ISubscriber}
+ */
+export const SubscriberMapper = (data: {email: string, [key:string]: any}): ISubscriber => {
+  return {
+    email: data.email
+  };
 }
