@@ -79,4 +79,43 @@ describe('user', () => {
     };
     await functions.user({ headers: { authorization: INVALID_AUTH_TOKEN as string } } as any, res as any);
   });
+
+  // test('[UPDATE USER] should return 401 if token is invalid', async () => {
+  //   const res = {
+  //     status: (code: number) => {
+  //       expect(code).toBe(400);
+  //       return {
+  //         send: (value: any) => { },
+  //         json: (value: any) => { }
+  //       }
+  //     }
+  //   };
+  //   await functions.user({ headers: { authorization: INVALID_AUTH_TOKEN as string } } as any, res as any);
+  // });
+
+  // test('[UPDATE USER] should return 400 if fields are invalid', async () => {
+  //   const res = {
+  //     status: (code: number) => {
+  //       expect(code).toBe(400);
+  //       return {
+  //         send: (value: any) => { },
+  //         json: (value: any) => { }
+  //       }
+  //     }
+  //   };
+  //   await functions.user({ headers: { authorization: INVALID_AUTH_TOKEN as string } } as any, res as any);
+  // });
+
+  // test('[UPDATE USER] should return updated user', async () => {
+  //   const res = {
+  //     status: (code: number) => {
+  //       expect(code).toBe(400);
+  //       return {
+  //         send: (value: any) => { },
+  //         json: (value: any) => { }
+  //       }
+  //     }
+  //   };
+  //   await functions.user({ headers: { authorization: INVALID_AUTH_TOKEN as string } } as any, res as any);
+  // });
 });

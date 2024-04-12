@@ -14,7 +14,7 @@ import { ISubscriber, IUpdateUser } from './user.interface';
 
 
 const subscriberValidators: Record<keyof ISubscriber, IValidationConfig> = {
-  email: {validators: [stringValidator]}
+  email: {validators: [stringValidator, emailValidator]}
 }
 
 const userUpdateValidators: Record<keyof IUpdateUser, IValidationConfig> = {
