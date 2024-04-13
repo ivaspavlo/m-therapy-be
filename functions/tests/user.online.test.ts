@@ -6,6 +6,8 @@ import { defineString } from 'firebase-functions/params';
 import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
 import { describe, expect, afterAll, beforeAll, test } from '@jest/globals';
 import { ENV_KEYS, COLLECTIONS } from 'src/shared/constants';
+import { ResponseBody } from 'src/shared/models';
+import { IUser } from 'src/shared/interfaces';
 
 
 firebaseFunctionsTest({
@@ -32,7 +34,8 @@ describe('user', () => {
 
   let USER_ID: string;
   let VALID_AUTH_TOKEN: string;
-  let INVALID_AUTH_TOKEN: string;
+  let INVALID_AUTH_TOKEN_1: string;
+  let INVALID_AUTH_TOKEN_2: string;
 
   beforeAll(async () => {
     await getFirestore().collection(COLLECTIONS.USERS).add(REGISTERED_USER);
@@ -44,7 +47,8 @@ describe('user', () => {
     } catch (error: any) {
       // no action
     }
-    INVALID_AUTH_TOKEN = 'Bearer ' + jwt.sign({ id: 'incorrect_user_id' }, jwtSecret, { expiresIn: resetTokenExp });
+    INVALID_AUTH_TOKEN_1 = 'Bearer ' + jwt.sign({ id: 'incorrect_user_id' }, jwtSecret, { expiresIn: resetTokenExp });
+    INVALID_AUTH_TOKEN_2 = 'Bearer ' + jwt.sign({ id: 'mock_user_id' }, 'invalid_jwt', { expiresIn: resetTokenExp });
   });
 
   afterAll(async () => {
@@ -64,7 +68,7 @@ describe('user', () => {
         }
       }
     };
-    await functions.user({ headers: { authorization: VALID_AUTH_TOKEN as string } } as any, res as any);
+    await functions.user({ headers: { authorization: VALID_AUTH_TOKEN as string }, method: 'GET' } as any, res as any);
   });
 
   test('[GET USER] should return 400 if user was not found', async () => {
@@ -77,45 +81,60 @@ describe('user', () => {
         }
       }
     };
-    await functions.user({ headers: { authorization: INVALID_AUTH_TOKEN as string } } as any, res as any);
+    await functions.user({ headers: { authorization: INVALID_AUTH_TOKEN_1 as string }, method: 'GET' } as any, res as any);
   });
 
-  // test('[UPDATE USER] should return 401 if token is invalid', async () => {
-  //   const res = {
-  //     status: (code: number) => {
-  //       expect(code).toBe(400);
-  //       return {
-  //         send: (value: any) => { },
-  //         json: (value: any) => { }
-  //       }
-  //     }
-  //   };
-  //   await functions.user({ headers: { authorization: INVALID_AUTH_TOKEN as string } } as any, res as any);
-  // });
+  test('[UPDATE USER] should return 401 if token is invalid', async () => {
+    const res = {
+      status: (code: number) => {
+        expect(code).toBe(401);
+        return {
+          send: (value: any) => { },
+          json: (value: any) => { }
+        }
+      }
+    };
+    await functions.user({ headers: { authorization: INVALID_AUTH_TOKEN_2 as string }, method: 'PUT' } as any, res as any);
+  });
 
-  // test('[UPDATE USER] should return 400 if fields are invalid', async () => {
-  //   const res = {
-  //     status: (code: number) => {
-  //       expect(code).toBe(400);
-  //       return {
-  //         send: (value: any) => { },
-  //         json: (value: any) => { }
-  //       }
-  //     }
-  //   };
-  //   await functions.user({ headers: { authorization: INVALID_AUTH_TOKEN as string } } as any, res as any);
-  // });
+  test('[UPDATE USER] should return 400 if fields are invalid', async () => {
+    const res = {
+      status: (code: number) => {
+        expect(code).toBe(400);
+        return {
+          send: (value: any) => { },
+          json: (value: any) => { }
+        }
+      } 
+    };
+    await functions.user({
+      headers: { authorization: VALID_AUTH_TOKEN as string },
+      method: 'PUT',
+      body: { firstname: false }
+    } as any,
+    res as any
+    );
+  });
 
-  // test('[UPDATE USER] should return updated user', async () => {
-  //   const res = {
-  //     status: (code: number) => {
-  //       expect(code).toBe(400);
-  //       return {
-  //         send: (value: any) => { },
-  //         json: (value: any) => { }
-  //       }
-  //     }
-  //   };
-  //   await functions.user({ headers: { authorization: INVALID_AUTH_TOKEN as string } } as any, res as any);
-  // });
+  // to be continued
+  test.skip('[UPDATE USER] should return updated user', async () => {
+    const newValueForFirstname = 'mockName';
+    const res = {
+      status: (code: number) => {
+        return {
+          send: (value: any) => { },
+          json: (value: ResponseBody<IUser>) => {
+            expect(value.data.firstname).toBe('newValueForFirstname');
+          }
+        }
+      }
+    };
+    await functions.user({
+      headers: { authorization: VALID_AUTH_TOKEN as string },
+      method: 'PUT',
+      body: { firstname: newValueForFirstname }
+    } as any,
+    res as any
+    );
+  });
 });
