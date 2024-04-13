@@ -98,7 +98,7 @@ async function putUser(
   }
 
   logger.info(`[PUT USER] Updated user with id: ${userDocumentSnapshot.id}`);
-  res.status(200).send(new ResponseBody({}, true));
+  res.status(200).send(new ResponseBody(userDocumentSnapshot.data(), true));
 }
 
 async function postUser(
