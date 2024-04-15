@@ -116,16 +116,15 @@ describe('user', () => {
     );
   });
 
-  // to be continued
-  test.skip('[UPDATE USER] should return updated user', async () => {
+  test('[UPDATE USER] should return updated user', async () => {
     const newValueForFirstname = 'mockName';
     const res = {
       status: (code: number) => {
         return {
-          send: (value: any) => { },
-          json: (value: ResponseBody<IUser>) => {
-            expect(value.data.firstname).toBe('newValueForFirstname');
-          }
+          send: (value: ResponseBody<IUser>) => {
+            expect(value.data.firstname).toBe(newValueForFirstname);
+          },
+          json: (value: ResponseBody<IUser>) => { }
         }
       }
     };
@@ -136,5 +135,26 @@ describe('user', () => {
     } as any,
     res as any
     );
+  });
+
+  test('[UPDATE USER] should save the updated user in the DB', async () => {
+    const newValueForFirstname = 'mockName';
+    const res = {
+      status: (code: number) => {
+        return {
+          send: (value: any) => { },
+          json: (value: any) => { }
+        }
+      }
+    };
+    await functions.user({
+      headers: { authorization: VALID_AUTH_TOKEN as string },
+      method: 'PUT',
+      body: { firstname: newValueForFirstname }
+    } as any,
+    res as any
+    );
+    const userDocumentSnapshot = (await getFirestore().collection(COLLECTIONS.USERS).doc(USER_ID).get());
+    expect (userDocumentSnapshot.data()?.firstname).toBe(newValueForFirstname);
   });
 });
