@@ -129,7 +129,6 @@ async function postUser(
     }
 
     logger.info(`[POST USER SUBSCRIBE] Created subscriber: ${subscriberReference.id}`);
-
     res.status(200).send(new ResponseBody(subscriber, true));
   }
   }
