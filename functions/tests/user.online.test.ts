@@ -8,6 +8,7 @@ import { describe, expect, afterAll, beforeAll, test } from '@jest/globals';
 import { ENV_KEYS, COLLECTIONS } from 'src/shared/constants';
 import { ResponseBody } from 'src/shared/models';
 import { IUser } from 'src/shared/interfaces';
+import { ISubscriber } from 'src/user/user.interface';
 
 
 firebaseFunctionsTest({
@@ -52,6 +53,7 @@ describe('user', () => {
   });
 
   afterAll(async () => {
+    // clear mocked users
     const usersQuery = getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTERED_USER  .email);
     const querySnapshot = await usersQuery.get();
     querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
@@ -84,7 +86,7 @@ describe('user', () => {
     await functions.user({ headers: { authorization: INVALID_AUTH_TOKEN_1 as string }, method: 'GET' } as any, res as any);
   });
 
-  test('[UPDATE USER] should return 401 if token is invalid', async () => {
+  test('[PUT USER] should return 401 if token is invalid', async () => {
     const res = {
       status: (code: number) => {
         expect(code).toBe(401);
@@ -97,7 +99,7 @@ describe('user', () => {
     await functions.user({ headers: { authorization: INVALID_AUTH_TOKEN_2 as string }, method: 'PUT' } as any, res as any);
   });
 
-  test('[UPDATE USER] should return 400 if fields are invalid', async () => {
+  test('[PUT USER] should return 400 if fields are invalid', async () => {
     const res = {
       status: (code: number) => {
         expect(code).toBe(400);
@@ -116,7 +118,7 @@ describe('user', () => {
     );
   });
 
-  test('[UPDATE USER] should return updated user', async () => {
+  test('[PUT USER] should return updated user', async () => {
     const newValueForFirstname = 'mockName';
     const res = {
       status: (code: number) => {
@@ -124,7 +126,7 @@ describe('user', () => {
           send: (value: ResponseBody<IUser>) => {
             expect(value.data.firstname).toBe(newValueForFirstname);
           },
-          json: (value: ResponseBody<IUser>) => { }
+          json: (value: any) => { }
         }
       }
     };
@@ -137,7 +139,7 @@ describe('user', () => {
     );
   });
 
-  test('[UPDATE USER] should save the updated user in the DB', async () => {
+  test('[PUT USER] should save the updated user in DB', async () => {
     const newValueForFirstname = 'mockName';
     const res = {
       status: (code: number) => {
@@ -156,5 +158,74 @@ describe('user', () => {
     );
     const userDocumentSnapshot = (await getFirestore().collection(COLLECTIONS.USERS).doc(USER_ID).get());
     expect (userDocumentSnapshot.data()?.firstname).toBe(newValueForFirstname);
+  });
+});
+
+describe('subscriber', () => {
+  const newValueForEmail = 'mockEmail@gmail.com';
+
+  afterAll(async () => {
+    // clear mocked subscriber
+    const usersQuery = getFirestore().collection(COLLECTIONS.SUBSCRIBERS).where('email', '==', newValueForEmail);
+    const querySnapshot = await usersQuery.get();
+    querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
+  });
+
+  test('[POST USER SUBSCRIBE] should return created subscriber', async () => {
+    const res = {
+      status: (code: number) => {
+        return {
+          send: (value: ResponseBody<ISubscriber>) => {
+            expect(value.data.email).toBe(newValueForEmail);
+          },
+          json: (value: any) => { }
+        }
+      }
+    };
+    await functions.user({
+      method: 'POST',
+      body: { email: newValueForEmail }
+    } as any,
+    res as any
+    );
+  });
+
+  // continue from here
+  test.skip('[POST USER SUBSCRIBE] should return an error if subscriber already exists', async () => {
+    const res = {
+      status: (code: number) => {
+        return {
+          send: (value: any) => { },
+          json: (value: any) => { }
+        }
+      }
+    };
+    await functions.user({
+      method: 'POST',
+      body: { email: newValueForEmail }
+    } as any,
+    res as any
+    );
+    const subscriberDocument = (await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).doc('USER_ID').get());
+    expect (subscriberDocument.data()?.email).toBe(newValueForEmail);
+  });
+
+  test.skip('[POST USER SUBSCRIBE] should save subscirber in DB', async () => {
+    const res = {
+      status: (code: number) => {
+        return {
+          send: (value: any) => { },
+          json: (value: any) => { }
+        }
+      }
+    };
+    await functions.user({
+      method: 'POST',
+      body: { email: newValueForEmail }
+    } as any,
+    res as any
+    );
+    const subscriberDocument = (await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).doc('USER_ID').get());
+    expect (subscriberDocument.data()?.email).toBe(newValueForEmail);
   });
 });
