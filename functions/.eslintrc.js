@@ -3,6 +3,7 @@ module.exports = {
   env: {
     es6: true,
     node: true,
+    jest: true
   },
   parser: "@typescript-eslint/parser",
   parserOptions: {
@@ -78,5 +79,5 @@ module.exports = {
     "require-yield": "error",
     "use-isnan": "error",
     "valid-typeof": "error"
-  },
+  }
 };
