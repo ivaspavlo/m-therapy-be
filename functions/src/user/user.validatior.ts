@@ -1,3 +1,4 @@
+import { QuerySnapshot } from 'firebase-admin/firestore';
 import { ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
 import { IValidationConfig } from '../shared/interfaces';
 import {
@@ -35,10 +36,12 @@ export const UserUpdateValidator = (data: IUpdateUser): string[] | null => {
   return null;
 }
 
-export const SubscriberValidator = (data: ISubscriber): string[] | null => {
-  const errors = validate(data, subscriberValidators);
-  if (errors.length) {
-    return [`${ERROR_MESSAGES.FIELDS_VALIDATION}: ${errors.join(',')}`];
+export const SubscriberValidator = (data: ISubscriber, queryByEmail: QuerySnapshot): string[] | null => {
+  if (!queryByEmail.empty) {
+    return [ERROR_MESSAGES.DUPLICATE];
   }
-  return null;
+  const errors = validate(data, subscriberValidators);
+  return errors.length
+    ? [`${ERROR_MESSAGES.FIELDS_VALIDATION}: ${errors.join(',')}`]
+    : null;
 }

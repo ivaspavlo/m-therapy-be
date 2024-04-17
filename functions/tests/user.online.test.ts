@@ -164,7 +164,8 @@ describe('user', () => {
 describe('subscriber', () => {
   const newValueForEmail = 'mockEmail@gmail.com';
 
-  afterAll(async () => {
+  // @ts-ignore
+  afterEach(async () => {
     // clear mocked subscriber
     const usersQuery = getFirestore().collection(COLLECTIONS.SUBSCRIBERS).where('email', '==', newValueForEmail);
     const querySnapshot = await usersQuery.get();
@@ -184,14 +185,40 @@ describe('subscriber', () => {
     };
     await functions.user({
       method: 'POST',
+      url: '/subscribe',
       body: { email: newValueForEmail }
     } as any,
     res as any
     );
   });
 
-  // continue from here
-  test.skip('[POST USER SUBSCRIBE] should return an error if subscriber already exists', async () => {
+  test('[POST USER SUBSCRIBE] should return an error if subscriber already exists', async () => {
+    const res_1 = {
+      status: (code: number) => ({ send: (value: any) => { }, json: (value: any) => { }})
+    };
+    const res_2 = {
+      status: (code: number) => {
+        expect(code).toBe(400);
+        return {send: (value: any) => { }, json: (value: any) => { }}
+      }
+    }
+    await functions.user({
+      method: 'POST',
+      url: '/subscribe',
+      body: { email: newValueForEmail }
+    } as any,
+    res_1 as any
+    );
+    await functions.user({
+      method: 'POST',
+      url: '/subscribe',
+      body: { email: newValueForEmail }
+    } as any,
+    res_2 as any
+    );
+  });
+
+  test('[POST USER SUBSCRIBE] should save subscirber in DB', async () => {
     const res = {
       status: (code: number) => {
         return {
@@ -202,30 +229,14 @@ describe('subscriber', () => {
     };
     await functions.user({
       method: 'POST',
+      url: '/subscribe',
       body: { email: newValueForEmail }
     } as any,
     res as any
     );
-    const subscriberDocument = (await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).doc('USER_ID').get());
-    expect (subscriberDocument.data()?.email).toBe(newValueForEmail);
-  });
-
-  test.skip('[POST USER SUBSCRIBE] should save subscirber in DB', async () => {
-    const res = {
-      status: (code: number) => {
-        return {
-          send: (value: any) => { },
-          json: (value: any) => { }
-        }
-      }
-    };
-    await functions.user({
-      method: 'POST',
-      body: { email: newValueForEmail }
-    } as any,
-    res as any
-    );
-    const subscriberDocument = (await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).doc('USER_ID').get());
-    expect (subscriberDocument.data()?.email).toBe(newValueForEmail);
+    const usersQuery = getFirestore().collection(COLLECTIONS.SUBSCRIBERS).where('email', '==', newValueForEmail);
+    const querySnapshot = await usersQuery.get();
+    const subscirber: ISubscriber = querySnapshot.docs.find((doc: DocumentData) => !!doc)?.data() as ISubscriber;
+    expect (subscirber?.email).toBe(newValueForEmail);
   });
 });

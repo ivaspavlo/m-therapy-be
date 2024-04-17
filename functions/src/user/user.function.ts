@@ -1,12 +1,12 @@
 import * as logger from 'firebase-functions/logger';
 import { onRequest } from 'firebase-functions/v2/https';
-import { DocumentReference, DocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
+import { DocumentReference, DocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
 import { Request, Response } from 'firebase-functions';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../shared/constants';
 import { ResponseBody, User } from '../shared/models';
 import { IUser } from '../shared/interfaces';
 import { extractJwt } from '../shared/utils';
-import { IUpdateUser } from './user.interface';
+import { ISubscriber, IUpdateUser } from './user.interface';
 import { SubscriberValidator, UserUpdateValidator } from './user.validatior';
 import { SubscriberMapper, UpdateUserMapper } from './user.mapper';
 
@@ -108,14 +108,23 @@ async function postUser(
   switch(req.url) {
   case('/subscribe'): {
     const reqBody: any = req.body;
+    let existingSubscriber: QuerySnapshot;
 
-    const validationErrors = SubscriberValidator(reqBody);
+    try {
+      existingSubscriber = await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).where('email', '==', reqBody?.email).get();
+    } catch(e: any) {
+      logger.error('[POST USER SUBSCRIBE] Querying DB by email failed', e);
+      res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+      return;
+    }
+
+    const validationErrors = SubscriberValidator(reqBody, existingSubscriber);
     if (validationErrors) {
       res.status(400).json(new ResponseBody(null, false, validationErrors));
       return;
     }
 
-    const subscriber = SubscriberMapper(reqBody);
+    const subscriber = SubscriberMapper(reqBody as ISubscriber);
 
     let subscriberReference: DocumentReference;
     try {
@@ -132,5 +141,4 @@ async function postUser(
     res.status(200).send(new ResponseBody(subscriber, true));
   }
   }
-
 }
