@@ -164,7 +164,6 @@ describe('user', () => {
 describe('subscriber', () => {
   const newValueForEmail = 'mockEmail@gmail.com';
 
-  // @ts-ignore
   afterEach(async () => {
     // clear mocked subscriber
     const usersQuery = getFirestore().collection(COLLECTIONS.SUBSCRIBERS).where('email', '==', newValueForEmail);
