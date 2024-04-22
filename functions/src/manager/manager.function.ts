@@ -77,7 +77,9 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
     
     let emails: string[] | undefined;
     try {
-      emails = (await getFirestore().collection(COLLECTIONS.USERS).get()).docs.map(d => d.data().email);
+      const emails_users = (await getFirestore().collection(COLLECTIONS.USERS).get()).docs.map(d => d.data().email);
+      const emails_subscribers = (await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).get()).docs.map(d => d.data().email);
+      emails = [...emails_users, ...emails_subscribers];
     } catch (e) {
       logger.error('[POST MANAGER EMAILS] Error while retrieving user emails');
       res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
