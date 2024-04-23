@@ -1,4 +1,18 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+import { IEmailTemplateConfig } from '../../interfaces';
+
+
+export const GetNodemailerTemplate = (config: IEmailTemplateConfig) => {
+  return {
+    from: 'Tkachuk Massage Therapy <tkachuk_massage_therapy@gmail.com>',
+    to: config.to,
+    subject: config.subject,
+    html: buildTemplate(config)
+  };
+}
+
+export const buildTemplate = (config: IEmailTemplateConfig): string => {
+  return `
+  <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
     <head>
       <!--[if gte mso 9]>
@@ -177,7 +191,7 @@
                     <table id="u_content_text_5" style="font-family:arial,helvetica,sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
                       <tbody>
                         <tr>
-                          <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:20px 80px;font-family:arial,helvetica,sans-serif;" align="left">
+                          <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px 80px;font-family:arial,helvetica,sans-serif;" align="left">
                             
                             <div style="font-size: 14px; line-height: 160%; text-align: center; word-wrap: break-word;">
                               <img style="width: 100%;" src="${ config.img || 'https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/ad-email-sample.png?alt=media&token=2b2393d0-5faa-4b54-b96e-2062c86c6648' }" alt="Advertisement image">
@@ -190,14 +204,33 @@
                         </tr>
                       </tbody>
                     </table>
-
+  
                     <table style="font-family:arial,helvetica,sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
                       <tbody>
                         <tr>
-                          <a
-                            style="border-top: 1px solid #BBBBBB; padding-top: 16px; display: block; color: #2dc26b; text-align:center; font-size: 12px; margin-bottom: 16px;"
-                            rel="noopener" href="${ config.url }" target="_blank"
-                          >${ config.lang === 'en' ? 'Unsubscribe' : 'Відписатись' }</a>
+                          <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:0px;font-family:arial,helvetica,sans-serif;" align="left">
+                            
+                            <table height="0px" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;border-top: 1px solid #BBBBBB;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%">
+                              <tbody>
+                                <tr style="vertical-align: top">
+                                  <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;font-size: 0px;line-height: 0px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%">
+                                    <span>&#160;</span>
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+  
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+  
+                    <table style="font-family:arial,helvetica,sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
+                      <tbody>
+                        <tr>
+                          <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px 0px 40px;font-family:arial,helvetica,sans-serif;" align="left">
+  
+                          </td>
                         </tr>
                       </tbody>
                     </table>
@@ -218,3 +251,5 @@
       <!--[if IE]></div><![endif]-->
     </body>
   </html>
+  `;
+}
