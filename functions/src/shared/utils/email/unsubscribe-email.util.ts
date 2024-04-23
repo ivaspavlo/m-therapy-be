@@ -1,4 +1,18 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+import { IEmailTemplateConfig } from '../../interfaces';
+
+
+export const GetNodemailerTemplate = (config: IEmailTemplateConfig) => {
+  return {
+    from: 'Tkachuk Massage Therapy <tkachuk_massage_therapy@gmail.com>',
+    to: config.to,
+    subject: config.subject,
+    html: buildTemplate(config)
+  };
+}
+
+export const buildTemplate = (config: IEmailTemplateConfig): string => {
+  return `
+  <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
     <head>
       <!--[if gte mso 9]>
@@ -180,8 +194,6 @@
                           <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:20px 80px;font-family:arial,helvetica,sans-serif;" align="left">
                             
                             <div style="font-size: 14px; line-height: 160%; text-align: center; word-wrap: break-word;">
-                              <img style="width: 100%;" src="${ config.img || 'https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/ad-email-sample.png?alt=media&token=2b2393d0-5faa-4b54-b96e-2062c86c6648' }" alt="Advertisement image">
-
                               <p style="font-size: 14px; line-height: 160%;">${ config.message }</p>
                               <p style="font-size: 14px; line-height: 160%;"><span style="color: #2dc26b; line-height: 25.6px; font-size: 16px;"><a rel="noopener" href="${ config.url }" target="_blank" style="color: #044e3b;">${ config.lang === 'en' ? 'Follow the link' : 'Перейти за посиланням' }</a></span></p>
                             </div>
@@ -218,3 +230,5 @@
       <!--[if IE]></div><![endif]-->
     </body>
   </html>
+  `;
+}

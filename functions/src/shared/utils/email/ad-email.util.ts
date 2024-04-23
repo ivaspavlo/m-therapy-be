@@ -1,4 +1,4 @@
-import { IEmailTemplateConfig } from '../interfaces';
+import { IEmailTemplateConfig } from '../../interfaces';
 
 
 export const GetNodemailerTemplate = (config: IEmailTemplateConfig) => {
