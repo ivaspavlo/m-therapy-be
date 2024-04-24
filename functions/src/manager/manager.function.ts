@@ -99,7 +99,9 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
         subject: reqBody.subject || currentTranslations.adEmailSubject,
         title: reqBody.title,
         message: reqBody.message,
-        url: reqBody.url
+        config: {
+          url: reqBody.url
+        }
       });
       return new Promise((resolve, reject) => {
         transporter.sendMail(mailOptions, (e: any) => {

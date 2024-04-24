@@ -89,7 +89,9 @@ export const RegisterFunction = onRequest(
       subject: currentTranslations.registerEmailSubject,
       title: currentTranslations.registerEmailTitle,
       message: currentTranslations.registerEmailMessage,
-      url: `${uiUrl.value()}/${FE_URLS.CONFIRM_REGISTER}/${confirmToken}`
+      config: {
+        url: `${uiUrl.value()}/${FE_URLS.CONFIRM_REGISTER}/${confirmToken}`
+      }
     });
 
     transporter.sendMail(mailOptions, (e: any) => {
