@@ -1,16 +1,16 @@
-import { IEmailTemplateConfig } from '../../interfaces';
+import { IAdEmail, IEmailTemplate } from '../../interfaces';
 
 
-export const GetNodemailerTemplate = (config: IEmailTemplateConfig) => {
+export const GetNodemailerTemplate = (templateData: IEmailTemplate<IAdEmail>) => {
   return {
     from: 'Tkachuk Massage Therapy <tkachuk_massage_therapy@gmail.com>',
-    to: config.to,
-    subject: config.subject,
-    html: buildTemplate(config)
+    to: templateData.to,
+    subject: templateData.subject,
+    html: buildTemplate(templateData)
   };
 }
 
-export const buildTemplate = (config: IEmailTemplateConfig): string => {
+export const buildTemplate = (templateData: IEmailTemplate<IAdEmail>): string => {
   return `
   <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
   <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -163,7 +163,7 @@ export const buildTemplate = (config: IEmailTemplateConfig): string => {
                         <tr>
                           <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:arial,helvetica,sans-serif;" align="left">
                             
-                            <h3 style="margin: 0px; color: #044e3b; line-height: 140%; text-align: center; word-wrap: break-word; font-family: inherit; font-size: 18px; font-weight: 700;">${ config.title }</h3>
+                            <h3 style="margin: 0px; color: #044e3b; line-height: 140%; text-align: center; word-wrap: break-word; font-family: inherit; font-size: 18px; font-weight: 700;">${ templateData.title }</h3>
   
                           </td>
                         </tr>
@@ -194,10 +194,10 @@ export const buildTemplate = (config: IEmailTemplateConfig): string => {
                           <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px 80px;font-family:arial,helvetica,sans-serif;" align="left">
                             
                             <div style="font-size: 14px; line-height: 160%; text-align: center; word-wrap: break-word;">
-                              <img style="width: 100%;" src="${ config.img || 'https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/ad-email-sample.png?alt=media&token=2b2393d0-5faa-4b54-b96e-2062c86c6648' }" alt="Advertisement image">
+                              <img style="width: 100%;" src="${ templateData.config.img || 'https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/ad-email-sample.png?alt=media&token=2b2393d0-5faa-4b54-b96e-2062c86c6648' }" alt="Advertisement image">
 
-                              <p style="font-size: 14px; line-height: 160%;">${ config.message }</p>
-                              <p style="font-size: 14px; line-height: 160%;"><span style="color: #2dc26b; line-height: 25.6px; font-size: 16px;"><a rel="noopener" href="${ config.url }" target="_blank" style="color: #044e3b;">${ config.lang === 'en' ? 'Follow the link' : 'Перейти за посиланням' }</a></span></p>
+                              <p style="font-size: 14px; line-height: 160%;">${ templateData.message }</p>
+                              <p style="font-size: 14px; line-height: 160%;"><span style="color: #2dc26b; line-height: 25.6px; font-size: 16px;"><a rel="noopener" href="${ templateData.config.url }" target="_blank" style="color: #044e3b;">${ templateData.lang === 'en' ? 'Follow the link' : 'Перейти за посиланням' }</a></span></p>
                             </div>
   
                           </td>
