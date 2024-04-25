@@ -5,7 +5,7 @@ import { Request, Response } from 'firebase-functions';
 import { defineString } from 'firebase-functions/params';
 import { ResponseBody } from '../../shared/models';
 import { ENV_KEYS, ERROR_MESSAGES, FE_URLS, TRANSLATIONS } from '../../shared/constants';
-import { GetNodemailerTemplate, generateJwt } from '../../shared/utils';
+import { GetRemindPasswordTemplate, generateJwt } from '../../shared/utils';
 import { IRemindReq } from './remind.interface';
 import { RemindValidator } from './remind.validator';
 
@@ -41,13 +41,15 @@ export const RemindFunction = onRequest(
       return;
     }
 
-    const mailOptions = GetNodemailerTemplate({
+    const mailOptions = GetRemindPasswordTemplate({
       lang: remindReq.lang,
       to: remindReq.email,
       subject: currentTranslations.remindEmailSubject,
       title: currentTranslations.remindEmailTitle,
       message: currentTranslations.remindEmailMessage,
-      url: `${uiUrl.value()}/${FE_URLS.RESET_PASSWORD}/${resetToken}`
+      config: {
+        url: `${uiUrl.value()}/${FE_URLS.RESET_PASSWORD}/${resetToken}`
+      }
     });
 
     transporter.sendMail(mailOptions, (e: any) => {

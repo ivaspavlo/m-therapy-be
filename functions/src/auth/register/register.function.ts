@@ -5,7 +5,7 @@ import { Request, Response } from 'firebase-functions';
 import { DocumentReference, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
 import { defineString } from 'firebase-functions/params';
 import { ResponseBody } from '../../shared/models';
-import { GetNodemailerTemplate, generateJwt } from '../../shared/utils';
+import { GetRegisterTemplate, generateJwt } from '../../shared/utils';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES, FE_URLS, TRANSLATIONS } from '../../shared/constants';
 import { RegisterValidator } from './register.validator';
 import { IRegisterReq } from './register.interface';
@@ -83,7 +83,7 @@ export const RegisterFunction = onRequest(
       return;
     }
 
-    const mailOptions = GetNodemailerTemplate({
+    const mailOptions = GetRegisterTemplate({
       lang: userData.lang,
       to: userData.email,
       subject: currentTranslations.registerEmailSubject,

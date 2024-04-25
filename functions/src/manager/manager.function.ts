@@ -5,7 +5,7 @@ import { DocumentData, getFirestore } from 'firebase-admin/firestore';
 import { Request, Response } from 'firebase-functions';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
-import { GetNodemailerTemplate, extractJwt } from '../shared/utils';
+import { extractJwt, GetAdTemplate } from '../shared/utils';
 import { IUser } from '../shared/interfaces';
 import { ManagerValidator } from './manager.validator';
 import { IAdEmailsReq } from './manager.interface';
@@ -93,14 +93,15 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
     logger.info('[POST MANAGER EMAILS] Retrieved emails list');
 
     const transporterArr = emails!.map(email => {
-      const mailOptions = GetNodemailerTemplate({
+      const mailOptions = GetAdTemplate({
         lang: reqBody.lang,
         to: email,
         subject: reqBody.subject || currentTranslations.adEmailSubject,
         title: reqBody.title,
         message: reqBody.message,
         config: {
-          url: reqBody.url
+          url: reqBody.url,
+          img: ''
         }
       });
       return new Promise((resolve, reject) => {

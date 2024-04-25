@@ -5,8 +5,6 @@ export interface IEmailTemplate<T> {
   title: string,
   message: string,
   config: T
-  // url: string,
-  // img?: string
 }
 
 export interface IAdEmail {
@@ -18,6 +16,6 @@ export interface IRemindPasswordEmail {
   url: string
 }
 
-export interface IUnsubscribeEmail {
-
+export interface IRegisterEmail {
+  url: string
 }
