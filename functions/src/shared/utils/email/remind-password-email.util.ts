@@ -1,7 +1,7 @@
 import { IEmailTemplate, IRemindPasswordEmail } from '../../interfaces';
 
 
-export const GetNodemailerTemplate = (templateData: IEmailTemplate<IRemindPasswordEmail>) => {
+export const GetRemindPasswordTemplate = (templateData: IEmailTemplate<IRemindPasswordEmail>) => {
   return {
     from: 'Tkachuk Massage Therapy <tkachuk_massage_therapy@gmail.com>',
     to: templateData.to,
