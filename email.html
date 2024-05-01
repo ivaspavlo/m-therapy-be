@@ -15,6 +15,7 @@
     <!--[if !mso]><!--><meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"><!--<![endif]-->
 
     <style type="text/css">
+      /* Normalize */
       * {
         line-height: inherit;
       }
@@ -26,25 +27,81 @@
         margin: 0;
         padding: 0;
       }
-      table, tr, td {
-        vertical-align: top;
+      table, tbody, tr, td {
         border-collapse: collapse;
       }
       p {
         margin: 0;
+        padding: 0;
+      }
+      /* Classes */
+      @media only screen and (min-width: 620px) {
+        .u-table {
+          vertical-align: top;
+          text-align: center;
+        }
+        .u-tbody {
+          width: 100%;
+          max-width: 600px;
+          display: inline-block;
+        }
       }
       .ie-container table,
       .mso-container table {
         table-layout: fixed;
       }
+      .u-body {
+        width: 100%;
+        height: 100%;
+        background-color: #ecf0f1;
+      }
+      .u-table {
+        min-width: 320px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 10px;
+        display: inline-block;
+        border-spacing: 0;
+        border-collapse: collapse;
+        table-layout: fixed;
+        vertical-align: top;
+        background-color: #ffffff;
+        mso-table-lspace: 0pt;
+        mso-table-rspace: 0pt;
+      }
+      .u-tbody {
+        
+      }
+      .u-trow {
+        width: 100%;
+      }
+      .u-td {
+        text-align: center;
+      }
+      .u-logo {
+        outline: none;
+        text-decoration: none;
+        -ms-interpolation-mode: bicubic;
+        clear: both;
+        display: inline-block;
+        border: none;
+        height: auto;
+        float: none;
+      }
     </style>
   </head>
-  <body>
-    <table id="u-table" style="border-collapse:collapse; table-layout:fixed; border-spacing:0; mso-table-lspace:0pt; mso-table-rspace:0pt; vertical-align:top; min-width:320px; margin:0auto; background-color:#ecf0f1; width:100%" cellpadding="0" cellspacing="0">
-      <tbody>
-        <tr style="vertical-align:top">
-          <td>test</td>
+  <body class="u-body">
+    <table id="u-table" class="u-table" cellpadding="0" cellspacing="0">
+      <tbody class="u-tbody">
+
+        <tr class="u-trow">
+          <td class="u-td">
+            <a href="localhost://4200" class="u-logo">
+              <img src="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/mt-logo.png?alt=media&token=995a3cbe-4467-4321-bd40-9d1ea40f0197" alt="Logo" title="Logo" style="width: 100%;"/>
+            </a>
+          </td>
         </tr>
+
       </tbody>
     </table>
   </body>
