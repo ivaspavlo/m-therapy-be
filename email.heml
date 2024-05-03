@@ -1,0 +1,79 @@
+<heml>
+  <head>
+    <subject>Email is awesome</subject>
+    <preview>Learn about all the cool things you can do with email today!</preview>
+    <style>
+      body {
+        background: #EEE;
+      }
+      container {
+        background: white;
+        max-width: 700px;
+        margin: 10px auto;
+        padding: 10px 20px;
+        border: 1px solid #D2D2D2;
+      }
+      hr {
+        border-color: #DDD;
+      }
+      button {
+        background: #333;
+        padding: 10px 20px;
+        margin: 10px 0;
+      }
+      column {
+        padding: 0 10px;
+      }
+      .logo {
+        width: 175px;
+      }
+      .email-title {
+        color: #044e3b;
+        text-align: center;
+      }
+      .email-message {
+        color: #044e3b;
+      }
+      .main-link {
+        display: inline-block;
+        color: #8AC343;
+        margin-bottom: 24px;
+      }
+      .email-footer {
+        margin: 0;
+        padding: 16px 8px;
+        background-color: #F3F4F6;
+        border-radius: 4px;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <container>
+      <row>
+        <column>
+          <a href="localhost://4200" target="_blank">
+            <img class="logo" src="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/mt-logo.png?alt=media&token=995a3cbe-4467-4321-bd40-9d1ea40f0197" alt="Logo" title="Logo" />
+          </a>
+          <h2 id="email-title" class="email-title">${ config.title }</h2>
+        </column>
+      </row>
+      <hr>
+      <row>
+        <column>
+          <img class="email-graphics" src="" />
+          <p class="email-message">${ config.message }</p>
+          <a class="main-link">${ config.lang === 'en' ? 'Follow the link' : 'Перейти за посиланням' }</a>
+        </column>
+      </row>
+      <hr>
+      <row>
+        <column>
+          <p class="email-footer">${ config.lang === 'en' ? 'Follow the link' : 'Перейти за посиланням' }</p>
+        </column>
+      </row>
+    </container>
+  </body>
+</heml>
+
+https://www.google.com/search?sca_esv=660e9a545b1c85ab&sca_upv=1&sxsrf=ACQVn0986tNKhjC1lYBdXtj66akyqmM36w:1714740286047&q=png+massage+graphics&uds=AMwkrPuKiz3kd7jHuta4ar-HNLVtsADlfreAPxgfu3QOmFwSgf1q-vh4fMBqh9WJ6SAcp9asg0of6Rn9eU49VRDGMRhJXi_LWygN7Y9Z0M1bTLXk73Zoy0tWKkKV6lzMMnkNLHd8O_Gl07cLduq5UiX1ZT7i03xUg2skFLd-rOMvdN5eI8H41mtD7iWHAF5bPFwhrAVqGvLF_Q5rPE9eNPqxVvqBnZMT5W5GmhRlalYgXjIAV-TOqrpTRSudnSW7eC9Jg-cRbUQ_JXXWRxwKSxM_gbaCAFchanOuEYZmxQUa0KIiLcR4m0w&udm=2&prmd=ivbnz&sa=X&ved=2ahUKEwjG1YatwfGFAxXcQ_EDHZ7sB90QtKgLegQIDBAB&biw=1440&bih=709&dpr=2#vhid=HFdvew7qn2LjpM&vssid=mosaic
