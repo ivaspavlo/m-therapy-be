@@ -12,210 +12,150 @@ export const GetRegisterTemplate = (templateData: IEmailTemplate<IRegisterEmail>
 
 const buildTemplate = (templateData: IEmailTemplate<IRegisterEmail>): string => {
   return `
-  <!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-  <html xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+  <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional //EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd" />
+  <html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+    <head> </head>
     <head>
-      <!--[if gte mso 9]>
-      <xml>
-        <o:OfficeDocumentSettings>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta name="x-apple-disable-message-reformatting" /><!--[if !mso]><!-->
+      <meta http-equiv="X-UA-Compatible" content="IE=edge" /><!--<![endif]-->
+      <style type="text/css">
+        * {
+          text-size-adjust: 100%;
+          -ms-text-size-adjust: 100%;
+          -moz-text-size-adjust: 100%;
+          -webkit-text-size-adjust: 100%;
+        }
+  
+        html {
+          height: 100%;
+          width: 100%;
+        }
+  
+        body {
+          height: 100% !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          width: 100% !important;
+          mso-line-height-rule: exactly;
+        }
+  
+        div[style*="margin: 16px 0"] {
+          margin: 0 !important;
+        }
+  
+        table,
+        td {
+          mso-table-lspace: 0pt;
+          mso-table-rspace: 0pt;
+        }
+  
+        img {
+          border: 0;
+          height: auto;
+          line-height: 100%;
+          outline: none;
+          text-decoration: none;
+          -ms-interpolation-mode: bicubic;
+        }
+  
+        .ReadMsgBody,
+        .ExternalClass {
+          width: 100%;
+        }
+  
+        .ExternalClass,
+        .ExternalClass p,
+        .ExternalClass span,
+        .ExternalClass td,
+        .ExternalClass div {
+          line-height: 100%;
+        }
+      </style><!--[if gte mso 9]>
+        <style type="text/css">
+        li { text-indent: -1em; }
+        table td { border-collapse: collapse; }
+        </style>
+        <![endif]-->
+      <!-- content -->
+      <!--[if gte mso 9]><xml>
+         <o:OfficeDocumentSettings>
           <o:AllowPNG/>
           <o:PixelsPerInch>96</o:PixelsPerInch>
-        </o:OfficeDocumentSettings>
-      </xml>
-      <![endif]-->
-      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <meta name="x-apple-disable-message-reformatting">
-      <!--[if !mso]><!--><meta http-equiv="X-UA-Compatible" content="IE=edge"><!--<![endif]-->
-      <title></title>
-  
-      <style type="text/css">
-        @media only screen and (min-width: 620px) {
-          .u-row {
-            width: 600px !important;
-          }
-          .u-row .u-col {
-            vertical-align: top;
-          }
-          .u-row .u-col-100 {
-            width: 600px !important;
-          }
-        }
-        @media (max-width: 620px) {
-        .u-row-container {
-          max-width: 100% !important;
-          padding-left: 0px !important;
-          padding-right: 0px !important;
-        }
-        .u-row .u-col {
-          min-width: 320px !important;
-          max-width: 100% !important;
-          display: block !important;
-        }
-        .u-row {
-          width: 100% !important;
-        }
-        .u-col {
-          width: 100% !important;
-        }
-        .u-col > div {
-          margin: 0 auto;
-        }
-        }
-        body {
-          margin: 0;
-          padding: 0;
-        }
-        table,
-        tr,
-        td {
-          vertical-align: top;
-          border-collapse: collapse;
-        }
-        p {
-          margin: 0;
-        }
-        .ie-container table,
-        .mso-container table {
-          table-layout: fixed;
-        }
-        * {
-          line-height: inherit;
-        }
-        a[x-apple-data-detectors='true'] {
-          color: inherit !important;
-          text-decoration: none !important;
-        }
-        table, td { color: #000000; } #u_body a { color: #0000ee; text-decoration: underline; } @media (max-width: 480px) { #u_content_text_5 .v-container-padding-padding { padding: 40px 10px 10px !important; } }
-      </style>
+         </o:OfficeDocumentSettings>
+        </xml><![endif]-->
     </head>
-  
-    <body class="clean-body u_body" style="margin: 0;padding: 0;-webkit-text-size-adjust: 100%;background-color: #ecf0f1;color: #000000">
-      <!--[if IE]><div class="ie-container"><![endif]-->
-      <!--[if mso]><div class="mso-container"><![endif]-->
-      <table id="u_body" style="border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;min-width: 320px;Margin: 0 auto;background-color: #ecf0f1;width:100%" cellpadding="0" cellspacing="0">
-      <tbody>
-        <tr style="vertical-align: top">
-          <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top">
-          <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td align="center" style="background-color: #ecf0f1;"><![endif]-->
-            <div class="u-row-container" style="padding: 0px;background-color: #ffffff">
-              <div class="u-row" style="margin: 0 auto;min-width: 320px;max-width: 600px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;">
-                <div style="border-collapse: collapse;display: table;width: 100%;height: 100%;background-color: transparent;">
-                  <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding: 0px;background-color: #ffffff;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:600px;"><tr style="background-color: transparent;"><![endif]-->
-                  <!--[if (mso)|(IE)]><td align="center" width="600" style="background-color: #ffffff;width: 600px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;" valign="top"><![endif]-->
-                  <div class="u-col u-col-100" style="max-width: 320px;min-width: 600px;display: table-cell;vertical-align: top;">
-                    <div style="background-color: #ffffff;height: 100%;width: 100% !important;">
-                      <!--[if (!mso)&(!IE)]><!-->
-                      <div style="box-sizing: border-box; height: 100%; padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;"><!--<![endif]-->
-                      <table style="font-family:arial,helvetica,sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
-                        <tbody>
-                          <tr>
-                            <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:40px 0px 20px;font-family:arial,helvetica,sans-serif;" align="left">
-                              <table width="100%" cellpadding="0" cellspacing="0" border="0">
-                                <tr>
-                                  <td style="padding-right: 0px;padding-left: 0px;" align="center">
-                                    <img align="center" border="0" src="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/mt-logo.png?alt=media&token=995a3cbe-4467-4321-bd40-9d1ea40f0197" alt="Company&#039;s logo" title="Company&#039;s logo" style="outline: none;text-decoration: none;-ms-interpolation-mode: bicubic;clear: both;display: inline-block !important;border: none;height: auto;float: none;width: 31%;max-width: 186px;" width="186"/>
-                                  </td>
-                                </tr>
-                              </table>
-                            </td>
-                          </tr>
-                        </tbody>
-                      </table>
-                      <!--[if (!mso)&(!IE)]><!--></div><!--<![endif]-->
-                    </div>
-                  </div>
-                  <!--[if (mso)|(IE)]></td><![endif]-->
-                  <!--[if (mso)|(IE)]></tr></table></td></tr></table><![endif]-->
-                </div>
-              </div>
-            </div>
-  
-            <div class="u-row-container" style="padding: 0px;background-color: #ffffff">
-              <div class="u-row" style="margin: 0 auto;min-width: 320px;max-width: 600px;overflow-wrap: break-word;word-wrap: break-word;word-break: break-word;background-color: transparent;">
-                <div style="border-collapse: collapse;display: table;width: 100%;height: 100%;background-color: transparent;">
-                  <!--[if (mso)|(IE)]><table width="100%" cellpadding="0" cellspacing="0" border="0"><tr><td style="padding: 0px;background-color: #ffffff;" align="center"><table cellpadding="0" cellspacing="0" border="0" style="width:600px;"><tr style="background-color: transparent;"><![endif]-->
-                  <!--[if (mso)|(IE)]><td align="center" width="600" style="background-color: #ffffff;width: 600px;padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;" valign="top"><![endif]-->
-                  <div class="u-col u-col-100" style="max-width: 320px;min-width: 600px;display: table-cell;vertical-align: top;">
-                    <div style="background-color: #ffffff;height: 100%;width: 100% !important;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;">
-                    <!--[if (!mso)&(!IE)]><!--><div style="box-sizing: border-box; height: 100%; padding: 0px;border-top: 0px solid transparent;border-left: 0px solid transparent;border-right: 0px solid transparent;border-bottom: 0px solid transparent;border-radius: 0px;-webkit-border-radius: 0px; -moz-border-radius: 0px;"><!--<![endif]-->
-                    
-                    <table style="font-family:arial,helvetica,sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
-                      <tbody>
-                        <tr>
-                          <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:0px;font-family:arial,helvetica,sans-serif;" align="left">
-                            <table height="0px" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;border-top: 1px solid #BBBBBB;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%">
-                              <tbody>
-                                <tr style="vertical-align: top">
-                                  <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;font-size: 0px;line-height: 0px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%">
-                                    <span>&#160;</span>
-                                  </td>
-                                </tr>
-                              </tbody>
+    <body class="body" style="background-color: #EEEEEE; margin: 0; width: 100%;">
+      <table class="bodyTable" role="presentation" width="100%" align="left" border="0" cellpadding="0" cellspacing="0" style="width: 100%; background-color: #EEEEEE; margin: 0;" bgcolor="#EEEEEE">
+        <tr>
+          <td class="body__content" align="left" width="100%" valign="top" style="color: #000000; font-family: Helvetica,Arial,sans-serif; font-size: 16px; line-height: 20px;">
+            <div class="container" style="width: 100%; margin: 10px auto; max-width: 700px;"> <!--[if mso | IE]> <table class="container__table__ie" role="presentation" border="0" cellpadding="0" cellspacing="0" style=" margin-right: auto; margin-left: auto;width: 700px" width="700" align="center">
+                <tr>
+                  <td> <![endif]--> <table class="container__table" role="presentation" border="0" align="center" cellpadding="0" cellspacing="0" width="100%">
+                      <tr class="container__row">
+                        <td class="container__cell" width="100%" align="left" valign="top" style="background-color: #FFFFFF; border: 1px solid #D2D2D2; padding: 10px 20px;" bgcolor="#FFFFFF">
+                          <div class="row">
+                            <table class="row__table" width="100%" align="center" role="presentation" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
+                              <tr class="row__row">
+                                <td class="column col-sm-12" width="700" style="padding: 0 10px;width: 100%" align="left" valign="top">
+                                  <figure class="logo-figure" href="localhost://4200" target="_blank" style="display: inline-block; width: 100%;">
+                                    <img class="logo-img img__block" src="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/mt-logo.png?alt=media&token=995a3cbe-4467-4321-bd40-9d1ea40f0197" alt="Logo" title="Logo" border="0" style="max-width: 100%; width: 175px; display: inline;" width="175" />
+                                  </figure>
+                                  <h2 id="email-title" class="email-title header h2" style="margin: 20px 0; line-height: 30px; font-family: Helvetica,Arial,sans-serif; text-align: center; color: #044E3B;">${ templateData.title }</h2>
+                                </td>
+                              </tr>
                             </table>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-  
-                    <table style="font-family:arial,helvetica,sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
-                      <tbody>
-                        <tr>
-                          <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:10px;font-family:arial,helvetica,sans-serif;" align="left">
-                            
-                            <h3 style="margin: 0px; color: #044e3b; line-height: 140%; text-align: center; word-wrap: break-word; font-family: inherit; font-size: 18px; font-weight: 700;">${ templateData.title }</h3>
-  
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-  
-                    <table style="font-family:arial,helvetica,sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
-                      <tbody>
-                        <tr>
-                          <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:0px;font-family:arial,helvetica,sans-serif;" align="left">
-                            <table height="0px" align="center" border="0" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;table-layout: fixed;border-spacing: 0;mso-table-lspace: 0pt;mso-table-rspace: 0pt;vertical-align: top;border-top: 1px solid #BBBBBB;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%">
-                              <tbody>
-                                <tr style="vertical-align: top">
-                                  <td style="word-break: break-word;border-collapse: collapse !important;vertical-align: top;font-size: 0px;line-height: 0px;mso-line-height-rule: exactly;-ms-text-size-adjust: 100%;-webkit-text-size-adjust: 100%">
-                                    <span>&#160;</span>
-                                  </td>
-                                </tr>
-                              </tbody>
+                          </div>
+                          <div class="hr" style="margin: 0 auto; width: 100%;"> <!--[if mso | IE]> <table class="hr__table__ie" role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin-right: auto; margin-left: auto; width: 100%;" width="100%" align="center">
+                              <tr>
+                                <td> <![endif]--> <table class="hr__table" role="presentation" border="0" align="center" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;">
+                                    <tr class="hr__row">
+                                      <td class="hr__cell" width="100%" align="left" valign="top" style="border-top: 1px solid #9A9A9A; border-color: #DDDDDD;">&nbsp;</td>
+                                    </tr>
+                                  </table> <!--[if mso | IE]> </td>
+                              </tr>
+                            </table> <![endif]--> </div>
+                          <div class="row">
+                            <table class="row__table" width="100%" align="center" role="presentation" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
+                              <tr class="row__row">
+                                <td class="column col-sm-12" width="700" style="padding: 0 10px;width: 100%" align="left" valign="top">
+                                  <figure class="email-graphics-figure" style="display: inline-block; margin: 0; text-align: center; width: 100%;">
+                                    <img class="email-graphics-img img__block" src="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/promo-graphics-2.jpg?alt=media&token=fc3062e3-df85-4529-b266-1b9b561cc4e4" border="0" alt="" style="max-width: 100%; width: 35%; display: inline-block;" />
+                                  </figure>
+                                  <p class="email-message text p" style="display: block; margin: 14px 0; font-family: Helvetica,Arial,sans-serif; font-size: 16px; line-height: 20px; color: #044E3B;">${ templateData.message }</p>
+                                  <a class="main-link a" href="${ templateData.config.url }" style="margin-bottom: 24px; color: #8AC343; display: inline-block;"><span class="a__text" style="color: #8AC343;">${ templateData.lang === 'en' ? 'Follow the link' : 'Перейти за посиланням' }</span></a>
+                                </td>
+                              </tr>
                             </table>
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-  
-                    <table id="u_content_text_5" style="font-family:arial,helvetica,sans-serif;" role="presentation" cellpadding="0" cellspacing="0" width="100%" border="0">
-                      <tbody>
-                        <tr>
-                          <td class="v-container-padding-padding" style="overflow-wrap:break-word;word-break:break-word;padding:20px 80px;font-family:arial,helvetica,sans-serif;" align="left">
-                            
-                            <div style="font-size: 14px; line-height: 160%; text-align: center; word-wrap: break-word;">
-                              <p style="font-size: 14px; line-height: 160%;">${ templateData.message }</p>
-                            </div>
-  
-                          </td>
-                        </tr>
-                      </tbody>
-                    </table>
-                    <!--[if (!mso)&(!IE)]><!--></div><!--<![endif]-->
-                    </div>
-                  </div>
-                  <!--[if (mso)|(IE)]></td><![endif]-->
-                  <!--[if (mso)|(IE)]></tr></table></td></tr></table><![endif]-->
-                </div>
-              </div>
-            </div>
-            <!--[if (mso)|(IE)]></td></tr></table><![endif]-->
+                          </div>
+                          <div class="hr" style="margin: 0 auto; width: 100%;"> <!--[if mso | IE]> <table class="hr__table__ie" role="presentation" border="0" cellpadding="0" cellspacing="0" style="margin-right: auto; margin-left: auto; width: 100%;" width="100%" align="center">
+                              <tr>
+                                <td> <![endif]--> <table class="hr__table" role="presentation" border="0" align="center" cellpadding="0" cellspacing="0" width="100%" style="table-layout: fixed;">
+                                    <tr class="hr__row">
+                                      <td class="hr__cell" width="100%" align="left" valign="top" style="border-top: 1px solid #9A9A9A; border-color: #DDDDDD;">&nbsp;</td>
+                                    </tr>
+                                  </table> <!--[if mso | IE]> </td>
+                              </tr>
+                            </table> <![endif]--> </div>
+                          <div class="row">
+                            <table class="row__table" width="100%" align="center" role="presentation" border="0" cellpadding="0" cellspacing="0" style="table-layout: fixed;">
+                              <tr class="row__row">
+                                <td class="column col-sm-12" width="700" style="padding: 0 10px;width: 100%" align="left" valign="top">
+                                  <p class="email-footer text p" style="display: block; font-family: Helvetica,Arial,sans-serif; line-height: 20px; padding: 16px 8px; background-color: #F3F4F6; border-radius: 4px; color: #044E3B; font-size: 12px; margin: 0;">&copy; Tkachuk Massage Therapy</p>
+                                </td>
+                              </tr>
+                            </table>
+                          </div>
+                        </td>
+                      </tr>
+                    </table> <!--[if mso | IE]> </td>
+                </tr>
+              </table> <![endif]--> </div>
           </td>
         </tr>
-      </tbody>
       </table>
-      <!--[if mso]></div><![endif]-->
-      <!--[if IE]></div><![endif]-->
+      <div style="display:none; white-space:nowrap; font-size:15px; line-height:0;">&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; </div>
     </body>
   </html>
   `;

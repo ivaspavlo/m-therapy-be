@@ -55,7 +55,7 @@ export enum CONTACT_TYPE {
 export const TRANSLATIONS = {
   en: {
     registerEmailSubject: 'Email confirmation for Tkachuk Massage Therapy',
-    registerEmailTitle: 'Confirm email',
+    registerEmailTitle: 'Confirmation email',
     registerEmailMessage: 'Please follow the link below in order to confirm your email:',
     remindEmailSubject: 'Reset of password for Tkachuk Massage Therapy',
     remindEmailTitle: 'Password reset',

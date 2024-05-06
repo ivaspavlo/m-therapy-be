@@ -50,15 +50,39 @@
         font-size: 12px;
         color: #044e3b;
       }
-      .email-graphics-figure {
+      .email-ad-figure {
         width: 100%;
         margin: 0;
+        margin-bottom: 16px;
         display: inline-block;
         text-align: center;
+        position: relative;
       }
-      .email-graphics-img {
-        width: 35%;
+      .email-ad-figcaption {
+        position: absolute;
+        bottom: 44px;
+        width: 100%;
+        border-radius: 6px;
+      }
+      .email-ad-img {
+        width: 100%;
         display: inline-block;
+      }
+      .email-ad-link {
+        width: 35%;
+        padding: 8px 16px;
+        display: inline-block;
+        background: linear-gradient(4.01deg, #059669 3.04%, #36DCA5 96.51%);
+        color: #fff;
+        border-radius: 4px;
+        box-shadow: 0px 2px 5px 0px #808080;
+      }
+      .email-links {
+        margin-bottom: 16px;
+      }
+      .email-unsubscribe {
+        font-size: 12px;
+        color: #98CB5B;
       }
     </style>
   </head>
@@ -72,17 +96,40 @@
           <h2 id="email-title" class="email-title">${ templateData.title }</h2>
         </column>
       </row>
+
       <hr>
+
       <row>
         <column>
-          <figure class="email-graphics-figure">
-            <img class="email-graphics-img" src="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/promo-graphics-5.png?alt=media&token=9ce4367e-efd0-471d-8479-6031ad45d58c" />
-          </figure>
           <p class="email-message">${ templateData.message }</p>
-          <a class="main-link" href="${ templateData.config.url }">${ templateData.lang === 'en' ? 'Follow the link' : 'Перейти за посиланням' }</a>
+
+          <figure class="email-ad-figure">
+            <img class="email-ad-image" src="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/promo-graphics-5.png?alt=media&token=9ce4367e-efd0-471d-8479-6031ad45d58c" />
+            <figcaption class="email-ad-figcaption">
+              <a href="${ templateData.config.url }" class="email-ad-link">
+                ${ templateData.lang === 'en' ? 'Follow the link' : 'Перейти за посиланням' }
+              </a>
+            </figcaption>
+          </figure>
         </column>
       </row>
+
       <hr>
+
+      <row>
+        <column>
+          <div class="email-links">
+            <a class="email-unsubscribe" href="#">
+              ${ templateData.lang === 'en' ? 'Cancel subscription' : 'Відмінити підписку' }
+            </a>
+            <div class="email-social">
+              <a class="email-social-icon" href="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/telegram.svg?alt=media&token=e19826e8-8bb1-4cf5-b4b3-a9e299f6d603"></a>
+              <a class="email-social-icon" href="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/viber.svg?alt=media&token=3482860b-5494-49ac-8a20-d3dd6e3d060d"></a>
+            </div>
+          </div>
+        </column>
+      </row>
+
       <row>
         <column>
           <p class="email-footer">&copy; Tkachuk Massage Therapy</p>
