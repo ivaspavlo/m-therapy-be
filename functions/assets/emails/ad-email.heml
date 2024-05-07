@@ -23,8 +23,9 @@
         padding: 0 10px;
       }
       .logo-figure {
-        display: inline-block;
         width: 100%;
+        margin: 0;
+        display: inline-block;
       }
       .logo-img {
         display: inline;
@@ -82,7 +83,16 @@
       }
       .email-unsubscribe {
         font-size: 12px;
-        color: #98CB5B;
+        color: #0db981;
+      }
+      .email-social {
+        margin-top: 8px;
+      }
+      .email-social-icon {
+        width: 30px;
+        height: 30px;
+        border-radius: 4px;
+        display: inline-block;
       }
     </style>
   </head>
@@ -104,7 +114,7 @@
           <p class="email-message">${ templateData.message }</p>
 
           <figure class="email-ad-figure">
-            <img class="email-ad-image" src="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/promo-graphics-5.png?alt=media&token=9ce4367e-efd0-471d-8479-6031ad45d58c" />
+            <img class="email-ad-image" src="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/promo-graphics-5.jpg?alt=media&token=941e1229-ccc4-4abd-a62a-84f0bb33db34" />
             <figcaption class="email-ad-figcaption">
               <a href="${ templateData.config.url }" class="email-ad-link">
                 ${ templateData.lang === 'en' ? 'Follow the link' : 'Перейти за посиланням' }
@@ -123,8 +133,12 @@
               ${ templateData.lang === 'en' ? 'Cancel subscription' : 'Відмінити підписку' }
             </a>
             <div class="email-social">
-              <a class="email-social-icon" href="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/telegram.svg?alt=media&token=e19826e8-8bb1-4cf5-b4b3-a9e299f6d603"></a>
-              <a class="email-social-icon" href="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/viber.svg?alt=media&token=3482860b-5494-49ac-8a20-d3dd6e3d060d"></a>
+              <a class="email-social-icon" href="#">
+                <img src="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/telegram.svg?alt=media&token=e19826e8-8bb1-4cf5-b4b3-a9e299f6d603" />
+              </a>
+              <a class="email-social-icon" href="#">
+                <img src="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/viber.svg?alt=media&token=3482860b-5494-49ac-8a20-d3dd6e3d060d" />
+              </a>
             </div>
           </div>
         </column>
