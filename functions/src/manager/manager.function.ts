@@ -75,27 +75,27 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
       }
     });
     
-    let emails: string[] | undefined;
+    let allSubscribers: {id: string, email: string}[] = [];
     try {
-      const emails_users = (await getFirestore().collection(COLLECTIONS.USERS).get()).docs.map(d => d.data().email);
-      const emails_subscribers = (await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).get()).docs.map(d => d.data().email);
-      emails = [...emails_users, ...emails_subscribers];
+      const emails_users = (await getFirestore().collection(COLLECTIONS.USERS).get()).docs.map(d => ({ id: d.id, email: d.data().email }));
+      const emails_subscribers = (await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).get()).docs.map(d => ({ id: d.id, email: d.data().email }));
+      allSubscribers = [...emails_users, ...emails_subscribers];
     } catch (e) {
       logger.error('[POST MANAGER EMAILS] Error while retrieving user emails');
       res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
     }
 
-    if (!Array.isArray(emails) || !emails.length) {
+    if (!Array.isArray(allSubscribers) || !allSubscribers.length) {
       res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       logger.error('[POST MANAGER EMAILS] No user emails found');
     }
 
     logger.info('[POST MANAGER EMAILS] Retrieved emails list');
 
-    const transporterArr = emails!.map(email => {
+    const transporterArr = allSubscribers!.map(subscriber => {
       const mailOptions = GetAdTemplate({
         lang: reqBody.lang,
-        to: email,
+        to: subscriber.email,
         subject: reqBody.subject || currentTranslations.adEmailSubject,
         title: reqBody.title,
         message: reqBody.message,
@@ -107,11 +107,11 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
       return new Promise((resolve, reject) => {
         transporter.sendMail(mailOptions, (e: any) => {
           if (e) {
-            logger.error(`[POST MANAGER EMAILS] Ad email failed to send to: ${email}. Error: ${e}`);
-            resolve(email);
+            logger.error(`[POST MANAGER EMAILS] Ad email failed to send to: ${subscriber.email}. Error: ${e}`);
+            resolve(subscriber.email);
           }
           resolve(null);
-          logger.info(`[POST MANAGER EMAILS] Ad email was sent to: ${email}`);
+          logger.info(`[POST MANAGER EMAILS] Ad email was sent to: ${subscriber.email}`);
         });
       });
     });
