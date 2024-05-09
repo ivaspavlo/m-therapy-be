@@ -56,7 +56,9 @@ export function emailValidator(value: string): boolean {
 export function langFieldValidator(
   translations: {[key:string]: any}
 ): (value: string) => boolean {
-  return (value: string) => translations[value];
+  return (value: string) => {
+    return typeof value === 'string' && translations[value?.toLowerCase()]
+  };
 }
 
 export function stringValidator(value: any): boolean {
