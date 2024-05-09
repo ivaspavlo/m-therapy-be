@@ -1,6 +1,7 @@
 import * as jwt from 'jsonwebtoken';
 
-export function parseJwt(rawJwt: string): { [key:string]: string } | null {
+export function parseJwt(authData: string): { [key:string]: string } | null {
+  const rawJwt = stripBearer(authData);
   if (!rawJwt || typeof rawJwt !== 'string') {
     return null;
   }
@@ -12,8 +13,12 @@ export function parseJwt(rawJwt: string): { [key:string]: string } | null {
 }
 
 export function validateJwt(authData: string, secret: string): boolean {
+  if (typeof authData !== 'string') {
+    return false;
+  }
+  const rawJwt = stripBearer(authData);
   try {
-    jwt.verify(authData, secret);
+    jwt.verify(rawJwt, secret);
     return true;
   } catch (e: any) {
     return false;
@@ -21,15 +26,14 @@ export function validateJwt(authData: string, secret: string): boolean {
 }
 
 export function stripBearer(authData: string): string {
-  return authData.includes('Bearer ')
+  return authData?.includes('Bearer ')
     ? authData.split(' ')[1]
     : authData;
 }
 
 export function extractJwt<T>(authData: string, secret: string): T | null {
-  const rawJwt = stripBearer(authData);
-  return validateJwt(rawJwt, secret)
-    ? parseJwt(rawJwt) as T
+  return validateJwt(authData, secret)
+    ? parseJwt(authData) as T
     : null;
 }
 
