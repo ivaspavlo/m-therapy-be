@@ -2,14 +2,16 @@ import * as logger from 'firebase-functions/logger';
 import * as nodemailer from 'nodemailer';
 import { onRequest } from 'firebase-functions/v2/https';
 import { DocumentData, getFirestore } from 'firebase-admin/firestore';
+import { defineString } from 'firebase-functions/params';
 import { Request, Response } from 'firebase-functions';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
-import { extractJwt, GetAdTemplate } from '../shared/utils';
+import { extractJwt, generateJwt, GetAdTemplate } from '../shared/utils';
 import { IUser } from '../shared/interfaces';
 import { ManagerValidator } from './manager.validator';
 import { IAdEmailsReq } from './manager.interface';
 
+const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP);
 
 export const ManagerFunction = onRequest(
   { secrets: [ENV_KEYS.JWT_SECRET] },
@@ -93,6 +95,8 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
     logger.info('[POST MANAGER EMAILS] Retrieved emails list');
 
     const transporterArr = allSubscribers!.map(subscriber => {
+      const unsubscribeUrl = generateJwt({ id: subscriber.id }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp.value() });
+
       const mailOptions = GetAdTemplate({
         lang: reqBody.lang,
         to: subscriber.email,
@@ -101,13 +105,13 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
         message: reqBody.message,
         config: {
           url: reqBody.url,
-          img: ''
+          img: reqBody.img,
+          unsubscribeUrl: unsubscribeUrl || ''
         }
       });
       return new Promise((resolve, reject) => {
         transporter.sendMail(mailOptions, (e: any) => {
           if (e) {
-            logger.error(`[POST MANAGER EMAILS] Ad email failed to send to: ${subscriber.email}. Error: ${e}`);
             resolve(subscriber.email);
           }
           resolve(null);
