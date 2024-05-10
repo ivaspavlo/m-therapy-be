@@ -107,7 +107,7 @@ async function postUser(
 ): Promise<any> {
   switch(req.url) {
   case('/subscribe'): {
-    const reqBody: any = req.body;
+    const reqBody: ISubscriber = req.body;
     let existingSubscriber: QuerySnapshot;
 
     try {

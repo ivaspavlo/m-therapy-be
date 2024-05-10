@@ -9,7 +9,8 @@ export interface IEmailTemplate<T> {
 
 export interface IAdEmail {
   url: string,
-  img: string
+  img: string,
+  unsubscribeUrl: string
 }
 
 export interface IRemindPasswordEmail {
