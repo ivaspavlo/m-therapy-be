@@ -12,6 +12,7 @@ import { ManagerValidator } from './manager.validator';
 import { IAdEmailsReq } from './manager.interface';
 
 const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP);
+const uiUrl = defineString(ENV_KEYS.UI_URL);
 
 export const ManagerFunction = onRequest(
   { secrets: [ENV_KEYS.JWT_SECRET] },
@@ -95,7 +96,7 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
     logger.info('[POST MANAGER EMAILS] Retrieved emails list');
 
     const transporterArr = allSubscribers!.map(subscriber => {
-      const unsubscribeUrl = generateJwt({ id: subscriber.id }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp.value() });
+      const unsubscribeUrl = `${uiUrl.value()}/${generateJwt({ id: subscriber.id }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp.value() })}`;
 
       const mailOptions = GetAdTemplate({
         lang: reqBody.lang,
