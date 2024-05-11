@@ -146,7 +146,7 @@ const buildTemplate = (templateData: IEmailTemplate<IAdEmail>): string => {
                               <tr class="row__row">
                                 <td class="column col-sm-12" width="700" style="padding: 0 10px;width: 100%" align="left" valign="top">
                                   <div class="email-links" style="margin-bottom: 16px;">
-                                    <a class="email-unsubscribe a" href="#" style="font-size: 12px; color: #0DB981;"><span class="a__text" style="color: #0DB981;"> ${ templateData.lang === 'en' ? 'Cancel subscription' : 'Відмінити підписку' } </span></a>
+                                    <a class="email-unsubscribe a" href="${ templateData.config.unsubscribeUrl }" style="font-size: 12px; color: #0DB981;"><span class="a__text" style="color: #0DB981;"> ${ templateData.lang === 'en' ? 'Cancel subscription' : 'Відмінити підписку' } </span></a>
                                     <div class="email-social" style="margin-top: 8px;">
                                       <a class="email-social-icon a" href="#" style="width: 30px; height: 30px; border-radius: 4px; display: inline-block;"><span class="a__text">
                                           <img src="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/telegram.svg?alt=media&token=e19826e8-8bb1-4cf5-b4b3-a9e299f6d603" border="0" alt="" class="img__block" style="display: block; max-width: 100%;" />
