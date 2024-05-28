@@ -217,7 +217,7 @@ describe('subscriber', () => {
     );
   });
 
-  test.skip('[POST USER SUBSCRIBE] should save subscirber in DB', async () => {
+  test('[POST USER SUBSCRIBE] should save subscirber in DB', async () => {
     const res = {
       status: (code: number) => {
         return {
