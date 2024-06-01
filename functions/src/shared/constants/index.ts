@@ -11,7 +11,8 @@ export enum ERROR_MESSAGES {
   NOT_FOUND = 'Instance not found',
   CREDENTIALS = 'Credentials are incorrect',
   FIELDS_VALIDATION = 'Validation for fields failed',
-  JWT = 'JWT is invalid'
+  JWT = 'JWT is invalid',
+  TOKEN = 'Token is invalid'
 }
 
 export enum COLLECTIONS {

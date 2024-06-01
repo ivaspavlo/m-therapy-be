@@ -18,6 +18,7 @@ export const UserFunction = onRequest(
     case('GET'): return getUser(req, res);
     case('PUT'): return putUser(req, res);
     case('POST'): return postUser(req, res);
+    case('DELETE'): return deleteUser(req, res);
     }
   }
 );
@@ -139,6 +140,27 @@ async function postUser(
 
     logger.info(`[POST USER SUBSCRIBE] Created subscriber: ${subscriberReference.id}`);
     res.status(200).send(new ResponseBody(subscriber, true));
+  }
+  }
+}
+
+async function deleteUser(
+  req: Request,
+  res: Response
+): Promise<any> {
+  switch(req.url) {
+  case('/unsubscribe'): {
+    const unsubscribeToken = extractJwt<{[key:string]: any, email: string}>(
+      req.query.token as string,
+      process.env[ENV_KEYS.JWT_SECRET] as string
+    );
+    if (!unsubscribeToken) {
+      res.status(401).json(new ResponseBody(null, false, [ERROR_MESSAGES.TOKEN]));
+      return;
+    }
+
+    logger.info(`[DELETE USER UNSUBSCRIBE] Deleted subscriber: ${111}`);
+    res.status(200).send(new ResponseBody({}, true));
   }
   }
 }
