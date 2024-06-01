@@ -22,7 +22,7 @@ export const ResetFunction = onRequest(
       process.env[ENV_KEYS.JWT_SECRET] as string
     );
     if (!resetToken) {
-      res.status(401).json(new ResponseBody(null, false, [ERROR_MESSAGES.JWT]));
+      res.status(401).json(new ResponseBody(null, false, [ERROR_MESSAGES.TOKEN]));
       return;
     }
 
