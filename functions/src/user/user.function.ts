@@ -7,7 +7,7 @@ import { ResponseBody, User } from '../shared/models';
 import { IUser } from '../shared/interfaces';
 import { extractJwt } from '../shared/utils';
 import { ISubscriber, IUpdateUser } from './user.interface';
-import { SubscriberValidator, UserUpdateValidator } from './user.validatior';
+import { SubscriberValidator, UnsubscribeValidator, UserUpdateValidator } from './user.validatior';
 import { SubscriberMapper, UpdateUserMapper } from './user.mapper';
 
 
@@ -113,6 +113,7 @@ async function postUser(
 
     try {
       existingSubscriber = await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).where('email', '==', reqBody?.email).get();
+      // todo implement use-case when subscriber is existing user
     } catch(e: any) {
       logger.error('[POST USER SUBSCRIBE] Querying DB by email failed', e);
       res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
@@ -150,12 +151,32 @@ async function deleteUser(
 ): Promise<any> {
   switch(req.url) {
   case('/unsubscribe'): {
+    // Step #1: extract and validate token
     const unsubscribeToken = extractJwt<{[key:string]: any, email: string}>(
       req.query.token as string,
       process.env[ENV_KEYS.JWT_SECRET] as string
     );
     if (!unsubscribeToken) {
       res.status(401).json(new ResponseBody(null, false, [ERROR_MESSAGES.TOKEN]));
+      return;
+    }
+
+    // Step #2: validate the email from the token
+    let existingSubscriber: QuerySnapshot;
+    let existingUser: QuerySnapshot;
+    try {
+      existingSubscriber = await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).where('email', '==', unsubscribeToken.email).get();
+      existingUser = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', unsubscribeToken.email).get();
+    } catch(e: any) {
+      logger.error('[POST USER SUBSCRIBE] Querying DB by email failed', e);
+      res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+      return;
+    }
+
+    // continue here
+    const validationErrors = UnsubscribeValidator({ email: unsubscribeToken.email }, [existingSubscriber, existingUser]);
+    if (validationErrors) {
+      res.status(400).json(new ResponseBody(null, false, validationErrors));
       return;
     }
 

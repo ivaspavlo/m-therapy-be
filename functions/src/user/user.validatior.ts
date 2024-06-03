@@ -45,3 +45,7 @@ export const SubscriberValidator = (data: ISubscriber, queryByEmail: QuerySnapsh
     ? [`${ERROR_MESSAGES.FIELDS_VALIDATION}: ${errors.join(',')}`]
     : null;
 }
+
+export const UnsubscribeValidator = (data: ISubscriber, queriesByEmail: QuerySnapshot[]): string[] | null => {
+  return null;
+}
