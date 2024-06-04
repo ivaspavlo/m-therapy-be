@@ -7,7 +7,7 @@ import { ResponseBody, User } from '../shared/models';
 import { IUser } from '../shared/interfaces';
 import { extractJwt } from '../shared/utils';
 import { ISubscriber, IUpdateUser } from './user.interface';
-import { SubscriberValidator, UnsubscribeValidator, UserUpdateValidator } from './user.validatior';
+import { SubscriberValidator, UserUpdateValidator } from './user.validatior';
 import { SubscriberMapper, UpdateUserMapper } from './user.mapper';
 
 
@@ -161,24 +161,25 @@ async function deleteUser(
       return;
     }
 
-    // Step #2: validate the email from the token
-    let existingSubscriber: QuerySnapshot;
-    let existingUser: QuerySnapshot;
+    // Step #2: validation
+    let subscriberQuery: QuerySnapshot;
+    let userQuery: QuerySnapshot;
     try {
-      existingSubscriber = await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).where('email', '==', unsubscribeToken.email).get();
-      existingUser = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', unsubscribeToken.email).get();
+      subscriberQuery = await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).where('email', '==', unsubscribeToken.email).get();
+      userQuery = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', unsubscribeToken.email).get();
     } catch(e: any) {
-      logger.error('[POST USER SUBSCRIBE] Querying DB by email failed', e);
+      logger.error('[POST USER UNSUBSCRIBE] Querying DB by email failed', e);
       res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       return;
     }
-
-    // continue here
-    const validationErrors = UnsubscribeValidator({ email: unsubscribeToken.email }, [existingSubscriber, existingUser]);
-    if (validationErrors) {
-      res.status(400).json(new ResponseBody(null, false, validationErrors));
+    const subscriber = subscriberQuery.docs.find(d => !!d)
+    const user = userQuery.docs.find(d => !!d);
+    if (!subscriber && !user) {
+      res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_FOUND]));
       return;
     }
+
+    // Step #3: remove subscriber or remove a flag from a user
 
     logger.info(`[DELETE USER UNSUBSCRIBE] Deleted subscriber: ${111}`);
     res.status(200).send(new ResponseBody({}, true));
