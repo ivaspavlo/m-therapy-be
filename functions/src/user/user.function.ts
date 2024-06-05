@@ -2,6 +2,7 @@ import * as logger from 'firebase-functions/logger';
 import { onRequest } from 'firebase-functions/v2/https';
 import { DocumentReference, DocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
 import { Request, Response } from 'firebase-functions';
+
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../shared/constants';
 import { ResponseBody, User } from '../shared/models';
 import { IUser } from '../shared/interfaces';
@@ -151,9 +152,12 @@ async function deleteUser(
 ): Promise<any> {
   switch(req.url) {
   case('/unsubscribe'): {
+    // Expected body { token: string }
+    const token = req.body?.token;
+
     // Step #1: extract and validate token
     const unsubscribeToken = extractJwt<{[key:string]: any, email: string}>(
-      req.query.token as string,
+      token as string,
       process.env[ENV_KEYS.JWT_SECRET] as string
     );
     if (!unsubscribeToken) {
@@ -161,7 +165,7 @@ async function deleteUser(
       return;
     }
 
-    // Step #2: validation
+    // Step #2: get a user or subscriber by the token data
     let subscriberQuery: QuerySnapshot;
     let userQuery: QuerySnapshot;
     try {
@@ -180,6 +184,12 @@ async function deleteUser(
     }
 
     // Step #3: remove subscriber or remove a flag from a user
+    // if (subscriberQuery) {
+
+    // } else if (userQuery) {
+
+    // }
+
 
     logger.info(`[DELETE USER UNSUBSCRIBE] Deleted subscriber: ${111}`);
     res.status(200).send(new ResponseBody({}, true));
