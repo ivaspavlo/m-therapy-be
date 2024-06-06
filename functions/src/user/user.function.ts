@@ -156,7 +156,7 @@ async function deleteUser(
     const token = req.body?.token;
 
     // Step #1: extract and validate token
-    const unsubscribeToken = extractJwt<{[key:string]: any, email: string}>(
+    const unsubscribeToken = extractJwt<{[key:string]: any, id: string}>(
       token as string,
       process.env[ENV_KEYS.JWT_SECRET] as string
     );
@@ -165,34 +165,31 @@ async function deleteUser(
       return;
     }
 
-    // Step #2: get a user or subscriber by the token data
-    let subscriberQuery: QuerySnapshot;
-    let userQuery: QuerySnapshot;
+    // Step #2: get a user or subscriber by id from token
+    let subscriber: DocumentSnapshot;
+    let user: DocumentSnapshot;
     try {
-      subscriberQuery = await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).where('email', '==', unsubscribeToken.email).get();
-      userQuery = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', unsubscribeToken.email).get();
+      subscriber = await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).doc(unsubscribeToken.id).get();
+      user = await getFirestore().collection(COLLECTIONS.USERS).doc(unsubscribeToken.id).get();
     } catch(e: any) {
       logger.error('[POST USER UNSUBSCRIBE] Querying DB by email failed', e);
       res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       return;
     }
-    const subscriber = subscriberQuery.docs.find(d => !!d)
-    const user = userQuery.docs.find(d => !!d);
-    if (!subscriber && !user) {
+    if (!subscriber.exists && !user.exists) {
       res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_FOUND]));
       return;
     }
 
     // Step #3: remove subscriber or remove a flag from a user
-    // if (subscriberQuery) {
+    if (subscriber) {
+      await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).doc(unsubscribeToken.id).delete();
+    } else if (user) {
+      await getFirestore().collection(COLLECTIONS.USERS).doc(unsubscribeToken.id).update({ hasEmailConsent: false });
+    }
 
-    // } else if (userQuery) {
-
-    // }
-
-
-    logger.info(`[DELETE USER UNSUBSCRIBE] Deleted subscriber: ${111}`);
-    res.status(200).send(new ResponseBody({}, true));
+    logger.info(`[DELETE USER UNSUBSCRIBE] Deleted subscriber: ${unsubscribeToken.id}`);
+    res.status(200).send(new ResponseBody(null, true));
   }
   }
 }
