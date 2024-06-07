@@ -172,7 +172,7 @@ async function deleteUser(
       subscriber = await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).doc(unsubscribeToken.id).get();
       user = await getFirestore().collection(COLLECTIONS.USERS).doc(unsubscribeToken.id).get();
     } catch(e: any) {
-      logger.error('[POST USER UNSUBSCRIBE] Querying DB by email failed', e);
+      logger.error('[POST USER UNSUBSCRIBE] Querying DB by id failed', e);
       res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       return;
     }
@@ -188,7 +188,7 @@ async function deleteUser(
       await getFirestore().collection(COLLECTIONS.USERS).doc(unsubscribeToken.id).update({ hasEmailConsent: false });
     }
 
-    logger.info(`[DELETE USER UNSUBSCRIBE] Deleted subscriber: ${unsubscribeToken.id}`);
+    logger.info(`[DELETE USER UNSUBSCRIBE] ${subscriber.exists ? 'Deleted subscriber': 'Subscribtion removed for user'}: ${unsubscribeToken.id}`);
     res.status(200).send(new ResponseBody(null, true));
   }
   }

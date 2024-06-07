@@ -178,7 +178,7 @@ describe('subscriber', () => {
           send: (value: ResponseBody<ISubscriber>) => {
             expect(value.data.email).toBe(newValueForEmail);
           },
-          json: (value: any) => { }
+          json: () => { }
         }
       }
     };
@@ -237,5 +237,17 @@ describe('subscriber', () => {
     const querySnapshot = await usersQuery.get();
     const subscirber: ISubscriber = querySnapshot.docs.find((doc: DocumentData) => !!doc)?.data() as ISubscriber;
     expect (subscirber?.email).toBe(newValueForEmail);
+  });
+
+  test('[DELETE USER UNSUBSCRIBE] should delete subscirber in DB', async () => {
+
+  });
+
+  test('[DELETE USER UNSUBSCRIBE] should set hasEmailConsent flag to false in the user instance', async () => {
+    
+  });
+
+  test('[DELETE USER UNSUBSCRIBE] should set return 400 if no user or subscriber found by id', async () => {
+    
   });
 });
