@@ -182,9 +182,9 @@ async function deleteUser(
     }
 
     // Step #3: remove subscriber or remove a flag from a user
-    if (subscriber) {
+    if (subscriber.exists) {
       await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).doc(unsubscribeToken.id).delete();
-    } else if (user) {
+    } else if (user.exists) {
       await getFirestore().collection(COLLECTIONS.USERS).doc(unsubscribeToken.id).update({ hasEmailConsent: false });
     }
 
