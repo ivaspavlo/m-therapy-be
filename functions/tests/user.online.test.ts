@@ -21,18 +21,19 @@ dotenv.config({ path: './.env.local' });
 const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP).value();
 const jwtSecret = defineString(ENV_KEYS.JWT_SECRET).value();
 
-describe('user', () => {
-  const REGISTERED_USER = {
-    firstname: 'Test',
-    lastname: 'Testovich',
-    email: 'test@testmail.com',
-    birthday: '1990-08-08',
-    phone: '+111222333444',
-    password: 'TestPass1!',
-    lang: 'en',
-    hasUserConsent: true
-  };
+const REGISTERED_USER = {
+  firstname: 'Test',
+  lastname: 'Testovich',
+  email: 'test@testmail.com',
+  birthday: '1990-08-08',
+  phone: '+111222333444',
+  password: 'TestPass1!',
+  lang: 'en',
+  hasUserConsent: true,
+  hasEmailConsent: true
+};
 
+describe('user', () => {
   let USER_ID: string;
   let VALID_AUTH_TOKEN: string;
   let INVALID_AUTH_TOKEN_1: string;
@@ -236,15 +237,56 @@ describe('subscriber', () => {
     const usersQuery = getFirestore().collection(COLLECTIONS.SUBSCRIBERS).where('email', '==', newValueForEmail);
     const querySnapshot = await usersQuery.get();
     const subscirber: ISubscriber = querySnapshot.docs.find((doc: DocumentData) => !!doc)?.data() as ISubscriber;
-    expect (subscirber?.email).toBe(newValueForEmail);
+    expect(subscirber?.email).toBe(newValueForEmail);
   });
 
   test('[DELETE USER UNSUBSCRIBE] should delete subscirber in DB', async () => {
-
+    const mockSubscriberId = 'mockSubscriberId';
+    const unsubscribeToken = jwt.sign({id: mockSubscriberId}, jwtSecret, {expiresIn: resetTokenExp});
+    await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).doc(mockSubscriberId).set({email: newValueForEmail});
+    const res = {
+      status: () => {
+        return {
+          send: () => {},
+          json: () => {}
+        }
+      }
+    };
+    await functions.user({
+      method: 'DELETE',
+      url: '/unsubscribe',
+      body: {token: unsubscribeToken}
+    } as any,
+    res as any
+    );
+    const test = await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).doc(mockSubscriberId).get();
+    expect(test.exists).toBe(false);
   });
 
   test('[DELETE USER UNSUBSCRIBE] should set hasEmailConsent flag to false in the user instance', async () => {
-    
+    const mockSubscriberId = 'mockSubscriberId';
+    await getFirestore().collection(COLLECTIONS.USERS).doc(mockSubscriberId).set(REGISTERED_USER);
+    const unsubscribeToken = jwt.sign({id: mockSubscriberId}, jwtSecret, {expiresIn: resetTokenExp});
+    const res = {
+      status: () => {
+        return {
+          send: () => {},
+          json: () => {}
+        }
+      }
+    };
+    await functions.user({
+      method: 'DELETE',
+      url: '/unsubscribe',
+      body: {token: unsubscribeToken}
+    } as any,
+    res as any
+    );
+    const test = await getFirestore().collection(COLLECTIONS.USERS).doc(mockSubscriberId).get();
+    const user = test.data();
+    expect(user?.hasEmailConsent).toBe(false);
+    // cleanup
+    await getFirestore().collection(COLLECTIONS.USERS).doc(mockSubscriberId).delete();
   });
 
   test('[DELETE USER UNSUBSCRIBE] should set return 400 if no user or subscriber found by id', async () => {
