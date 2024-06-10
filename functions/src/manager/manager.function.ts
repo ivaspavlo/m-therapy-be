@@ -96,7 +96,8 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
     logger.info('[POST MANAGER EMAILS] Retrieved emails list');
 
     const transporterArr = allSubscribers!.map(subscriber => {
-      const unsubscribeUrl = `${uiUrl.value()}/${generateJwt({ id: subscriber.id }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp.value() })}`;
+      const unsubscribeToken = generateJwt({ id: subscriber.id }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp.value() });
+      const unsubscribeUrl = `${uiUrl.value()}/auth/unsubscribe/${unsubscribeToken}`;
 
       const mailOptions = GetAdTemplate({
         lang: reqBody.lang,
