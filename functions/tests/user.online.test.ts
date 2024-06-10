@@ -33,6 +33,9 @@ const REGISTERED_USER = {
   hasEmailConsent: true
 };
 
+const mockSubscriberId = 'mockSubscriberId';
+const unsubscribeToken = jwt.sign({id: mockSubscriberId}, jwtSecret, {expiresIn: resetTokenExp});
+
 describe('user', () => {
   let USER_ID: string;
   let VALID_AUTH_TOKEN: string;
@@ -241,8 +244,6 @@ describe('subscriber', () => {
   });
 
   test('[DELETE USER UNSUBSCRIBE] should delete subscirber in DB', async () => {
-    const mockSubscriberId = 'mockSubscriberId';
-    const unsubscribeToken = jwt.sign({id: mockSubscriberId}, jwtSecret, {expiresIn: resetTokenExp});
     await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).doc(mockSubscriberId).set({email: newValueForEmail});
     const res = {
       status: () => {
@@ -264,9 +265,7 @@ describe('subscriber', () => {
   });
 
   test('[DELETE USER UNSUBSCRIBE] should set hasEmailConsent flag to false in the user instance', async () => {
-    const mockSubscriberId = 'mockSubscriberId';
     await getFirestore().collection(COLLECTIONS.USERS).doc(mockSubscriberId).set(REGISTERED_USER);
-    const unsubscribeToken = jwt.sign({id: mockSubscriberId}, jwtSecret, {expiresIn: resetTokenExp});
     const res = {
       status: () => {
         return {
@@ -290,6 +289,22 @@ describe('subscriber', () => {
   });
 
   test('[DELETE USER UNSUBSCRIBE] should set return 400 if no user or subscriber found by id', async () => {
-    
+    const res = {
+      status: (res: number) => {
+        return {
+          send: () => {},
+          json: () => {
+            expect(res).toBe(400);
+          }
+        }
+      }
+    };
+    await functions.user({
+      method: 'DELETE',
+      url: '/unsubscribe',
+      body: {token: unsubscribeToken}
+    } as any,
+    res as any
+    );
   });
 });
