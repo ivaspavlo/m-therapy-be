@@ -161,7 +161,7 @@ async function deleteUser(
       process.env[ENV_KEYS.JWT_SECRET] as string
     );
     if (!unsubscribeToken) {
-      res.status(401).json(new ResponseBody(null, false, [ERROR_MESSAGES.TOKEN]));
+      res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.TOKEN]));
       return;
     }
 
