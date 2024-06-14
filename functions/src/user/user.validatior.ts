@@ -1,6 +1,6 @@
 import { QuerySnapshot } from 'firebase-admin/firestore';
 import { ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
-import { IValidationConfig } from '../shared/interfaces';
+import { ISubscriber, IUser, IValidationConfig } from '../shared/interfaces';
 import {
   birthdayValidator,
   booleanValidator,
@@ -11,11 +11,12 @@ import {
   stringValidator,
   validate
 } from '../shared/utils';
-import { ISubscriber, IUpdateUser } from './user.interface';
+import { IUpdateUser } from './user.interface';
 
 
 const subscriberValidators: Record<keyof ISubscriber, IValidationConfig> = {
-  email: {validators: [stringValidator, emailValidator]}
+  email: {validators: [stringValidator, emailValidator]},
+  lang: {validators: [stringValidator, langFieldValidator]}
 }
 
 const userUpdateValidators: Record<keyof IUpdateUser, IValidationConfig> = {
@@ -36,7 +37,7 @@ export const UserUpdateValidator = (data: IUpdateUser): string[] | null => {
   return null;
 }
 
-export const SubscriberValidator = (data: ISubscriber, queryByEmail: QuerySnapshot): string[] | null => {
+export const SubscriberValidator = (data: ISubscriber | IUser, queryByEmail: QuerySnapshot): string[] | null => {
   if (!queryByEmail.empty) {
     return [ERROR_MESSAGES.DUPLICATE];
   }

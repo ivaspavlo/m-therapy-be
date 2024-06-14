@@ -1,5 +1,6 @@
+import { ISubscriber, LanguageType } from 'src/shared/interfaces';
 import { User } from '../shared/models';
-import { ISubscriber, IUpdateUser } from './user.interface';
+import { IUpdateUser } from './user.interface';
 
 /**
  * Remove undefined and not intended values.
@@ -25,8 +26,9 @@ export const UpdateUserMapper = (updateData: IUpdateUser, user: User): Partial<U
  * @param {email: string, [key:string]: any} data
  * @returns {ISubscriber}
  */
-export const SubscriberMapper = (data: {email: string, [key:string]: any}): ISubscriber => {
+export const SubscriberMapper = (data: {email: string, lang: LanguageType, [key:string]: any}): ISubscriber => {
   return {
-    email: data.email
+    email: data.email,
+    lang: data.lang
   };
 }

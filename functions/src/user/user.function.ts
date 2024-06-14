@@ -5,9 +5,9 @@ import { Request, Response } from 'firebase-functions';
 
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../shared/constants';
 import { ResponseBody, User } from '../shared/models';
-import { IUser } from '../shared/interfaces';
+import { ISubscriber, IUser } from '../shared/interfaces';
 import { extractJwt } from '../shared/utils';
-import { ISubscriber, IUpdateUser } from './user.interface';
+import { IUpdateUser } from './user.interface';
 import { SubscriberValidator, UserUpdateValidator } from './user.validatior';
 import { SubscriberMapper, UpdateUserMapper } from './user.mapper';
 
@@ -111,17 +111,18 @@ async function postUser(
   case('/subscribe'): {
     const reqBody: ISubscriber = req.body;
     let existingSubscriber: QuerySnapshot;
+    let existingUser: QuerySnapshot;
 
     try {
       existingSubscriber = await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).where('email', '==', reqBody?.email).get();
-      // todo implement use-case when subscriber is existing user
+      existingUser = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', reqBody?.email).get();
     } catch(e: any) {
       logger.error('[POST USER SUBSCRIBE] Querying DB by email failed', e);
       res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       return;
     }
 
-    const validationErrors = SubscriberValidator(reqBody, existingSubscriber);
+    const validationErrors = SubscriberValidator(reqBody, existingSubscriber || existingUser);
     if (validationErrors) {
       res.status(400).json(new ResponseBody(null, false, validationErrors));
       return;

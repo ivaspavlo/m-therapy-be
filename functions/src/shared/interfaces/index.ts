@@ -7,3 +7,4 @@ export * from './ad.interface';
 export * from './product.interface';
 export * from './content.interface';
 export * from './validator-set.interface';
+export * from './subscriber.interface';

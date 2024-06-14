@@ -1,7 +1,3 @@
-export interface ISubscriber {
-  email: string
-}
-
 export interface IUpdateUser {
   firstname?: string,
   lastname?: string,

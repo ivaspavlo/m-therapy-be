@@ -1,3 +1,5 @@
+import { LanguageType } from "./language.type";
+
 export interface IUser {
   id?: string,
   created?: number,
@@ -10,5 +12,5 @@ export interface IUser {
   isAdmin: boolean,
   isConfirmed: boolean,
   hasEmailConsent: boolean,
-  lang: string
+  lang: LanguageType
 }
