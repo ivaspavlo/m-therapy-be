@@ -78,10 +78,10 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
       }
     });
     
-    let allSubscribers: {id: string, email: string}[] = [];
+    let allSubscribers: {id: string, email: string, lang: string}[] = [];
     try {
-      const emails_users = (await getFirestore().collection(COLLECTIONS.USERS).get()).docs.map(d => ({ id: d.id, email: d.data().email }));
-      const emails_subscribers = (await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).get()).docs.map(d => ({ id: d.id, email: d.data().email }));
+      const emails_users = (await getFirestore().collection(COLLECTIONS.USERS).get()).docs.map(d => ({ id: d.id, email: d.data().email, lang: d.data().lang }));
+      const emails_subscribers = (await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).get()).docs.map(d => ({ id: d.id, email: d.data().email, lang: d.data().lang }));
       allSubscribers = [...emails_users, ...emails_subscribers];
     } catch (e) {
       logger.error('[POST MANAGER EMAILS] Error while retrieving user emails');
@@ -96,11 +96,11 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
     logger.info('[POST MANAGER EMAILS] Retrieved emails list');
 
     const transporterArr = allSubscribers!.map(subscriber => {
-      const unsubscribeToken = generateJwt({ id: subscriber.id }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp.value() });
+      const unsubscribeToken = generateJwt({ id: subscriber.id, language: subscriber.lang }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp.value() });
       const unsubscribeUrl = `${uiUrl.value()}/auth/unsubscribe/${unsubscribeToken}`;
 
       const mailOptions = GetAdTemplate({
-        lang: reqBody.lang,
+        lang: subscriber.lang,
         to: subscriber.email,
         subject: reqBody.subject || currentTranslations.adEmailSubject,
         title: reqBody.title,

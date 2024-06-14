@@ -7,8 +7,7 @@ import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admi
 import { describe, expect, afterAll, beforeAll, test } from '@jest/globals';
 import { ENV_KEYS, COLLECTIONS } from 'src/shared/constants';
 import { ResponseBody } from 'src/shared/models';
-import { IUser } from 'src/shared/interfaces';
-import { ISubscriber } from 'src/user/user.interface';
+import { ISubscriber, IUser } from 'src/shared/interfaces';
 
 
 firebaseFunctionsTest({
@@ -233,7 +232,7 @@ describe('subscriber', () => {
     await functions.user({
       method: 'POST',
       url: '/subscribe',
-      body: { email: newValueForEmail }
+      body: { email: newValueForEmail, lang: 'en' }
     } as any,
     res as any
     );

@@ -1,4 +1,4 @@
-import { IUser } from '../interfaces';
+import { IUser, LanguageType } from '../interfaces';
 
 
 export class User {
@@ -23,7 +23,7 @@ export class User {
     birthday: number,
     hasEmailConsent: boolean,
     isConfirmed: boolean,
-    lang: string
+    lang: LanguageType
   ) {
     this.id = id;
     this.created = created;
