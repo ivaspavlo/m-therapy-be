@@ -177,20 +177,22 @@ async function deleteUser(
       res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       return;
     }
-    if (!subscriber.exists && !user.exists) {
-      res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_FOUND]));
+
+    if (subscriber.exists) {
+      await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).doc(unsubscribeToken.id).delete();
+      logger.info(`[DELETE USER UNSUBSCRIBE] Deleted subscriber: ${unsubscribeToken.id}`);
+      return res.status(200).send(new ResponseBody({ lang: subscriber.data()!.lang }, true));
+    } else if (user.exists && user.data()!.hasEmailConsent) {
+      await getFirestore().collection(COLLECTIONS.USERS).doc(unsubscribeToken.id).update({ hasEmailConsent: false });
+      logger.info(`[DELETE USER UNSUBSCRIBE] Subscribtion removed for user: ${unsubscribeToken.id}`);
+      return res.status(200).send(new ResponseBody({ lang: user.data()!.lang }, true));
+    } else if (user.exists && !user.data()!.hasEmailConsent) {
+      res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.BAD_DATA]));
       return;
     }
 
-    // Step #3: remove subscriber or remove a flag from a user
-    if (subscriber.exists) {
-      await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).doc(unsubscribeToken.id).delete();
-    } else if (user.exists) {
-      await getFirestore().collection(COLLECTIONS.USERS).doc(unsubscribeToken.id).update({ hasEmailConsent: false });
-    }
-
-    logger.info(`[DELETE USER UNSUBSCRIBE] ${subscriber.exists ? 'Deleted subscriber': 'Subscribtion removed for user'}: ${unsubscribeToken.id}`);
-    res.status(200).send(new ResponseBody(null, true));
+    res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_FOUND]));
+    return;
   }
   }
 }
