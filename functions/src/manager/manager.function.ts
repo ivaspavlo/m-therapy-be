@@ -80,7 +80,11 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
     
     let allSubscribers: {id: string, email: string, lang: string}[] = [];
     try {
-      const emails_users = (await getFirestore().collection(COLLECTIONS.USERS).get()).docs.map(d => ({ id: d.id, email: d.data().email, lang: d.data().lang }));
+      const emails_users = (await getFirestore().collection(COLLECTIONS.USERS).get()).docs.filter(
+        (d => d.data().hasEmailConsent)
+      ).map(d => {
+        return { id: d.id, email: d.data().email, lang: d.data().lang };
+      });
       const emails_subscribers = (await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).get()).docs.map(d => ({ id: d.id, email: d.data().email, lang: d.data().lang }));
       allSubscribers = [...emails_users, ...emails_subscribers];
     } catch (e) {
@@ -89,7 +93,7 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
     }
 
     if (!Array.isArray(allSubscribers) || !allSubscribers.length) {
-      res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+      res.status(400).send(new ResponseBody(null, false, [ERROR_MESSAGES.BAD_DATA]));
       logger.error('[POST MANAGER EMAILS] No user emails found');
     }
 
