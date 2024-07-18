@@ -1,6 +1,9 @@
 import { onRequest } from 'firebase-functions/v2/https';
-import { Request, Response } from 'firebase-functions';
-import { ENV_KEYS } from 'src/shared/constants';
+import { logger, Request, Response } from 'firebase-functions';
+import { COLLECTIONS, ENV_KEYS } from '../shared/constants';
+import { getFirestore } from 'firebase-admin/firestore';
+import { ResponseBody } from '../shared/models';
+import { IGetBookingReq } from './booking.interface';
 
 export const BookingFunction = onRequest(
   { secrets: [ENV_KEYS.JWT_SECRET] },
@@ -18,7 +21,11 @@ async function getBooking(
   req: Request,
   res: Response
 ): Promise<any> {
-
+  const reqBody: IGetBookingReq = req.body;
+  console.log(reqBody);
+  const bookingSlots = await getFirestore().collection(COLLECTIONS.BOOKINGS);
+  logger.info(`[GET BOOKING] Retrieved ${'111'} bookings.`);
+  res.status(200).send(new ResponseBody(bookingSlots, true));
 }
 
 async function putBooking(
