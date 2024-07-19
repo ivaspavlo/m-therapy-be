@@ -65,6 +65,10 @@ export function stringValidator(value: any): boolean {
   return typeof value === 'string';
 }
 
+export function numberValidator(value: any): boolean {
+  return typeof value === 'number';
+}
+
 export function booleanValidator(value: any): boolean {
   return typeof value === 'boolean';
 }
