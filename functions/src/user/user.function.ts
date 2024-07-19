@@ -8,7 +8,7 @@ import { ResponseBody, User } from '../shared/models';
 import { ISubscriber, IUser } from '../shared/interfaces';
 import { extractJwt } from '../shared/utils';
 import { IUpdateUser } from './user.interface';
-import { SubscriberValidator, UserUpdateValidator } from './user.validatior';
+import { SubscriberValidator, UserUpdateValidator } from './user.validator';
 import { SubscriberMapper, UpdateUserMapper } from './user.mapper';
 
 
