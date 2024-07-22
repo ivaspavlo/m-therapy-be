@@ -24,24 +24,24 @@ async function getBooking(
   res: Response
 ): Promise<any> {
   switch(req.url) {
-    case('/'): {
-      const reqBody: IGetBookingReq = req.body;
+  case('/'): {
+    const reqBody: IGetBookingReq = req.body;
 
-      const validationErrors = fetchBookingValidator(reqBody);
-      if (validationErrors) {
-        res.status(400).json(new ResponseBody(null, false, validationErrors));
-        return;
-      }
-
-      const endDate = new Date(reqBody.fromDate);
-      endDate.setDate(endDate.getDate() + 14);
-
-      const querySnapshot: QuerySnapshot = await getFirestore().collection(COLLECTIONS.BOOKINGS).where('start', '>=', reqBody.fromDate).where('start', '<=', endDate.valueOf()).get();
-      const docs: IBookingSlot[] = querySnapshot.docs.map((doc: DocumentSnapshot) => doc.data()) as IBookingSlot[];
-
-      logger.info(`[GET BOOKING] Retrieved ${docs.length} bookings starting with date: ${reqBody.fromDate}`);
-      return res.status(200).send(new ResponseBody(docs, true));
+    const validationErrors = fetchBookingValidator(reqBody);
+    if (validationErrors) {
+      res.status(400).json(new ResponseBody(null, false, validationErrors));
+      return;
     }
+
+    const endDate = new Date(reqBody.fromDate);
+    endDate.setDate(endDate.getDate() + 14);
+
+    const querySnapshot: QuerySnapshot = await getFirestore().collection(COLLECTIONS.BOOKINGS).where('start', '>=', reqBody.fromDate).where('start', '<=', endDate.valueOf()).get();
+    const docs: IBookingSlot[] = querySnapshot.docs.map((doc: DocumentSnapshot) => doc.data()) as IBookingSlot[];
+
+    logger.info(`[GET BOOKING] Retrieved ${docs.length} bookings starting with date: ${reqBody.fromDate}`);
+    return res.status(200).send(new ResponseBody(docs, true));
+  }
   }
 
 
