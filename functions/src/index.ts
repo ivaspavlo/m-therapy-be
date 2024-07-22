@@ -4,22 +4,19 @@ import { UserFunction } from './user';
 import { ContentFunction } from './content';
 import { ManagerFunction } from './manager';
 import { Seed } from './shared/utils';
+import { BookingFunction } from './booking';
 
 initializeApp();
 
-// Auth
 exports.register = RegisterFunction;
 exports.login = LoginFunction;
 exports.remind = RemindFunction;
 exports.reset = ResetFunction;
 exports.registerConfirm = RegisterConfirmFunction;
 exports.manager = ManagerFunction;
-
-// User
 exports.user = UserFunction;
-
-// Content
 exports.content = ContentFunction;
+exports.booking = BookingFunction;
 
 // Exports for unit-tests
 export const register = RegisterFunction;
