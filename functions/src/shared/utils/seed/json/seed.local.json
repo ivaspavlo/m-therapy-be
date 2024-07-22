@@ -57,5 +57,22 @@
       "value": "@sometelegram",
       "type": "TELEGRAM"
     }
+  ],
+  "bookings": [
+    {
+      "start": 1721641343892,
+      "end": 1721644845330,
+      "isBooked": false
+    },
+    {
+      "start": 1721644845330,
+      "end": 1721648653020,
+      "isBooked": false
+    },
+    {
+      "start": 1721724323148,
+      "end": 1721727923148,
+      "isBooked": false
+    }
   ]
 }
