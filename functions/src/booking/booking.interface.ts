@@ -4,7 +4,3 @@ export interface IBookingSlot {
   isBooked: boolean,
   bookedBy?: string
 }
-
-export interface IGetBookingReq {
-  fromDate: number
-}
