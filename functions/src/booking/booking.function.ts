@@ -2,7 +2,7 @@ import { onRequest } from 'firebase-functions/v2/https';
 import { logger, Request, Response } from 'firebase-functions';
 import { DocumentSnapshot, getFirestore, QuerySnapshot } from 'firebase-admin/firestore';
 
-import { COLLECTIONS, ENV_KEYS } from '../shared/constants';
+import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
 import { IBookingSlot } from './booking.interface';
 import { fetchBookingValidator } from './booking.validator';
@@ -23,9 +23,14 @@ async function getBooking(
   req: Request,
   res: Response
 ): Promise<any> {
-  switch(req.url) {
-  case('/'): {
-    const fromDate = req.query.fromDate;
+  if (req.url.includes('fromDate')) {
+    let fromDate = null;
+    try {
+      // @ts-ignore
+      fromDate = +req.query.fromDate as number;
+    } catch (e: unknown) {
+      return res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.BAD_DATA]));
+    }
 
     const validationErrors = fetchBookingValidator({fromDate});
     if (validationErrors) {
@@ -43,28 +48,26 @@ async function getBooking(
     logger.info(`[GET BOOKING] Retrieved ${docs.length} bookings starting with date: ${fromDate}`);
     return res.status(200).send(new ResponseBody(docs, true));
   }
-  }
-
-
+  return res.status(404).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_EXIST]));
 }
 
 async function putBooking(
   req: Request,
   res: Response
 ): Promise<any> {
-  
+  return res.status(404).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_EXIST]));
 }
 
 async function postBooking(
   req: Request,
   res: Response
 ): Promise<any> {
-  
+  return res.status(404).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_EXIST]));
 }
 
 async function deleteBooking(
   req: Request,
   res: Response
 ): Promise<any> {
-  
+  return res.status(404).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_EXIST]));
 }
