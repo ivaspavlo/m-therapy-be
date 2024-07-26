@@ -13,7 +13,8 @@ export enum ERROR_MESSAGES {
   FIELDS_VALIDATION = 'Validation for fields failed',
   JWT = 'JWT is invalid',
   TOKEN = 'Token is invalid',
-  BAD_DATA = 'Data is incorrect'
+  BAD_DATA = 'Data is incorrect',
+  NOT_EXIST = 'API does not exist'
 }
 
 export enum COLLECTIONS {
