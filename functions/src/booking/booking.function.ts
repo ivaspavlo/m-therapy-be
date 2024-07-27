@@ -38,11 +38,13 @@ async function getBooking(
       return;
     }
 
+    // Commented out for development purposes
     // @ts-ignore
-    const endDate = new Date(fromDate);
-    endDate.setDate(endDate.getDate() + 14);
+    // const endDate = new Date(fromDate);
+    // endDate.setDate(endDate.getDate() + 14);
+    // const querySnapshot: QuerySnapshot = await getFirestore().collection(COLLECTIONS.BOOKINGS).where('start', '>=', fromDate).where('start', '<=', endDate.valueOf()).get();
 
-    const querySnapshot: QuerySnapshot = await getFirestore().collection(COLLECTIONS.BOOKINGS).where('start', '>=', fromDate).where('start', '<=', endDate.valueOf()).get();
+    const querySnapshot: QuerySnapshot = await getFirestore().collection(COLLECTIONS.BOOKINGS).where('start', '>=', fromDate).get();
     const docs: IBookingSlot[] = querySnapshot.docs.map((doc: DocumentSnapshot) => doc.data()) as IBookingSlot[];
 
     logger.info(`[GET BOOKING] Retrieved ${docs.length} bookings starting with date: ${fromDate}`);
