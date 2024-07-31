@@ -45,7 +45,7 @@ async function getBooking(
     // const querySnapshot: QuerySnapshot = await getFirestore().collection(COLLECTIONS.BOOKINGS).where('start', '>=', fromDate).where('start', '<=', endDate.valueOf()).get();
 
     const querySnapshot: QuerySnapshot = await getFirestore().collection(COLLECTIONS.BOOKINGS).where('start', '>=', fromDate).get();
-    const docs: IBookingSlot[] = querySnapshot.docs.map((doc: DocumentSnapshot) => doc.data()) as IBookingSlot[];
+    const docs: IBookingSlot[] = querySnapshot.docs.map((doc: DocumentSnapshot) => ({ id: doc.id, ...doc.data() } as IBookingSlot));
 
     logger.info(`[GET BOOKING] Retrieved ${docs.length} bookings starting with date: ${fromDate}`);
     return res.status(200).send(new ResponseBody(docs, true));
