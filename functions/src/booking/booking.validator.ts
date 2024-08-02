@@ -14,3 +14,12 @@ export const fetchBookingValidator = (
     ? [`${ERROR_MESSAGES.FIELDS_VALIDATION}: ${errors.join(',')}`]
     : null;
 }
+
+export const putBookingValidator = (
+  data: unknown
+): string[] | null => {
+  const errors = validate(data, fetchBookingValidators);
+  return errors.length
+    ? [`${ERROR_MESSAGES.FIELDS_VALIDATION}: ${errors.join(',')}`]
+    : null;
+}
