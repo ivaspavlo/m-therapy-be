@@ -5,3 +5,7 @@ export interface IBookingSlot {
   isBooked: boolean,
   bookedBy?: string
 }
+
+export interface IBookingReq {
+  bookingSlots: IBookingSlot[]
+}

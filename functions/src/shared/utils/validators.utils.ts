@@ -76,3 +76,7 @@ export function booleanValidator(value: any): boolean {
 export function requiredValidator(value: any): boolean {
   return value !== undefined;
 }
+
+export function arrayValidator(value: any): boolean {
+  return Array.isArray(value);
+}
