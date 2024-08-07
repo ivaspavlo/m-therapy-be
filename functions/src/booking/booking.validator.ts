@@ -11,9 +11,9 @@ const putBookingValidatorSet: Record<keyof {}, IValidationConfig> = {
 }
 
 function bookingSlotValidator(value: unknown): boolean {
-  return true;
-  // return typeof value === 'object'
-  //   && typeof value.id === 'string'
+  return value !== null
+    // @ts-ignore
+    && typeof value === 'object' && typeof value.id === 'string' && typeof value.start === 'number' && typeof value.end === 'number' && typeof value.isBooked === 'boolean' && typeof value.bookedBy === 'string'
 }
 
 export const fetchBookingValidator = (
