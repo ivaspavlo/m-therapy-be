@@ -4,9 +4,8 @@ import { DocumentSnapshot, getFirestore, QuerySnapshot } from 'firebase-admin/fi
 
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
-import { extractJwt } from '../shared/utils';
-import { IBookingSlot } from './booking.interface';
-import { fetchBookingValidator } from './booking.validator';
+import { IBookingReq, IBookingSlot } from './booking.interface';
+import { fetchBookingValidator, putBookingValidator } from './booking.validator';
 
 export const BookingFunction = onRequest(
   { secrets: [ENV_KEYS.JWT_SECRET] },
@@ -59,24 +58,17 @@ async function putBooking(
   res: Response
 ): Promise<any> {
   // const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
-  const jwtError = new ResponseBody(null, false, [ERROR_MESSAGES.JWT]);
 
-  const jwtToken = extractJwt<{[key:string]: string} | null>(
-    req.headers.authorization as string,
-    process.env[ENV_KEYS.JWT_SECRET] as string
-  );
-
-  if (!jwtToken) {
-    res.status(401).json(jwtError);
+  const reqBody: IBookingReq = req.body;
+  const validationErrors = putBookingValidator(reqBody);
+  if (validationErrors) {
+    res.status(400).json(new ResponseBody(null, false, validationErrors));
     return;
   }
 
-  // const reqBody: IBookingSlot[] = req.body;
-  // const validationErrors = null;
-  // if (validationErrors) {
-  //   res.status(400).json(new ResponseBody(null, false, validationErrors));
-  //   return;
-  // }
+  reqBody.bookingSlots.forEach(async (slot) => {
+    await getFirestore().doc(slot.id).update({isBooked: true}).finally();
+  });
 
   return res.status(404).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_EXIST]));
 }

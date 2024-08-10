@@ -7,5 +7,6 @@ export interface IBookingSlot {
 }
 
 export interface IBookingReq {
-  bookingSlots: IBookingSlot[]
+  bookingSlots: IBookingSlot[],
+  email: string
 }

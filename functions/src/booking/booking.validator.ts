@@ -1,13 +1,14 @@
 import { ERROR_MESSAGES } from '../shared/constants';
 import { IValidationConfig } from '../shared/interfaces';
-import { numberValidator, validate, arrayValidator, stringValidator, booleanValidator } from '../shared/utils';
+import { numberValidator, validate, arrayValidator, stringValidator, booleanValidator, emailValidator } from '../shared/utils';
 
 const fetchBookingValidators: Record<keyof {fromDate: unknown}, IValidationConfig> = {
   fromDate: {validators: [numberValidator]}
 }
 
 const putBookingValidatorSet: Record<keyof {}, IValidationConfig> = {
-  bookingSlots: {validators: [arrayValidator, bookingSlotValidator]}
+  bookingSlots: {validators: [arrayValidator, bookingSlotValidator]},
+  email: {validators: [emailValidator]}
 }
 
 const bookingSlotValidatorSet: Record<keyof {}, IValidationConfig> = {
@@ -19,8 +20,11 @@ const bookingSlotValidatorSet: Record<keyof {}, IValidationConfig> = {
 }
 
 function bookingSlotValidator(value: unknown[]): boolean {
-  const errors = value.find((item: unknown) => validate(item, bookingSlotValidatorSet));
-  return errors === undefined;
+  const incorrectSlot = value.find((item: unknown) => {
+    const errors = validate(item, bookingSlotValidatorSet);
+    return !!errors.length;
+  });
+  return incorrectSlot === undefined;
 }
 
 export const fetchBookingValidator = (
