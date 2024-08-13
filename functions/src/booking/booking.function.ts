@@ -57,13 +57,21 @@ async function putBooking(
   req: Request,
   res: Response
 ): Promise<any> {
-  // const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
+  const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
 
   const reqBody: IBookingReq = req.body;
   const validationErrors = putBookingValidator(reqBody);
   if (validationErrors) {
     res.status(400).json(new ResponseBody(null, false, validationErrors));
     return;
+  }
+
+  let preBooking;
+  try {
+    preBooking = (await getFirestore().collection(COLLECTIONS.PREBOOKINGS).add(reqBody)).id;
+    console.log(preBooking);
+  } catch (error) {
+    return res.status(500).json(generalError);
   }
 
   reqBody.bookingSlots.forEach(async (slot) => {

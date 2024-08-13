@@ -3,6 +3,7 @@ export interface IBookingSlot {
   start: number,
   end: number,
   isBooked: boolean,
+  preBookedDate?: number,
   bookedBy?: string
 }
 
