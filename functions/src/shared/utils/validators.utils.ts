@@ -61,22 +61,26 @@ export function langFieldValidator(
   };
 }
 
-export function stringValidator(value: any): boolean {
+export function stringValidator(value: unknown): boolean {
   return typeof value === 'string';
 }
 
-export function numberValidator(value: any): boolean {
+export function numberValidator(value: unknown): boolean {
   return typeof value === 'number';
 }
 
-export function booleanValidator(value: any): boolean {
+export function booleanValidator(value: unknown): boolean {
   return typeof value === 'boolean';
 }
 
-export function requiredValidator(value: any): boolean {
+export function isFalseValidator(value: unknown): boolean {
+  return value === false;
+}
+
+export function requiredValidator(value: unknown): boolean {
   return value !== undefined;
 }
 
-export function arrayValidator(value: any): boolean {
+export function arrayValidator(value: unknown): boolean {
   return Array.isArray(value);
 }
