@@ -6,6 +6,7 @@ import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
 import { IBookingReq, IBookingSlot } from './booking.interface';
 import { fetchBookingValidator, putBookingValidator } from './booking.validator';
+import { GetConfirmBookingTemplate } from '../shared/utils';
 
 export const BookingFunction = onRequest(
   { secrets: [ENV_KEYS.JWT_SECRET] },
@@ -73,6 +74,19 @@ async function putBooking(
   } catch (error) {
     return res.status(500).json(generalError);
   }
+
+  const mailOptions = GetConfirmBookingTemplate({
+    title: '',
+    subject: '',
+    to: '',
+    message: '',
+    config: {
+      subtitle: '',
+      url: ''
+    }
+  });
+
+  console.log(mailOptions);
 
   reqBody.bookingSlots.forEach(async (slot) => {
     await getFirestore().doc(slot.id).update({isBooked: true}).finally();

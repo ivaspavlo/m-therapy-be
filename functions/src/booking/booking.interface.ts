@@ -1,3 +1,5 @@
+import { LanguageType } from 'src/shared/interfaces'
+
 export interface IBookingSlot {
   id: string,
   start: number,
@@ -9,5 +11,6 @@ export interface IBookingSlot {
 
 export interface IBookingReq {
   bookingSlots: IBookingSlot[],
-  email: string
+  email: string,
+  language: LanguageType
 }

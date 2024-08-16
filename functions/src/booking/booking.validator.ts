@@ -1,6 +1,6 @@
 import { ERROR_MESSAGES } from '../shared/constants';
 import { IValidationConfig } from '../shared/interfaces';
-import { numberValidator, validate, arrayValidator, stringValidator, booleanValidator, emailValidator, isFalseValidator } from '../shared/utils';
+import { numberValidator, validate, arrayValidator, stringValidator, booleanValidator, emailValidator, isFalseValidator, langFieldValidator } from '../shared/utils';
 
 const fetchBookingValidators: Record<keyof {fromDate: unknown}, IValidationConfig> = {
   fromDate: {validators: [numberValidator]}
@@ -8,7 +8,8 @@ const fetchBookingValidators: Record<keyof {fromDate: unknown}, IValidationConfi
 
 const putBookingValidatorSet: Record<keyof {}, IValidationConfig> = {
   bookingSlots: {validators: [arrayValidator, bookingSlotValidator]},
-  email: {validators: [emailValidator]}
+  email: {validators: [emailValidator]},
+  language: {validators: [langFieldValidator]}
 }
 
 const bookingSlotValidatorSet: Record<keyof {}, IValidationConfig> = {

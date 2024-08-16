@@ -20,3 +20,8 @@ export interface IRemindPasswordEmail {
 export interface IRegisterEmail {
   url: string
 }
+
+export interface IConfirmBookingEmail {
+  subtitle: string,
+  url: string
+}
