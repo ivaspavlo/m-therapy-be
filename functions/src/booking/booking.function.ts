@@ -2,7 +2,7 @@ import { onRequest } from 'firebase-functions/v2/https';
 import { logger, Request, Response } from 'firebase-functions';
 import { DocumentSnapshot, getFirestore, QuerySnapshot } from 'firebase-admin/firestore';
 
-import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../shared/constants';
+import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
 import { IBookingReq, IBookingSlot } from './booking.interface';
 import { fetchBookingValidator, putBookingValidator } from './booking.validator';
@@ -75,20 +75,40 @@ async function putBooking(
     return res.status(500).json(generalError);
   }
 
-  const mailOptions = GetConfirmBookingTemplate({
-    title: '',
-    subject: '',
-    to: '',
-    message: '',
-    config: {
-      subtitle: '',
-      url: ''
-    }
-  });
+  let user;
+  try {
+    user = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', reqBody.email).get();
+  } catch (error) {
+    return res.status(500).json(generalError);
+  }
 
-  console.log(mailOptions);
+  // If user is not registered
+  if (user.empty) {
+    const datesForTemplate = reqBody.bookingSlots.map((slot: IBookingSlot) => {
+      const dateStart = new Date(slot.start);
+      return `<span>${dateStart.getDay() + 1}.${dateStart.getMonth() + 1} - ${dateStart.getHours()}:${dateStart.getMinutes()}<span>`;
+    });
 
-  reqBody.bookingSlots.forEach(async (slot) => {
+    console.log(datesForTemplate);
+
+    // @ts-ignore
+    const currentTranslations = TRANSLATIONS[reqBody.lang];
+
+    const mailOptions = GetConfirmBookingTemplate({
+      title: currentTranslations.confirmBookingTitle,
+      subject: currentTranslations.confirmBookingSubject,
+      to: reqBody.email,
+      message: currentTranslations.confirmBookingMessage,
+      config: {
+        subtitle: currentTranslations.subtitle,
+        url: ''
+      }
+    });
+
+    console.log(mailOptions);
+  }
+
+  reqBody.bookingSlots.map(async (slot) => {
     await getFirestore().doc(slot.id).update({isBooked: true}).finally();
   });
 
