@@ -72,15 +72,16 @@ export const RegisterFunction = onRequest(
       }
     });
 
-    const confirmToken = generateJwt(
-      { email: userData.email },
-      process.env[ENV_KEYS.JWT_SECRET] as string,
-      { expiresIn: resetTokenExp.value() }
-    );
-    if (!confirmToken) {
+    let confirmToken;
+    try {
+      confirmToken = generateJwt(
+        { email: userData.email },
+        process.env[ENV_KEYS.JWT_SECRET] as string,
+        { expiresIn: resetTokenExp.value() }
+      );
+    } catch (error: unknown) {
       logger.error('[REGISTER] Signing JWT for register confirmation email failed');
-      res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
-      return;
+      res.status(500).json(generalError);
     }
 
     const mailOptions = GetRegisterTemplate({

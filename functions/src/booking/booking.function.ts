@@ -1,12 +1,14 @@
+import * as nodemailer from 'nodemailer';
+import { defineString } from 'firebase-functions/params';
 import { onRequest } from 'firebase-functions/v2/https';
 import { logger, Request, Response } from 'firebase-functions';
 import { DocumentSnapshot, getFirestore, QuerySnapshot } from 'firebase-admin/firestore';
 
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
+import { generateJwt, GetConfirmBookingTemplate } from '../shared/utils';
 import { IBookingReq, IBookingSlot } from './booking.interface';
 import { fetchBookingValidator, putBookingValidator } from './booking.validator';
-import { GetConfirmBookingTemplate } from '../shared/utils';
 
 export const BookingFunction = onRequest(
   { secrets: [ENV_KEYS.JWT_SECRET] },
@@ -19,6 +21,10 @@ export const BookingFunction = onRequest(
     }
   }
 );
+
+const uiUrl = defineString(ENV_KEYS.UI_URL);
+const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP);
+const environment = defineString(ENV_KEYS.ENVIRONMENT);
 
 async function getBooking(
   req: Request,
@@ -67,10 +73,9 @@ async function putBooking(
     return;
   }
 
-  let preBooking;
+  let preBookingId;
   try {
-    preBooking = (await getFirestore().collection(COLLECTIONS.PREBOOKINGS).add(reqBody)).id;
-    console.log(preBooking);
+    preBookingId = (await getFirestore().collection(COLLECTIONS.PREBOOKINGS).add(reqBody)).id;
   } catch (error) {
     return res.status(500).json(generalError);
   }
@@ -89,7 +94,17 @@ async function putBooking(
       return `<span>${dateStart.getDay() + 1}.${dateStart.getMonth() + 1} - ${dateStart.getHours()}:${dateStart.getMinutes()}<span>`;
     });
 
-    console.log(datesForTemplate);
+    let token;
+    try {
+      token = generateJwt(
+        { preBookingId: preBookingId },
+        process.env[ENV_KEYS.JWT_SECRET] as string,
+        { expiresIn: resetTokenExp.value() }
+      );
+    } catch (error: unknown) {
+      logger.error('[PUT BOOKING] Signing JWT for pre-booking confirmation email failed');
+      res.status(500).json(generalError);
+    }
 
     // @ts-ignore
     const currentTranslations = TRANSLATIONS[reqBody.lang];
@@ -98,21 +113,40 @@ async function putBooking(
       title: currentTranslations.confirmBookingTitle,
       subject: currentTranslations.confirmBookingSubject,
       to: reqBody.email,
-      message: currentTranslations.confirmBookingMessage,
+      message: `${currentTranslations.confirmBookingMessage}: ${datesForTemplate}`,
       config: {
         subtitle: currentTranslations.subtitle,
-        url: ''
+        url: `${uiUrl}/pre-booking/${token}`
       }
     });
 
-    console.log(mailOptions);
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env[ENV_KEYS.MAIL_USER],
+        pass: process.env[ENV_KEYS.MAIL_PASS]
+      }
+    });
+
+    transporter.sendMail(mailOptions, (error: unknown) => {
+      if (error) {
+        if (environment.value() === 'PROD') {
+          logger.error('[PUT BOOKING] Nodemailer failed to send pre-booking confirmation email', error);
+        }
+        res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+        return;
+      }
+
+      logger.info(`[PUT BOOKING] Pre-booking confirmation email was sent to: ${reqBody.email}`);
+      res.status(201).send(new ResponseBody({}, true));
+    });
   }
 
   reqBody.bookingSlots.map(async (slot) => {
     await getFirestore().doc(slot.id).update({isBooked: true}).finally();
   });
 
-  return res.status(404).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_EXIST]));
+  return res.status(201).json(new ResponseBody({}, true));
 }
 
 async function postBooking(
