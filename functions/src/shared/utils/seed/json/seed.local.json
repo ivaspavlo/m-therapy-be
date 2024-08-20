@@ -7,9 +7,9 @@
       "phone": "111222333444",
       "password": "$2b$04$3jovT/iq.CY4YWZzpCyn5ulgktVmovA9fFSab.qzwGZkSfv.KWSMm",
       "birthday": "1999-11-11",
-      "isConfirmed": true,
+      "isConfirmed": false,
       "lang": "en",
-      "isAdmin": true,
+      "isAdmin": false,
       "hasEmailConsent": true
     }
   ],
@@ -60,51 +60,61 @@
   ],
   "bookings": [
     {
+      "id": "1",
       "start": 4088824005956,
       "end": 4088827605956,
       "isBooked": false
     },
     {
+      "id": "2",
       "start": 4088827605956,
       "end": 4088831205956,
       "isBooked": false
     },
     {
+      "id": "3",
       "start": 4088831205956,
       "end": 4088834805956,
       "isBooked": false
     },
     {
+      "id": "4",
       "start": 4088834805956,
       "end": 4088838405956,
       "isBooked": false
     },
     {
+      "id": "5",
       "start": 4088838405956,
       "end": 4088842005956,
       "isBooked": false
     },
     {
+      "id": "6",
       "start": 4088842005956,
       "end": 4088845605956,
       "isBooked": false
     },
     {
+      "id": "7",
       "start": 4088845605956,
       "end": 4088849205956,
       "isBooked": false
     },
     {
+      "id": "8",
       "start": 4088849205956,
       "end": 4088852805956,
       "isBooked": false
     },
     {
+      "id": "9",
       "start": 4088852805956,
       "end": 4088856405956,
       "isBooked": false
     },
     {
+      "id": "10",
       "start": 4088856405956,
       "end": 4088860005956,
       "isBooked": false
