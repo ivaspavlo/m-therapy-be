@@ -6,10 +6,10 @@ export interface IBookingSlot {
   end: number,
   isBooked: boolean,
   isPreBooked: boolean,
-  bookedBy?: string
+  bookedByEmail?: string
 }
 
-export interface IBookingReq {
+export interface IPreBooking {
   bookingSlots: IBookingSlot[],
   email: string,
   language: LanguageType
