@@ -16,8 +16,9 @@ const bookingSlotValidatorSet: Record<keyof {}, IValidationConfig> = {
   id: {validators: [stringValidator]},
   start: {validators: [numberValidator]},
   end: {validators: [numberValidator]},
+  isPreBooked: {validators: [booleanValidator]},
   isBooked: {isOptional: true, validators: [booleanValidator, isFalseValidator]},
-  bookedBy: {isOptional: true, validators: [booleanValidator]}
+  bookedByEmail: {isOptional: true, validators: [booleanValidator]}
 }
 
 function bookingSlotValidator(value: unknown[]): boolean {
