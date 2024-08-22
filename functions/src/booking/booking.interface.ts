@@ -12,5 +12,5 @@ export interface IBookingSlot {
 export interface IPreBooking {
   bookingSlots: IBookingSlot[],
   email: string,
-  language: LanguageType
+  lang: LanguageType
 }

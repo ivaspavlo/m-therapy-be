@@ -67,6 +67,7 @@ export const TRANSLATIONS = {
     remindEmailMessage: 'Please follow the link below in order to reset your password:',
     adEmailSubject: 'New offers from Tkachuk Massage Therapy!',
     confirmBookingTitle: 'test title',
+    confirmBookingSubject: 'test subject',
     confirmBookingSubtitle: 'test subtitle',
     confirmBookingMessage: 'test message'
   },
@@ -79,6 +80,7 @@ export const TRANSLATIONS = {
     remindEmailMessage: 'Будь ласка, перейдіть за посиланням нижче для того, щоб змінити пароль:',
     adEmailSubject: 'Нові пропозиції від Tkachuk Massage Therapy',
     confirmBookingTitle: 'test title',
+    confirmBookingSubject: 'test subject',
     confirmBookingSubtitle: 'test subtitle',
     confirmBookingMessage: 'test message'
   }

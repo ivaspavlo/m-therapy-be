@@ -101,6 +101,8 @@ async function putBookingHandler(
       return res.status(500).json(generalError);
     }
 
+    console.log(user);
+
     // If user is not registered or not confirmed
     if (user?.empty || user.docs[0]?.data()?.isConfirmed) {
       const datesForTemplate = reqBody.bookingSlots.map((slot: IBookingSlot) => {
@@ -129,7 +131,7 @@ async function putBookingHandler(
         to: reqBody.email,
         message: `${currentTranslations.confirmBookingMessage}: ${datesForTemplate}`,
         config: {
-          subtitle: currentTranslations.subtitle,
+          subtitle: currentTranslations.confirmBookingSubtitle,
           url: `${uiUrl}/pre-booking/${token}`
         }
       });
@@ -157,6 +159,8 @@ async function putBookingHandler(
     }
 
     reqBody.bookingSlots.forEach(async (slot: IBookingSlot) => {
+      const test = await getFirestore().collection(COLLECTIONS.BOOKINGS).doc(slot.id);
+      console.log((await test.get()).exists);
       await getFirestore().collection(COLLECTIONS.BOOKINGS).doc(slot.id).update({isPreBooked: true});
     });
 
