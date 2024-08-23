@@ -101,14 +101,14 @@ async function putBookingHandler(
       return res.status(500).json(generalError);
     }
 
-    console.log(user);
-
     // If user is not registered or not confirmed
     if (user?.empty || user.docs[0]?.data()?.isConfirmed) {
-      const datesForTemplate = reqBody.bookingSlots.map((slot: IBookingSlot) => {
+      const datesForTemplate = reqBody.bookingSlots.reduce((acc: string, slot: IBookingSlot) => {
         const dateStart = new Date(slot.start);
-        return `<span>${dateStart.getDay() + 1}.${dateStart.getMonth() + 1} - ${dateStart.getHours()}:${dateStart.getMinutes()}<span>`;
-      });
+        return acc + `<span style="display:block;">
+          ${dateStart.getDay() + 1}.${dateStart.getMonth() + 1} - ${dateStart.getHours()}:${dateStart.getMinutes()}
+        <span>`;
+      }, '');
 
       let token;
       try {
@@ -159,8 +159,6 @@ async function putBookingHandler(
     }
 
     reqBody.bookingSlots.forEach(async (slot: IBookingSlot) => {
-      const test = await getFirestore().collection(COLLECTIONS.BOOKINGS).doc(slot.id);
-      console.log((await test.get()).exists);
       await getFirestore().collection(COLLECTIONS.BOOKINGS).doc(slot.id).update({isPreBooked: true});
     });
 
