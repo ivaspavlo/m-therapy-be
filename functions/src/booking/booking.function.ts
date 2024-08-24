@@ -103,13 +103,6 @@ async function putBookingHandler(
 
     // If user is not registered or not confirmed
     if (user?.empty || user.docs[0]?.data()?.isConfirmed) {
-      const datesForTemplate = reqBody.bookingSlots.reduce((acc: string, slot: IBookingSlot) => {
-        const dateStart = new Date(slot.start);
-        return acc + `<span style="display:block;">
-          ${dateStart.getDay() + 1}.${dateStart.getMonth() + 1} - ${dateStart.getHours()}:${dateStart.getMinutes()}
-        <span>`;
-      }, '');
-
       let token;
       try {
         token = generateJwt(
@@ -129,9 +122,8 @@ async function putBookingHandler(
         title: currentTranslations.confirmBookingTitle,
         subject: currentTranslations.confirmBookingSubject,
         to: reqBody.email,
-        message: `${currentTranslations.confirmBookingMessage}: ${datesForTemplate}`,
+        message: `${currentTranslations.confirmBookingMessage}`,
         config: {
-          subtitle: currentTranslations.confirmBookingSubtitle,
           url: `${uiUrl}/pre-booking/${token}`
         }
       });
