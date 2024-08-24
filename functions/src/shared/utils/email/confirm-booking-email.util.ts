@@ -123,7 +123,6 @@ const buildTemplate = (templateData: IEmailTemplate<IConfirmBookingEmail>): stri
                                     <figure class="email-graphics-figure" style="display: inline-block; margin: 0; text-align: center; width: 100%;">
                                       <img class="email-graphics-img img__block" src="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/promo-graphics-2.jpg?alt=media&token=fc3062e3-df85-4529-b266-1b9b561cc4e4" border="0" alt="" style="max-width: 100%; width: 35%; display: inline-block;" />
                                     </figure>
-                                    <h5 class="email-subtitle header h5" style="line-height: 17px; font-family: Helvetica,Arial,sans-serif; font-size: 16px; margin: 16px 0; text-align: start; color: #044E3B;">${ templateData.config.subtitle }</h5>
                                     <p class="email-message text p" style="display: block; margin: 14px 0; font-family: Helvetica,Arial,sans-serif; font-size: 16px; line-height: 20px; color: #044E3B;">${ templateData.message }</p>
                                     <a class="main-link a" href="${ templateData.config.url }" style="margin-bottom: 24px; color: #8AC343; display: inline-block;"><span class="a__text" style="color: #8AC343;">${ templateData.lang === 'en' ? 'Follow the link' : 'Перейти за посиланням' }</span></a>
                                   </td>

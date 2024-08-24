@@ -22,6 +22,5 @@ export interface IRegisterEmail {
 }
 
 export interface IConfirmBookingEmail {
-  subtitle: string,
   url: string
 }

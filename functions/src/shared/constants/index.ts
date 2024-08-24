@@ -59,17 +59,16 @@ export enum CONTACT_TYPE {
 
 export const TRANSLATIONS = {
   en: {
-    registerEmailSubject: 'Email confirmation for Tkachuk Massage Therapy',
+    registerEmailSubject: 'Email confirmation on Tkachuk Massage Therapy',
     registerEmailTitle: 'Confirmation email',
     registerEmailMessage: 'Please follow the link below in order to confirm your email:',
-    remindEmailSubject: 'Reset of password for Tkachuk Massage Therapy',
+    remindEmailSubject: 'Reset of password on Tkachuk Massage Therapy',
     remindEmailTitle: 'Password reset',
     remindEmailMessage: 'Please follow the link below in order to reset your password:',
     adEmailSubject: 'New offers from Tkachuk Massage Therapy!',
-    confirmBookingTitle: 'test title',
-    confirmBookingSubject: 'test subject',
-    confirmBookingSubtitle: 'test subtitle',
-    confirmBookingMessage: 'test message'
+    confirmBookingSubject: 'Massage booking confirmation on Tkachuk Massage Therapy',
+    confirmBookingTitle: 'Massage booking confirmation',
+    confirmBookingMessage: 'Please follow the link below to confirm your booking'
   },
   ua: {
     registerEmailSubject: 'Підтвердити електронну пошту для Tkachuk Massage Therapy',
@@ -79,9 +78,8 @@ export const TRANSLATIONS = {
     remindEmailTitle: 'Зміна пароля',
     remindEmailMessage: 'Будь ласка, перейдіть за посиланням нижче для того, щоб змінити пароль:',
     adEmailSubject: 'Нові пропозиції від Tkachuk Massage Therapy',
-    confirmBookingTitle: 'test title',
-    confirmBookingSubject: 'test subject',
-    confirmBookingSubtitle: 'test subtitle',
-    confirmBookingMessage: 'test message'
+    confirmBookingSubject: 'Підтвердження резервування массажу на Tkachuk Massage Therapy',
+    confirmBookingTitle: 'Підтвердження резервування массажу',
+    confirmBookingMessage: 'Будь ласка, перейдіть за посиланням нижче, щоб підтвердити своє бронювання'
   }
 }
