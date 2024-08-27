@@ -6,10 +6,10 @@ import { DocumentData, DocumentSnapshot, getFirestore, QuerySnapshot } from 'fir
 
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
+import { IUser } from '../shared/interfaces';
 import { extractJwt, generateJwt, GetConfirmBookingTemplate } from '../shared/utils';
 import { IPreBooking, IBookingSlot } from './booking.interface';
 import { fetchBookingValidator, putBookingValidator } from './booking.validator';
-import { IUser } from 'src/shared/interfaces';
 
 const BookingURLs = {
   GET: {
@@ -72,8 +72,7 @@ async function getBookingHandler(
 
     logger.info(`[GET BOOKING] Retrieved ${docs.length} bookings starting with date: ${fromDate}`);
     return res.status(200).send(new ResponseBody(docs, true));
-  }
-  if (req.url.includes(BookingURLs.GET.preBooking)) {
+  } else if (req.url.includes(BookingURLs.GET.preBooking)) {
     const jwtToken = extractJwt<{preBookingId: string} | null>(
       req.query.token as string,
       process.env[ENV_KEYS.JWT_SECRET] as string
@@ -91,11 +90,7 @@ async function getBookingHandler(
       return res.status(500).json(generalError);
     }
 
-    preBooking.data()!.bookingSlots.forEach(async (slot: IBookingSlot) => {
-      await getFirestore().collection(COLLECTIONS.BOOKINGS).doc(slot.id).update({isPreBooked: true});
-    });
-
-    return res.status(200).json(new ResponseBody({}, true));
+    return res.status(200).json(new ResponseBody(preBooking.data(), true));
   }
 
   return res.status(404).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_EXIST]));
