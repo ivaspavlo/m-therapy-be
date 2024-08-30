@@ -17,9 +17,11 @@ const BookingURLs = {
     preBooking: 'pre-booking'
   },
   PUT: {
-    preBooking: 'pre-booking',
     preBookingConfirm: 'pre-booking/confirm',
     bookingApprove: 'approve'
+  },
+  POST: {
+    preBooking: 'pre-booking'
   }
 }
 
@@ -100,83 +102,7 @@ async function putBookingHandler(
   req: Request,
   res: Response
 ): Promise<any> {
-  if (req.url.includes(BookingURLs.PUT.preBooking)) {
-    const reqBody: IPreBooking = req.body;
-    const validationErrors = putBookingValidator(reqBody);
-    if (validationErrors) {
-      res.status(400).json(new ResponseBody(null, false, validationErrors));
-      return;
-    }
-
-    let preBookingId;
-    try {
-      preBookingId = (await getFirestore().collection(COLLECTIONS.PREBOOKINGS).add(reqBody)).id;
-    } catch (error) {
-      return res.status(500).json(generalError);
-    }
-
-    let user;
-    try {
-      user = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', reqBody.email).get();
-    } catch (error) {
-      return res.status(500).json(generalError);
-    }
-
-    // If user is not registered or not confirmed
-    if (user?.empty || user.docs[0]?.data()?.isConfirmed) {
-      let token;
-      try {
-        token = generateJwt(
-          { preBookingId: preBookingId },
-          process.env[ENV_KEYS.JWT_SECRET] as string,
-          { expiresIn: resetTokenExp.value() }
-        );
-      } catch (error: unknown) {
-        logger.error('[PUT BOOKING PRE_BOOKING] Signing JWT for pre-booking confirmation email failed');
-        res.status(500).json(generalError);
-      }
-
-      // @ts-ignore
-      const currentTranslations = TRANSLATIONS[reqBody.lang];
-
-      const mailOptions = GetConfirmBookingTemplate({
-        title: currentTranslations.confirmBookingTitle,
-        subject: currentTranslations.confirmBookingSubject,
-        to: reqBody.email,
-        message: `${currentTranslations.confirmBookingMessage}`,
-        config: {
-          url: `${uiUrl}/pre-booking/${token}`
-        }
-      });
-
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: process.env[ENV_KEYS.MAIL_USER],
-          pass: process.env[ENV_KEYS.MAIL_PASS]
-        }
-      });
-
-      transporter.sendMail(mailOptions, (error: unknown) => {
-        if (error) {
-          if (environment.value() === 'PROD') {
-            logger.error('[PUT BOOKING PRE_BOOKING] Nodemailer failed to send pre-booking confirmation email', error);
-          }
-          res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
-          return;
-        }
-
-        logger.info(`[PUT BOOKING PRE_BOOKING] Pre-booking confirmation email was sent to: ${reqBody.email}`);
-        res.status(201).send(new ResponseBody({}, true));
-      });
-    }
-
-    reqBody.bookingSlots.forEach(async (slot: IBookingSlot) => {
-      await getFirestore().collection(COLLECTIONS.BOOKINGS).doc(slot.id).update({isPreBooked: true});
-    });
-
-    return res.status(200).json(new ResponseBody({}, true));
-  } else if (req.url.includes(BookingURLs.PUT.preBookingConfirm)) {
+  if (req.url.includes(BookingURLs.PUT.preBookingConfirm)) {
     const jwtToken = extractJwt<{preBookingId: string} | null>(
       req.query.token as string,
       process.env[ENV_KEYS.JWT_SECRET] as string
@@ -254,6 +180,89 @@ async function postBookingHandler(
   req: Request,
   res: Response
 ): Promise<any> {
+  if (req.url.includes(BookingURLs.POST.preBooking)) {
+    const reqBody: IPreBooking = req.body;
+    const validationErrors = putBookingValidator(reqBody);
+    if (validationErrors) {
+      res.status(400).json(new ResponseBody(null, false, validationErrors));
+      return;
+    }
+
+    let preBookingId;
+    try {
+      preBookingId = (await getFirestore().collection(COLLECTIONS.PREBOOKINGS).add(reqBody)).id;
+    } catch (error) {
+      return res.status(500).json(generalError);
+    }
+
+    let user;
+    try {
+      user = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', reqBody.email).get();
+    } catch (error) {
+      return res.status(500).json(generalError);
+    }
+
+    // If user is not registered or not confirmed
+    if (user?.empty || user.docs[0]?.data()?.isConfirmed) {
+      let token;
+      try {
+        token = generateJwt(
+          { preBookingId: preBookingId },
+          process.env[ENV_KEYS.JWT_SECRET] as string,
+          { expiresIn: resetTokenExp.value() }
+        );
+      } catch (error: unknown) {
+        logger.error('[PUT BOOKING PRE_BOOKING] Signing JWT for pre-booking confirmation email failed');
+        res.status(500).json(generalError);
+      }
+
+      // @ts-ignore
+      const currentTranslations = TRANSLATIONS[reqBody.lang];
+
+      const mailOptions = GetConfirmBookingTemplate({
+        title: currentTranslations.confirmBookingTitle,
+        subject: currentTranslations.confirmBookingSubject,
+        to: reqBody.email,
+        message: `${currentTranslations.confirmBookingMessage}`,
+        config: {
+          url: `${uiUrl.value()}/confirm-booking/${token}`
+        }
+      });
+
+      const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+          user: process.env[ENV_KEYS.MAIL_USER],
+          pass: process.env[ENV_KEYS.MAIL_PASS]
+        }
+      });
+
+      transporter.sendMail(mailOptions, (error: unknown) => {
+        if (error) {
+          if (environment.value() === 'PROD') {
+            logger.error('[PUT BOOKING PRE_BOOKING] Nodemailer failed to send pre-booking confirmation email', error);
+          }
+          res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+          return;
+        }
+
+        logger.info(`[PUT BOOKING PRE_BOOKING] Pre-booking confirmation email was sent to: ${reqBody.email}`);
+        res.status(201).send(new ResponseBody({}, true));
+      });
+    }
+
+    reqBody.bookingSlots.forEach(async (slot: IBookingSlot) => {
+      try {
+        await getFirestore().collection(COLLECTIONS.BOOKINGS).doc(slot.id).update({isPreBooked: true});
+      } catch (error: unknown) {
+        res.status(500).json(generalError);
+        return;
+      }
+    });
+
+    return res.status(200).json(new ResponseBody({id: preBookingId}, true));
+  }
+
   return res.status(404).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_EXIST]));
 }
 
