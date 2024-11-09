@@ -81,7 +81,7 @@ async function getBookingHandler(
     );
 
     if (!jwtToken) {
-      res.status(401).json(jwtError);
+      res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.TOKEN]));
       return;
     }
 
