@@ -6,7 +6,7 @@ import { DocumentReference, QuerySnapshot, getFirestore } from 'firebase-admin/f
 import { defineString } from 'firebase-functions/params';
 import { ResponseBody } from '../../shared/models';
 import { GetRegisterTemplate, generateJwt } from '../../shared/utils';
-import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES, FE_URLS, TRANSLATIONS } from '../../shared/constants';
+import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES, FE_URLS, RESPONSE_STATUS, TRANSLATIONS } from '../../shared/constants';
 import { RegisterValidator } from './register.validator';
 import { IRegisterReq } from './register.interface';
 import { RegisterMapper } from './register.mapper';
@@ -33,7 +33,12 @@ export const RegisterFunction = onRequest(
       return;
     }
 
-    validationErrors = RegisterValidator(userData, existingUser);
+    if (!existingUser.empty) {
+      res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.DUPLICATE], RESPONSE_STATUS.DUPLICATE));
+      return;
+    }
+
+    validationErrors = RegisterValidator(userData);
     if (validationErrors) {
       res.status(400).json(new ResponseBody(null, false, validationErrors));
       return;

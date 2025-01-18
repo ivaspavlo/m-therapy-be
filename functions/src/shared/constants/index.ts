@@ -5,17 +5,29 @@ export enum FE_URLS {
   RESET_PASSWORD = 'auth/reset'
 }
 
-export enum ERROR_MESSAGES {
-  GENERAL = 'Internal server error',
-  DUPLICATE = 'Instance already exists',
-  NOT_FOUND = 'Instance not found',
-  CREDENTIALS = 'Credentials are incorrect',
-  FIELDS_VALIDATION = 'Validation for fields failed',
-  JWT = 'JWT is invalid',
-  TOKEN = 'Token is invalid',
-  BAD_DATA = 'Data is incorrect',
-  NOT_EXIST = 'API does not exist'
+export enum RESPONSE_STATUS {
+  GENERAL = 'GENERAL',
+  DUPLICATE = 'DUPLICATE',
+  NOT_FOUND = 'NOT_FOUND',
+  CREDENTIALS = 'CREDENTIALS',
+  FIELDS_VALIDATION = 'FIELDS_VALIDATION',
+  JWT = 'JWT',
+  TOKEN = 'TOKEN',
+  BAD_DATA = 'BAD_DATA',
+  NOT_EXIST = 'NOT_EXIST'
 }
+
+export const ERROR_MESSAGES = {
+  [RESPONSE_STATUS.GENERAL]: 'Internal server error',
+  [RESPONSE_STATUS.DUPLICATE]: 'Instance already exists',
+  [RESPONSE_STATUS.NOT_FOUND]: 'Instance not found',
+  [RESPONSE_STATUS.CREDENTIALS]: 'Credentials are incorrect',
+  [RESPONSE_STATUS.FIELDS_VALIDATION]: 'Validation for fields failed',
+  [RESPONSE_STATUS.JWT]: 'JWT is invalid',
+  [RESPONSE_STATUS.TOKEN]: 'Token is invalid',
+  [RESPONSE_STATUS.BAD_DATA]: 'Data is incorrect',
+  [RESPONSE_STATUS.NOT_EXIST]: 'API does not exist',
+};
 
 export enum COLLECTIONS {
   USERS = 'users',
