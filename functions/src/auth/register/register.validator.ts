@@ -1,4 +1,3 @@
-import { QuerySnapshot } from 'firebase-admin/firestore';
 import { IRegisterReq } from './register.interface';
 import { ERROR_MESSAGES, TRANSLATIONS } from '../../shared/constants';
 import {
@@ -26,10 +25,7 @@ const fieldValidators: Record<keyof IRegisterReq, IValidationConfig> = {
   hasEmailConsent: {validators: [booleanValidator]}
 }
 
-export const RegisterValidator = (req: IRegisterReq, queryByEmail: QuerySnapshot): string[] | null => {
-  if (!queryByEmail.empty) {
-    return [ERROR_MESSAGES.DUPLICATE];
-  }
+export const RegisterValidator = (req: IRegisterReq): string[] | null => {
   const errors = validate(req, fieldValidators);
   if (errors.length) {
     return [`${ERROR_MESSAGES.FIELDS_VALIDATION}: ${errors.join(',')}`];
