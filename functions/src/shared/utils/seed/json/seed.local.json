@@ -58,6 +58,16 @@
       "type": "TELEGRAM"
     }
   ],
+  "payment": [
+    {
+      "name": "privat",
+      "number": "5532 3354 1734 2267"
+    },
+    {
+      "name": "universal",
+      "number": "5545 3674 3542 2560"
+    }
+  ],
   "bookings": [
     {
       "start": 4088824005956,

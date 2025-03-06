@@ -8,3 +8,5 @@ export * from './product.interface';
 export * from './content.interface';
 export * from './validator-set.interface';
 export * from './subscriber.interface';
+export * from './contact.interface';
+export * from './payment-data.interface';
