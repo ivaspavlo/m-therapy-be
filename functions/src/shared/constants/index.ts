@@ -35,7 +35,7 @@ export enum COLLECTIONS {
   ADS = 'ads',
   PRODUCTS = 'products',
   CONTACTS = 'contacts',
-  PAYMENT = 'payment',
+  PAYMENT_CARDS = 'payment-cards',
   SUBSCRIBERS = 'subscribers',
   BOOKINGS = 'bookings',
   PREBOOKINGS = 'pre-bookings'

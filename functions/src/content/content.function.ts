@@ -20,10 +20,10 @@ async function getContent(res: Response): Promise<void> {
     const products: IProduct[] = (await getFirestore().collection(COLLECTIONS.PRODUCTS).get()).docs.map(d => d.data() as IProduct);
     const ads: IAd[] = (await getFirestore().collection(COLLECTIONS.ADS).get()).docs.map(d => Ad.of(d.data() as IAd)) as IAd[];
     const contacts: IContact[] = (await getFirestore().collection(COLLECTIONS.CONTACTS).get()).docs.map(d => d.data() as IContact);
-    const paymentData: IPaymentData[] = (await getFirestore().collection(COLLECTIONS.PAYMENT).get()).docs.map(d => d.data() as IPaymentData);
+    const paymentCards: IPaymentData[] = (await getFirestore().collection(COLLECTIONS.PAYMENT_CARDS).get()).docs.map(d => d.data() as IPaymentData);
 
     logger.info('[GET CONTENT] Retrieved successfully');
-    res.status(200).json(new ResponseBody({products, ads, contacts, paymentData}, true));
+    res.status(200).json(new ResponseBody({products, ads, contacts, paymentCards}, true));
   } catch (e: any) {
     logger.error('[GET CONTENT] Retrieval failed: ', e);
     res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
