@@ -1,7 +1,8 @@
 import { defineString } from 'firebase-functions/params';
 import { getFirestore } from 'firebase-admin/firestore';
-import { COLLECTIONS, ENV, ENV_KEYS } from '../../constants';
 import * as logger from 'firebase-functions/logger';
+
+import { COLLECTIONS, ENV, ENV_KEYS } from '../../constants';
 import localSeeds from './json/seed.local.json';
 
 
