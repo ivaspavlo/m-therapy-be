@@ -10,7 +10,6 @@ import { IUser } from '../../shared/interfaces';
 import { LoginValidator } from './login.validator';
 import { ILoginReq } from './login.interface';
 
-
 const jwtExp = defineString(ENV_KEYS.JWT_EXP);
 const jwtExpAdmin = defineString(ENV_KEYS.JWT_EXP_ADMIN);
 

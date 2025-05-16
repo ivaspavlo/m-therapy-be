@@ -3,7 +3,6 @@
 ## CLI commands
   - run linter: `npm run lint`
   - run tests: `npm run test`
-  - run in debugger mode: `npm run debug`
   - configure Firebase secret: `firebase functions:secrets:set <SECRET_NAME> --project <project_id>`
   - list Firebase projects: `firebase projects:list`
   - switch to a specific Firebase project: `firebase use <project_id>`
