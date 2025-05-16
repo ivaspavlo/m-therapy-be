@@ -11,7 +11,6 @@ import { RegisterValidator } from './register.validator';
 import { IRegisterReq } from './register.interface';
 import { RegisterMapper } from './register.mapper';
 
-
 const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP);
 const uiUrl = defineString(ENV_KEYS.UI_URL);
 const environment = defineString(ENV_KEYS.ENVIRONMENT);
