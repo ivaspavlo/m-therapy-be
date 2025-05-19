@@ -5,9 +5,9 @@
       "lastname": "test1",
       "email": "samoran4ez@gmail.com",
       "phone": "111222333444",
-      "password": "$2b$04$3jovT/iq.CY4YWZzpCyn5ulgktVmovA9fFSab.qzwGZkSfv.KWSMm",
+      "password": "$2b$04$yFqmJeNJrTNpdsLEGLq2Iug3G9C6gdoor.GCsnTs3WNpWb4Ewunpa",
       "birthday": "1999-11-11",
-      "isConfirmed": false,
+      "isConfirmed": true,
       "lang": "en",
       "isAdmin": false,
       "hasEmailConsent": true

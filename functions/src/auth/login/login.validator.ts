@@ -9,7 +9,7 @@ export const LoginValidator = async (req: ILoginReq, user: IUser): Promise<strin
   let isPasswordCorrect: boolean;
 
   if (!user.isConfirmed) {
-    return Promise.resolve([ERROR_MESSAGES.CREDENTIALS]);
+    return Promise.resolve([ERROR_MESSAGES.BAD_DATA]);
   }
 
   try {
