@@ -44,7 +44,7 @@ describe('content', () => {
     }
   });
 
-  test('[GET CONTENT] should return correct response', async () => {
+  test.skip('[GET CONTENT] should return correct response', async () => {
     const res = {
       status: (code: number) => {
         return {

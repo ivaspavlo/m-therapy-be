@@ -9,7 +9,6 @@ import { GetRemindPasswordTemplate, generateJwt } from '../../shared/utils';
 import { IRemindReq } from './remind.interface';
 import { RemindValidator } from './remind.validator';
 
-
 const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP);
 const uiUrl = defineString(ENV_KEYS.UI_URL);
 
