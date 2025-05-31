@@ -3,7 +3,7 @@
   "name": "m-therapy-be",
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
-    "build": "tsc",
+    "build": "dotenv -e .env.mt-stage-db6be -- tsc",
     "build:watch": "tsc --watch",
     "start": "npm run build && firebase emulators:start --only functions",
     "start:debug": "npm run build && firebase emulators:start --inspect-functions",
