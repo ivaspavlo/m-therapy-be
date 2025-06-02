@@ -3,11 +3,11 @@
   "name": "m-therapy-be",
   "scripts": {
     "lint": "eslint --ext .js,.ts .",
-    "build": "dotenv -e .env.mt-stage-db6be -- tsc",
+    "build": "tsc",
     "build:watch": "tsc --watch",
     "start": "npm run build && firebase emulators:start --only functions",
     "start:debug": "npm run build && firebase emulators:start --inspect-functions",
-    "deploy:stage": "dotenv -e .env.mt-stage-db6be -- tsc && firebase deploy --only functions --project mt-stage-db6be",
+    "deploy:stage": "npm run build && firebase deploy --only functions --project mt-stage-db6be",
     "deploy:prod": "dotenv -e .env.mt-prod-30347 -- tsc && firebase deploy --only functions --project mt-prod-30347",
     "logs": "firebase functions:log",
     "test": "jest --runInBand"
@@ -22,8 +22,8 @@
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "firebase": "^10.7.1",
-    "firebase-admin": "^11.8.0",
-    "firebase-functions": "^4.5.0",
+    "firebase-admin": "^13.4.0",
+    "firebase-functions": "^6.3.2",
     "jsonwebtoken": "^9.0.1",
     "nodemailer": "^6.9.4",
     "xss": "^1.0.14"

@@ -1,7 +1,8 @@
 import * as nodemailer from 'nodemailer';
+import { Request, Response } from 'express';
 import { defineString } from 'firebase-functions/params';
 import { onRequest } from 'firebase-functions/v2/https';
-import { logger, Request, Response } from 'firebase-functions';
+import { logger } from 'firebase-functions';
 import { DocumentData, DocumentSnapshot, getFirestore, QuerySnapshot } from 'firebase-admin/firestore';
 
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';

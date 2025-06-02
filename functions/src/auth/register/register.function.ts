@@ -1,7 +1,7 @@
 import * as logger from 'firebase-functions/logger';
 import * as nodemailer from 'nodemailer';
 import { onRequest } from 'firebase-functions/v2/https';
-import { Request, Response } from 'firebase-functions';
+import { Request, Response } from 'express';
 import { DocumentReference, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
 import { defineString } from 'firebase-functions/params';
 import { ResponseBody } from '../../shared/models';

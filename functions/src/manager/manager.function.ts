@@ -3,7 +3,7 @@ import * as nodemailer from 'nodemailer';
 import { onRequest } from 'firebase-functions/v2/https';
 import { DocumentData, getFirestore } from 'firebase-admin/firestore';
 import { defineString } from 'firebase-functions/params';
-import { Request, Response } from 'firebase-functions';
+import { Request, Response } from 'express';
 
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
 import { ResponseBody } from '../shared/models';

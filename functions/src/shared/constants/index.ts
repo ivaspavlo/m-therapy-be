@@ -59,6 +59,24 @@ export enum ENV_KEYS {
   UI_URL = 'UI_URL'
 }
 
+export const ENV_KEYS_ = {
+  general: {
+    ENVIRONMENT: 'ENVIRONMENT',
+    ui_url: 'ui_url'
+  },
+  AUTH: {
+    SALT_ROUNDS: 'SALT_ROUNDS',
+    JWT_SECRET: 'JWT_SECRET',
+    JWT_EXP: 'JWT_EXP',
+    JWT_EXP_ADMIN: 'JWT_EXP_ADMIN',
+    RESET_TOKEN_EXP: 'RESET_TOKEN_EXP'
+  },
+  MAIL: {
+    MAIL_USER: 'MAIL_USER',
+    MAIL_PASS: 'MAIL_PASS',
+  }
+}
+
 export enum AD_TYPE {
   COUNTDOWN,
   FOOTER

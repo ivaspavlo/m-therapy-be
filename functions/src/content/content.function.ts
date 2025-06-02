@@ -1,13 +1,14 @@
+import { Request, Response } from 'express';
 import { onRequest } from 'firebase-functions/v2/https';
-import { Request, Response, config, logger } from 'firebase-functions';
+import { logger } from 'firebase-functions';
 import { getFirestore } from 'firebase-admin/firestore';
 
-import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../shared/constants';
+import { COLLECTIONS, ERROR_MESSAGES } from '../shared/constants';
 import { Ad, ResponseBody } from '../shared/models';
 import { IProduct, IAd, IContact, IPaymentData } from '../shared/interfaces';
 
 export const ContentFunction = onRequest(
-  { cors: [config()[ENV_KEYS.UI_URL]] },
+  { cors: [process.env.UI_URL || ''] },
   async (req: Request, res: Response): Promise<void> => {
     switch(req.method) {
     case('GET'): return getContent(res);
