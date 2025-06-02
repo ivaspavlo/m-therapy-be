@@ -1,6 +1,6 @@
 import * as logger from 'firebase-functions/logger';
 import { onRequest } from 'firebase-functions/v2/https';
-import { Request, Response } from 'firebase-functions';
+import { Request, Response } from 'express';
 import { defineString } from 'firebase-functions/params';
 import { QueryDocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
