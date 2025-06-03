@@ -23,9 +23,9 @@ The entry point for application-related logic is app.component.ts, it loads amon
 ## Environments
 
 The application has three environments:
-- local: .env.local
-- stage: .env.mt-stage-db6be
-- prod: .env.mt-prod-30347
+- local: set up via .env file.
+- stage: set up via Firebase CLI for project - mt-stage-db6be.
+- prod: set up via Firebase CLI for project - mt-prod-30347.
 
 ## CLI commands
   - run linter: `npm run lint`
