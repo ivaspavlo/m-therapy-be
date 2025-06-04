@@ -2,6 +2,7 @@ import * as logger from 'firebase-functions/logger';
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'express';
 import { QueryDocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
+
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
 import { ResponseBody } from '../../shared/models';
 import { IUser } from '../../shared/interfaces';
@@ -9,7 +10,6 @@ import { extractJwt } from '../../shared/utils';
 import { IResetReq } from './reset.interface';
 import { ResetValidator } from './reset.validator';
 import { ResetMapper } from './reset.mapper';
-
 
 export const ResetFunction = onRequest(
   { secrets: [ENV_KEYS.JWT_SECRET] },
@@ -19,7 +19,7 @@ export const ResetFunction = onRequest(
 
     const resetToken = extractJwt<{[key:string]: any, email: string}>(
       req.query.token as string,
-      process.env[ENV_KEYS.JWT_SECRET] as string
+      process.env[ENV_KEYS.JWT_SECRET]!
     );
     if (!resetToken) {
       res.status(401).json(new ResponseBody(null, false, [ERROR_MESSAGES.TOKEN]));

@@ -1,15 +1,11 @@
-import { defineString } from 'firebase-functions/params';
 import { getFirestore } from 'firebase-admin/firestore';
 import * as logger from 'firebase-functions/logger';
 
 import { COLLECTIONS, ENV, ENV_KEYS } from '../../constants';
 import localSeeds from './json/seed.local.json';
 
-
-const currentEnv = defineString(ENV_KEYS.ENVIRONMENT);
-
 export const Seed = async (): Promise<void> => {
-  switch(currentEnv.value()) {
+  switch(process.env[ENV_KEYS.ENVIRONMENT]) {
     case ENV.LOCAL: await populateLocal(); break; // eslint-disable-line
     case ENV.STAGE: await populateStage(); break; // eslint-disable-line
   }

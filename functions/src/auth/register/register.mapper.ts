@@ -1,17 +1,16 @@
-import { defineInt } from 'firebase-functions/params';
 import { IRegisterReq } from './register.interface';
 import { IUser } from '../../shared/interfaces';
 import { ENV_KEYS } from '../../shared/constants';
 
 const bcrypt = require('bcrypt');
 const xss = require('xss');
-const saltRounds = defineInt(ENV_KEYS.SALT_ROUNDS);
-
 
 export const RegisterMapper = async (req: IRegisterReq): Promise<IUser> => {
+  const saltRounds = process.env[ENV_KEYS.SALT_ROUNDS];
+
   let hashedPassword;
   try {
-    hashedPassword = await bcrypt.hash(req.password, saltRounds.value());
+    hashedPassword = await bcrypt.hash(req.password, saltRounds);
   } catch (e: any) {
     return Promise.reject();
   }

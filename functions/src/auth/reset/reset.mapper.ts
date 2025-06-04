@@ -1,17 +1,15 @@
-import { defineInt } from 'firebase-functions/params';
 import { IUser } from '../../shared/interfaces';
 import { IResetReq } from './reset.interface';
 import { ENV_KEYS } from '../../shared/constants';
 
 const bcrypt = require('bcrypt');
 
-
-const saltRounds = defineInt(ENV_KEYS.SALT_ROUNDS);
-
 export const ResetMapper = async (req: IResetReq, user: IUser): Promise<IUser> => {
+  const saltRounds = process.env[ENV_KEYS.SALT_ROUNDS];
+
   let hashedPassword;
   try {
-    hashedPassword = await bcrypt.hash(req.password, saltRounds.value());
+    hashedPassword = await bcrypt.hash(req.password, saltRounds);
   } catch (e: any) {
     return Promise.reject();
   }

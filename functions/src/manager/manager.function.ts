@@ -2,7 +2,6 @@ import * as logger from 'firebase-functions/logger';
 import * as nodemailer from 'nodemailer';
 import { onRequest } from 'firebase-functions/v2/https';
 import { DocumentData, getFirestore } from 'firebase-admin/firestore';
-import { defineString } from 'firebase-functions/params';
 import { Request, Response } from 'express';
 
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
@@ -11,9 +10,6 @@ import { extractJwt, generateJwt, GetAdTemplate } from '../shared/utils';
 import { IUser } from '../shared/interfaces';
 import { ManagerValidator } from './manager.validator';
 import { IAdEmailsReq } from './manager.interface';
-
-const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP);
-const uiUrl = defineString(ENV_KEYS.UI_URL);
 
 export const ManagerFunction = onRequest(
   { secrets: [ENV_KEYS.JWT_SECRET] },
@@ -61,6 +57,9 @@ export const ManagerFunction = onRequest(
 async function postManagerData(req: Request, res: Response): Promise<any> {
   switch(req.url) {
   case('/promo-emails'): {
+    const resetTokenExp = process.env[ENV_KEYS.RESET_TOKEN_EXP];
+    const uiUrl = process.env[ENV_KEYS.UI_URL];
+  
     const reqBody: IAdEmailsReq = req.body;
 
     const validationErrors: string[] | null = ManagerValidator(reqBody);
@@ -101,8 +100,8 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
     logger.info('[POST MANAGER EMAILS] Retrieved emails list');
 
     const transporterArr = allSubscribers!.map(subscriber => {
-      const unsubscribeToken = generateJwt({ id: subscriber.id, language: subscriber.lang }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp.value() });
-      const unsubscribeUrl = `${uiUrl.value()}/auth/unsubscribe/${unsubscribeToken}`;
+      const unsubscribeToken = generateJwt({ id: subscriber.id, language: subscriber.lang }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp });
+      const unsubscribeUrl = `${uiUrl}/auth/unsubscribe/${unsubscribeToken}`;
 
       const mailOptions = GetAdTemplate({
         lang: subscriber.lang,

@@ -1,6 +1,5 @@
 import * as nodemailer from 'nodemailer';
 import { Request, Response } from 'express';
-import { defineString } from 'firebase-functions/params';
 import { onRequest } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions';
 import { DocumentData, DocumentSnapshot, getFirestore, QuerySnapshot } from 'firebase-admin/firestore';
@@ -40,10 +39,6 @@ export const BookingFunction = onRequest(
     }
   }
 );
-
-const uiUrl = defineString(ENV_KEYS.UI_URL);
-const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP);
-const environment = defineString(ENV_KEYS.ENVIRONMENT);
 
 async function getBookingHandler(
   req: Request,
@@ -182,6 +177,10 @@ async function postBookingHandler(
   res: Response
 ): Promise<any> {
   if (req.url.includes(BookingURLs.POST.preBooking)) {
+    const uiUrl = process.env[ENV_KEYS.UI_URL];
+    const resetTokenExp = process.env[ENV_KEYS.RESET_TOKEN_EXP];
+    const environment = process.env[ENV_KEYS.ENVIRONMENT];
+
     const reqBody: IPreBooking = req.body;
     const validationErrors = putBookingValidator(reqBody);
     if (validationErrors) {
@@ -210,7 +209,7 @@ async function postBookingHandler(
         token = generateJwt(
           { preBookingId: preBookingId },
           process.env[ENV_KEYS.JWT_SECRET] as string,
-          { expiresIn: resetTokenExp.value() }
+          { expiresIn: resetTokenExp }
         );
       } catch (error: unknown) {
         logger.error('[PUT BOOKING PRE_BOOKING] Signing JWT for pre-booking confirmation email failed');
@@ -226,7 +225,7 @@ async function postBookingHandler(
         to: reqBody.email,
         message: `${currentTranslations.confirmBookingMessage}`,
         config: {
-          url: `${uiUrl.value()}/confirm-booking/${token}`
+          url: `${uiUrl}/confirm-booking/${token}`
         }
       });
 
@@ -240,7 +239,7 @@ async function postBookingHandler(
 
       transporter.sendMail(mailOptions, (error: unknown) => {
         if (error) {
-          if (environment.value() === 'PROD') {
+          if (environment === 'PROD') {
             logger.error('[PUT BOOKING PRE_BOOKING] Nodemailer failed to send pre-booking confirmation email', error);
           }
           res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
