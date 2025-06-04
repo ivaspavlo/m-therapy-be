@@ -1,8 +1,8 @@
 import * as logger from 'firebase-functions/logger';
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'express';
-import { defineString } from 'firebase-functions/params';
 import { QueryDocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
+
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
 import { ResponseBody } from '../../shared/models';
 import { generateJwt } from '../../shared/utils';
@@ -10,12 +10,13 @@ import { IUser } from '../../shared/interfaces';
 import { LoginValidator } from './login.validator';
 import { ILoginReq } from './login.interface';
 
-const jwtExp = defineString(ENV_KEYS.JWT_EXP);
-const jwtExpAdmin = defineString(ENV_KEYS.JWT_EXP_ADMIN);
-
 export const LoginFunction = onRequest(
   { secrets: [ENV_KEYS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
+    const jwtExp = process.env[ENV_KEYS.JWT_EXP];
+    const jwtExpAdmin = process.env[ENV_KEYS.JWT_EXP_ADMIN];
+    const jwtSecret = process.env[ENV_KEYS.JWT_SECRET];
+
     const loginData: ILoginReq = req.body;
 
     let validationErrors: string[] | null = null;
@@ -51,8 +52,8 @@ export const LoginFunction = onRequest(
 
     const jwtToken = generateJwt(
       { id: userDocumentSnapshot.id },
-      process.env[ENV_KEYS.JWT_SECRET] as string,
-      { expiresIn: user.isAdmin ? jwtExpAdmin.value() : jwtExp.value() }
+      jwtSecret!,
+      { expiresIn: user.isAdmin ? jwtExpAdmin : jwtExp }
     );
     if (!jwtToken) {
       logger.error('[LOGIN] Signing JWT failed');

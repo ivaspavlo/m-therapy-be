@@ -3,7 +3,7 @@ import * as nodemailer from 'nodemailer';
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'express';
 import { DocumentReference, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
-import { defineString } from 'firebase-functions/params';
+
 import { ResponseBody } from '../../shared/models';
 import { GetRegisterTemplate, generateJwt } from '../../shared/utils';
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES, FE_URLS, RESPONSE_STATUS, TRANSLATIONS } from '../../shared/constants';
@@ -11,13 +11,13 @@ import { RegisterValidator } from './register.validator';
 import { IRegisterReq } from './register.interface';
 import { RegisterMapper } from './register.mapper';
 
-const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP);
-const uiUrl = defineString(ENV_KEYS.UI_URL);
-const environment = defineString(ENV_KEYS.ENVIRONMENT);
-
 export const RegisterFunction = onRequest(
   { secrets: [ENV_KEYS.MAIL_PASS, ENV_KEYS.MAIL_USER, ENV_KEYS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
+    const resetTokenExp = process.env[ENV_KEYS.RESET_TOKEN_EXP];
+    const uiUrl = process.env[ENV_KEYS.UI_URL];
+    const environment = process.env[ENV_KEYS.ENVIRONMENT];
+
     const userData: IRegisterReq = req.body;
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
 
@@ -81,7 +81,7 @@ export const RegisterFunction = onRequest(
       confirmToken = generateJwt(
         { email: userData.email },
         process.env[ENV_KEYS.JWT_SECRET] as string,
-        { expiresIn: resetTokenExp.value() }
+        { expiresIn: resetTokenExp }
       );
     } catch (error: unknown) {
       logger.error('[REGISTER] Signing JWT for register confirmation email failed');
@@ -95,13 +95,13 @@ export const RegisterFunction = onRequest(
       title: currentTranslations.registerEmailTitle,
       message: currentTranslations.registerEmailMessage,
       config: {
-        url: `${uiUrl.value()}/${FE_URLS.CONFIRM_REGISTER}/${confirmToken}`
+        url: `${uiUrl}/${FE_URLS.CONFIRM_REGISTER}/${confirmToken}`
       }
     });
 
     transporter.sendMail(mailOptions, (e: any) => {
       if (e) {
-        if (environment.value() === 'PROD') {
+        if (environment === 'PROD') {
           logger.error('[REGISTER] Nodemailer failed to send register confirmation email', e);
         }
         res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));

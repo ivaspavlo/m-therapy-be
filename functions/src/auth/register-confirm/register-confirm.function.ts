@@ -2,11 +2,11 @@ import * as logger from 'firebase-functions/logger';
 import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'express';
 import { QueryDocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
+
 import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
 import { ResponseBody } from '../../shared/models';
 import { IUser } from '../../shared/interfaces';
 import { extractJwt } from '../../shared/utils';
-
 
 export const RegisterConfirmFunction = onRequest(
   { secrets: [ENV_KEYS.JWT_SECRET] },
@@ -16,7 +16,7 @@ export const RegisterConfirmFunction = onRequest(
 
     const jwtToken = extractJwt<{[key:string]: string} | null>(
       req.query.token as string,
-      process.env[ENV_KEYS.JWT_SECRET] as string
+      process.env[ENV_KEYS.JWT_SECRET]!
     );
 
     if (!jwtToken) {
