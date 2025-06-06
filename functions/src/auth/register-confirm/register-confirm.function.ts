@@ -3,20 +3,20 @@ import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'express';
 import { QueryDocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
 
-import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
+import { COLLECTIONS, ENV_SECRETS, ERROR_MESSAGES } from '../../shared/constants';
 import { ResponseBody } from '../../shared/models';
 import { IUser } from '../../shared/interfaces';
 import { extractJwt } from '../../shared/utils';
 
 export const RegisterConfirmFunction = onRequest(
-  { secrets: [ENV_KEYS.JWT_SECRET] },
+  { secrets: [ENV_SECRETS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
     const jwtError = new ResponseBody(null, false, [ERROR_MESSAGES.JWT]);
 
     const jwtToken = extractJwt<{[key:string]: string} | null>(
       req.query.token as string,
-      process.env[ENV_KEYS.JWT_SECRET]!
+      process.env[ENV_SECRETS.JWT_SECRET]!
     );
 
     if (!jwtToken) {

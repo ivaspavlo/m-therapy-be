@@ -8,7 +8,7 @@ import { Ad, ResponseBody } from '../shared/models';
 import { IProduct, IAd, IContact, IPaymentData } from '../shared/interfaces';
 
 export const ContentFunction = onRequest(
-  { cors: [process.env[ENV_KEYS.UI_URL]!] },
+  { cors: [process.env[ENV_KEYS.UI_URL]!, process.env[ENV_KEYS.UI_URL_LOCAL]!] },
   async (req: Request, res: Response): Promise<void> => {
     switch(req.method) {
     case('GET'): return getContent(res);
