@@ -3,7 +3,7 @@ import { onRequest } from 'firebase-functions/v2/https';
 import { DocumentReference, DocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
 import { Request, Response } from 'express';
 
-import { COLLECTIONS, ENV_SECRETS, ERROR_MESSAGES } from '../shared/constants';
+import { COLLECTIONS, ENV_KEYS, ENV_SECRETS, ERROR_MESSAGES } from '../shared/constants';
 import { ResponseBody, User } from '../shared/models';
 import { ISubscriber, IUser } from '../shared/interfaces';
 import { extractJwt } from '../shared/utils';
@@ -13,7 +13,7 @@ import { SubscriberMapper, UpdateUserMapper } from './user.mapper';
 
 
 export const UserFunction = onRequest(
-  { secrets: [ENV_SECRETS.JWT_SECRET] },
+  { secrets: [ENV_SECRETS.JWT_SECRET], cors: [process.env[ENV_KEYS.UI_URL]!, process.env[ENV_KEYS.UI_URL_LOCAL]!] },
   async (req: Request, res: Response): Promise<void> => {
     switch(req.method) {
     case('GET'): return getUser(req, res);
