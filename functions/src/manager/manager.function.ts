@@ -4,7 +4,7 @@ import { onRequest } from 'firebase-functions/v2/https';
 import { DocumentData, getFirestore } from 'firebase-admin/firestore';
 import { Request, Response } from 'express';
 
-import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
+import { COLLECTIONS, ENV_KEYS, ENV_SECRETS, ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
 import { extractJwt, generateJwt, GetAdTemplate } from '../shared/utils';
 import { IUser } from '../shared/interfaces';
@@ -12,14 +12,14 @@ import { ManagerValidator } from './manager.validator';
 import { IAdEmailsReq } from './manager.interface';
 
 export const ManagerFunction = onRequest(
-  { secrets: [ENV_KEYS.JWT_SECRET] },
+  { secrets: [ENV_SECRETS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
     const jwtError = new ResponseBody(null, false, [ERROR_MESSAGES.JWT]);
 
     const jwtToken = extractJwt<{[key:string]: string} | null>(
       req.headers.authorization as string,
-      process.env[ENV_KEYS.JWT_SECRET] as string
+      process.env[ENV_SECRETS.JWT_SECRET] as string
     );
 
     if (!jwtToken) {
@@ -73,8 +73,8 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env[ENV_KEYS.MAIL_USER],
-        pass: process.env[ENV_KEYS.MAIL_PASS]
+        user: process.env[ENV_SECRETS.MAIL_USER],
+        pass: process.env[ENV_SECRETS.MAIL_PASS]
       }
     });
     
@@ -100,7 +100,7 @@ async function postManagerData(req: Request, res: Response): Promise<any> {
     logger.info('[POST MANAGER EMAILS] Retrieved emails list');
 
     const transporterArr = allSubscribers!.map(subscriber => {
-      const unsubscribeToken = generateJwt({ id: subscriber.id, language: subscriber.lang }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp });
+      const unsubscribeToken = generateJwt({ id: subscriber.id, language: subscriber.lang }, process.env[ENV_SECRETS.JWT_SECRET] as string, { expiresIn: resetTokenExp });
       const unsubscribeUrl = `${uiUrl}/auth/unsubscribe/${unsubscribeToken}`;
 
       const mailOptions = GetAdTemplate({

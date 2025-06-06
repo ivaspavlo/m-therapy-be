@@ -4,13 +4,13 @@ import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'express';
 
 import { ResponseBody } from '../../shared/models';
-import { ENV_KEYS, ERROR_MESSAGES, FE_URLS, TRANSLATIONS } from '../../shared/constants';
+import { ENV_KEYS, ENV_SECRETS, ERROR_MESSAGES, FE_URLS, TRANSLATIONS } from '../../shared/constants';
 import { GetRemindPasswordTemplate, generateJwt } from '../../shared/utils';
 import { IRemindReq } from './remind.interface';
 import { RemindValidator } from './remind.validator';
 
 export const RemindFunction = onRequest(
-  { secrets: [ENV_KEYS.MAIL_PASS, ENV_KEYS.MAIL_USER, ENV_KEYS.JWT_SECRET] },
+  { secrets: [ENV_SECRETS.MAIL_PASS, ENV_SECRETS.MAIL_USER, ENV_SECRETS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
     const resetTokenExp = process.env[ENV_KEYS.RESET_TOKEN_EXP];
     const uiUrl = process.env[ENV_KEYS.UI_URL];
@@ -28,12 +28,12 @@ export const RemindFunction = onRequest(
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env[ENV_KEYS.MAIL_USER],
-        pass: process.env[ENV_KEYS.MAIL_PASS]
+        user: process.env[ENV_SECRETS.MAIL_USER],
+        pass: process.env[ENV_SECRETS.MAIL_PASS]
       }
     });
 
-    const resetToken = generateJwt({ email: remindReq.email }, process.env[ENV_KEYS.JWT_SECRET] as string, { expiresIn: resetTokenExp });
+    const resetToken = generateJwt({ email: remindReq.email }, process.env[ENV_SECRETS.JWT_SECRET] as string, { expiresIn: resetTokenExp });
     if (!resetToken) {
       logger.error('[REMIND] Signing JWT for reminder email failed');
       res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));

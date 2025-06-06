@@ -4,7 +4,7 @@ import { onRequest } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions';
 import { DocumentData, DocumentSnapshot, getFirestore, QuerySnapshot } from 'firebase-admin/firestore';
 
-import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
+import { COLLECTIONS, ENV_KEYS, ENV_SECRETS, ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
 import { IUser } from '../shared/interfaces';
 import { extractJwt, generateJwt, GetConfirmBookingTemplate } from '../shared/utils';
@@ -29,7 +29,7 @@ const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
 const jwtError = new ResponseBody(null, false, [ERROR_MESSAGES.JWT]);
 
 export const BookingFunction = onRequest(
-  { secrets: [ENV_KEYS.JWT_SECRET] },
+  { secrets: [ENV_SECRETS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
     switch(req.method) {
     case('GET'): return getBookingHandler(req, res);
@@ -73,7 +73,7 @@ async function getBookingHandler(
   } else if (req.url.includes(BookingURLs.GET.preBooking)) {
     const jwtToken = extractJwt<{preBookingId: string} | null>(
       req.query.token as string,
-      process.env[ENV_KEYS.JWT_SECRET] as string
+      process.env[ENV_SECRETS.JWT_SECRET] as string
     );
 
     if (!jwtToken) {
@@ -101,7 +101,7 @@ async function putBookingHandler(
   if (req.url.includes(BookingURLs.PUT.preBookingConfirm)) {
     const jwtToken = extractJwt<{preBookingId: string} | null>(
       req.query.token as string,
-      process.env[ENV_KEYS.JWT_SECRET] as string
+      process.env[ENV_SECRETS.JWT_SECRET] as string
     );
 
     if (!jwtToken) {
@@ -124,7 +124,7 @@ async function putBookingHandler(
   } else if (req.url.includes(BookingURLs.PUT.bookingApprove)) {
     const jwtToken = extractJwt<{id: string} | null>(
       req.query.token as string,
-      process.env[ENV_KEYS.JWT_SECRET] as string
+      process.env[ENV_SECRETS.JWT_SECRET] as string
     );
 
     if (!jwtToken) {
@@ -208,7 +208,7 @@ async function postBookingHandler(
       try {
         token = generateJwt(
           { preBookingId: preBookingId },
-          process.env[ENV_KEYS.JWT_SECRET] as string,
+          process.env[ENV_SECRETS.JWT_SECRET] as string,
           { expiresIn: resetTokenExp }
         );
       } catch (error: unknown) {
@@ -232,8 +232,8 @@ async function postBookingHandler(
       const transporter = nodemailer.createTransport({
         service: 'gmail',
         auth: {
-          user: process.env[ENV_KEYS.MAIL_USER],
-          pass: process.env[ENV_KEYS.MAIL_PASS]
+          user: process.env[ENV_SECRETS.MAIL_USER],
+          pass: process.env[ENV_SECRETS.MAIL_PASS]
         }
       });
 

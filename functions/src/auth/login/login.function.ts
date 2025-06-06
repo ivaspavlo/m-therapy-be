@@ -3,7 +3,7 @@ import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'express';
 import { QueryDocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
 
-import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES } from '../../shared/constants';
+import { COLLECTIONS, ENV_KEYS, ENV_SECRETS, ERROR_MESSAGES } from '../../shared/constants';
 import { ResponseBody } from '../../shared/models';
 import { generateJwt } from '../../shared/utils';
 import { IUser } from '../../shared/interfaces';
@@ -11,11 +11,11 @@ import { LoginValidator } from './login.validator';
 import { ILoginReq } from './login.interface';
 
 export const LoginFunction = onRequest(
-  { secrets: [ENV_KEYS.JWT_SECRET] },
+  { secrets: [ENV_SECRETS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
     const jwtExp = process.env[ENV_KEYS.JWT_EXP];
     const jwtExpAdmin = process.env[ENV_KEYS.JWT_EXP_ADMIN];
-    const jwtSecret = process.env[ENV_KEYS.JWT_SECRET];
+    const jwtSecret = process.env[ENV_SECRETS.JWT_SECRET];
 
     const loginData: ILoginReq = req.body;
 

@@ -6,13 +6,13 @@ import { DocumentReference, QuerySnapshot, getFirestore } from 'firebase-admin/f
 
 import { ResponseBody } from '../../shared/models';
 import { GetRegisterTemplate, generateJwt } from '../../shared/utils';
-import { COLLECTIONS, ENV_KEYS, ERROR_MESSAGES, FE_URLS, RESPONSE_STATUS, TRANSLATIONS } from '../../shared/constants';
+import { COLLECTIONS, ENV_KEYS, ENV_SECRETS, ERROR_MESSAGES, FE_URLS, RESPONSE_STATUS, TRANSLATIONS } from '../../shared/constants';
 import { RegisterValidator } from './register.validator';
 import { IRegisterReq } from './register.interface';
 import { RegisterMapper } from './register.mapper';
 
 export const RegisterFunction = onRequest(
-  { secrets: [ENV_KEYS.MAIL_PASS, ENV_KEYS.MAIL_USER, ENV_KEYS.JWT_SECRET] },
+  { secrets: [ENV_SECRETS.MAIL_PASS, ENV_SECRETS.MAIL_USER, ENV_SECRETS.JWT_SECRET] },
   async (req: Request, res: Response): Promise<void> => {
     const resetTokenExp = process.env[ENV_KEYS.RESET_TOKEN_EXP];
     const uiUrl = process.env[ENV_KEYS.UI_URL];
@@ -71,8 +71,8 @@ export const RegisterFunction = onRequest(
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: process.env[ENV_KEYS.MAIL_USER],
-        pass: process.env[ENV_KEYS.MAIL_PASS]
+        user: process.env[ENV_SECRETS.MAIL_USER],
+        pass: process.env[ENV_SECRETS.MAIL_PASS]
       }
     });
 
@@ -80,7 +80,7 @@ export const RegisterFunction = onRequest(
     try {
       confirmToken = generateJwt(
         { email: userData.email },
-        process.env[ENV_KEYS.JWT_SECRET] as string,
+        process.env[ENV_SECRETS.JWT_SECRET] as string,
         { expiresIn: resetTokenExp }
       );
     } catch (error: unknown) {
