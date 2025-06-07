@@ -11,9 +11,11 @@ import { IUpdateUser } from './user.interface';
 import { SubscriberValidator, UserUpdateValidator } from './user.validator';
 import { SubscriberMapper, UpdateUserMapper } from './user.mapper';
 
-
 export const UserFunction = onRequest(
-  { secrets: [ENV_SECRETS.JWT_SECRET], cors: [process.env[ENV_KEYS.UI_URL]!, process.env[ENV_KEYS.UI_URL_LOCAL]!] },
+  {
+    secrets: [ENV_SECRETS.JWT_SECRET],
+    cors: [process.env[ENV_KEYS.UI_URL]!, process.env[ENV_KEYS.UI_URL_LOCAL]!]
+  },
   async (req: Request, res: Response): Promise<void> => {
     switch(req.method) {
     case('GET'): return getUser(req, res);

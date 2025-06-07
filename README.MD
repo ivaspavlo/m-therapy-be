@@ -2,6 +2,13 @@
 
 This is a system for booking time slots for massage sessions. It includes authenticatio, user profile and admin functionality.
 
+## Project overview
+  - The root of the project contains `index.ts` file which exports all Firebase functions as module exports. This is required for deployment to Firebase cloud.
+  - Integration tests are located in the tests folder. Tests are run with spinning up Firestore locally on every commit with Husky script.
+  - All APIs are contained in the folders as per business domain: auth, booking, content, manager, user etc.
+  - Each feature usually inculdes at least three files: function, validator, interface.
+  - Shared folder includes folders: constants, interfaces, models and utils. Models folder includes util classes to make it simpler to create business related objects.
+
 ## Features
 
 <!-- Features are located in the `src/app/modules/lazy` folder: they are all routable and loaded lazily.
@@ -24,8 +31,8 @@ The entry point for application-related logic is app.component.ts, it loads amon
 
 The application has three environments:
 - local: set up via .env file.
-- stage: set up via Firebase CLI for project - mt-stage-db6be.
-- prod: set up via Firebase CLI for project - mt-prod-30347.
+- stage: set up via .env.mt-stage-db6be
+- prod: set up via .env.mt-prod-30347
 
 ## CLI commands
   - run linter: `npm run lint`
@@ -36,14 +43,6 @@ The application has three environments:
   - kill process not ended greacefully: `lsof -t -i tcp:5004 | xargs kill`
   - deploy specific function: `firebase deploy --only functions:content`
 
-## Project overview
-  - The root of the project contains `index.ts` file which exports all Firebase functions as module exports. This is required for deployment to Firebase cloud.
-  - Integration tests are located in the tests folder. Tests are run with spinning up Firestore locally on every commit with Husky script.
-  - The project includes three environments: local, stage, prod.
-  - All APIs are contained in the folders as per business domain: auth, booking, content, manager, user.
-  - Each feature usually inculdes at least three files: function, validator, interface.
-  - Shared folder includes folders: constants, interfaces, models and utils. Models folder includes util classes to make it simpler to create business related objects.
-
 ## Linting rules
 https://github.com/eslint/eslint/blob/main/packages/js/src/configs/eslint-recommended.js
 
@@ -52,3 +51,6 @@ https://firebase.google.com/support/troubleshooter/contact
 
 ## Firestore usage
 https://console.cloud.google.com/firestore/databases
+
+## Gmail passwords management
+https://myaccount.google.com/apppasswords

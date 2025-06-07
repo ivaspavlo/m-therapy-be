@@ -29,7 +29,10 @@ const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
 const jwtError = new ResponseBody(null, false, [ERROR_MESSAGES.JWT]);
 
 export const BookingFunction = onRequest(
-  { secrets: [ENV_SECRETS.JWT_SECRET] },
+  {
+    secrets: [ENV_SECRETS.JWT_SECRET],
+    cors: [process.env[ENV_KEYS.UI_URL]!, process.env[ENV_KEYS.UI_URL_LOCAL]!]
+  },
   async (req: Request, res: Response): Promise<void> => {
     switch(req.method) {
     case('GET'): return getBookingHandler(req, res);
