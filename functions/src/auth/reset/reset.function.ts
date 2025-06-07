@@ -3,7 +3,7 @@ import { onRequest } from 'firebase-functions/v2/https';
 import { Request, Response } from 'express';
 import { QueryDocumentSnapshot, QuerySnapshot, getFirestore } from 'firebase-admin/firestore';
 
-import { COLLECTIONS, ENV_SECRETS, ERROR_MESSAGES } from '../../shared/constants';
+import { COLLECTIONS, ENV_KEYS, ENV_SECRETS, ERROR_MESSAGES } from '../../shared/constants';
 import { ResponseBody } from '../../shared/models';
 import { IUser } from '../../shared/interfaces';
 import { extractJwt } from '../../shared/utils';
@@ -12,7 +12,10 @@ import { ResetValidator } from './reset.validator';
 import { ResetMapper } from './reset.mapper';
 
 export const ResetFunction = onRequest(
-  { secrets: [ENV_SECRETS.JWT_SECRET] },
+  {
+    secrets: [ENV_SECRETS.JWT_SECRET],
+    cors: [process.env[ENV_KEYS.UI_URL]!, process.env[ENV_KEYS.UI_URL_LOCAL]!]
+  },
   async (req: Request, res: Response): Promise<void> => {
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
     const resetData: IResetReq = req.body;

@@ -10,7 +10,10 @@ import { IRemindReq } from './remind.interface';
 import { RemindValidator } from './remind.validator';
 
 export const RemindFunction = onRequest(
-  { secrets: [ENV_SECRETS.MAIL_PASS, ENV_SECRETS.MAIL_USER, ENV_SECRETS.JWT_SECRET] },
+  {
+    secrets: [ENV_SECRETS.MAIL_PASS, ENV_SECRETS.MAIL_USER, ENV_SECRETS.JWT_SECRET],
+    cors: [process.env[ENV_KEYS.UI_URL]!, process.env[ENV_KEYS.UI_URL_LOCAL]!]
+  },
   async (req: Request, res: Response): Promise<void> => {
     const resetTokenExp = process.env[ENV_KEYS.RESET_TOKEN_EXP];
     const uiUrl = process.env[ENV_KEYS.UI_URL];

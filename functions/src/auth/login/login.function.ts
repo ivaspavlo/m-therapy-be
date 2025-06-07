@@ -11,7 +11,10 @@ import { LoginValidator } from './login.validator';
 import { ILoginReq } from './login.interface';
 
 export const LoginFunction = onRequest(
-  { secrets: [ENV_SECRETS.JWT_SECRET] },
+  {
+    secrets: [ENV_SECRETS.JWT_SECRET],
+    cors: [process.env[ENV_KEYS.UI_URL]!, process.env[ENV_KEYS.UI_URL_LOCAL]!]
+  },
   async (req: Request, res: Response): Promise<void> => {
     const jwtExp = process.env[ENV_KEYS.JWT_EXP];
     const jwtExpAdmin = process.env[ENV_KEYS.JWT_EXP_ADMIN];
