@@ -25,10 +25,6 @@ jobs:
       run: npm install
       working-directory: ./functions
 
-    - name: Check formatting
-      run: npm run format
-      working-directory: ./functions
-
     - name: Deploy to Firebase
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
