@@ -27,5 +27,5 @@ jobs:
 
     - name: Deploy to Firebase
       env:
-        CREDENTIAL_FILE_CONTENT: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
+        GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.CREDENTIAL_FILE_CONTENT }}
       run: firebase deploy --only functions --project mt-prod-30347
