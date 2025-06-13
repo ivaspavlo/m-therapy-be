@@ -28,4 +28,4 @@ jobs:
     - name: Deploy to Firebase
       env:
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN_STAGE }}
-      run: firebase deploy --only functions --project mt-stage-db6be
+      run: firebase deploy --only functions --force --project mt-stage-db6be
