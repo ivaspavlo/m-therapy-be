@@ -8,8 +8,6 @@ on:
 jobs:
   build-and-deploy:
     runs-on: ubuntu-latest
-    env:
-      GOOGLE_APPLICATION_CREDENTIALS: google-application-credentials.json
 
     steps:
     - name: Checkout code
@@ -20,24 +18,14 @@ jobs:
       with:
         node-version: '22'
 
-    - name: Prepare Google Application Credentials
-      shell: bash
-      run: echo "${{ secrets.FIREBASE_SERVICE_ACCOUNT_MT_STAGE }}" | base64 --decode > "google-application-credentials.json"
-
     - name: Install Firebase CLI
       run: npm install -g firebase-tools
-
-    - name: Firebase use project
-      shell: bash
-      run: firebase use mt-stage-db6be --debug
 
     - name: Install dependencies
       run: npm install
       working-directory: ./functions
 
     - name: Deploy to Firebase
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN_STAGE }}
       run: firebase deploy --only functions --project mt-stage-db6be
-
-    - name: Remove credentials file
-      if: success() || failure()
-      run: rm google-application-credentials.json
