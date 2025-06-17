@@ -8,7 +8,7 @@
     "start": "npm run build && firebase emulators:start --only functions",
     "start:debug": "npm run build && firebase emulators:start --inspect-functions",
     "deploy:stage": "npm run build && firebase deploy --only functions --project mt-stage-db6be",
-    "deploy:prod": "dotenv -e .env.mt-prod-30347 -- tsc && firebase deploy --only functions --project mt-prod-30347",
+    "deploy:prod": "npm run build && firebase deploy --only functions --project mt-prod-17c09",
     "logs": "firebase functions:log",
     "test": "jest --runInBand"
   },
