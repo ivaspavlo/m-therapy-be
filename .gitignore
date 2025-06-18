@@ -63,8 +63,5 @@ node_modules/
 # Yarn Integrity file
 .yarn-integrity
 
-# google api key
-mt-stage-db6be-a531eb8c5a6b.json
-
 # temp
 temp.txt
