@@ -2,7 +2,5 @@
   "projects": {
     "default": "mt-stage-db6be",
     "mt-prod": "mt-prod-17c09"
-  },
-  "targets": {},
-  "etags": {}
+  }
 }
