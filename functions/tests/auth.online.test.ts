@@ -1,27 +1,36 @@
 import * as jwt from 'jsonwebtoken';
-import * as functions from 'src/index';
 import firebaseFunctionsTest from 'firebase-functions-test';
 import { describe, expect, afterAll, beforeAll, test } from '@jest/globals';
 import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
-import { defineString } from 'firebase-functions/params';
 
+import * as functions from 'src/index';
 import { IUser } from 'src/shared/interfaces';
 import { ENV_KEYS, COLLECTIONS, ENV_SECRETS } from 'src/shared/constants';
 
 firebaseFunctionsTest({
   projectId: 'mt-stage-db6be',
   databaseURL: 'https://mt-stage-db6be.firebaseio.com'
-}, process.env[ENV_KEYS.FIREBASE_SERVICE_ACCOUNT_STAGE] || './stage-service-account-key.json');
+}, process.env[ENV_KEYS.FIREBASE_SERVICE_ACCOUNT_STAGE] || 'stage-service-account-key.json');
 
-const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP).value();
-const jwtSecret = defineString(ENV_SECRETS.JWT_SECRET).value();
+const dotenv = require('dotenv');
+dotenv.config();
 
-describe.skip('Auth functions', () => {
+describe('Auth functions', () => {
+  const jwtSecret = 'mockSecret';
+  const resetTokenExp = process.env[ENV_KEYS.JWT_EXP] as any;
+
+  process.env[ENV_SECRETS.JWT_SECRET] = jwtSecret;
+  process.env[ENV_SECRETS.MAIL_USER] = 'mockMailUser';
+  process.env[ENV_SECRETS.JWT_SECRET] = 'mockMailSecret';
+
   const MOCK_RES = {
-    status: (code: number) => ({
-      send: (value: any) => {},
-      json: (value: any) => {}
-    })
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn().mockReturnThis(),
+    send: jest.fn().mockReturnThis(),
+    setHeader: jest.fn(),
+    getHeader: jest.fn(),
+    end: jest.fn(),
+    on: jest.fn()
   };
 
   const PASSWORD = 'TestPass1!';
@@ -44,7 +53,7 @@ describe.skip('Auth functions', () => {
 
   describe('register', () => {
     beforeAll(async () => {
-      await functions.register({body: REGISTERED_USER} as any, MOCK_RES as any);
+      await functions.register({body: REGISTERED_USER, headers: {origin: 'http://localhost'}} as any, MOCK_RES as any);
     });
 
     afterAll(async () => {
@@ -60,6 +69,7 @@ describe.skip('Auth functions', () => {
         const userDocumentSnapshot: QueryDocumentSnapshot | undefined = queryByEmail.docs.find((d: any) => !!d);
         user = userDocumentSnapshot?.data() as IUser;
       } catch (error: any) {
+        console.log(error);
         // no action
       }
       expect(user?.email).toEqual(REGISTERED_USER.email);
@@ -67,6 +77,7 @@ describe.skip('Auth functions', () => {
 
     test('[REGISTER] should return 400 when user exists', async () => {
       const res = {
+        ...MOCK_RES,
         status: (code: number) => {
           expect(code).toBe(400);
           return {
@@ -75,11 +86,11 @@ describe.skip('Auth functions', () => {
           };
         }
       };
-      await functions.register({body: REGISTERED_USER} as any, res as any);
+      await functions.register({body: REGISTERED_USER, headers: {origin: 'http://localhost'}} as any, res as any);
     });
   });
 
-  describe('login', () => {
+  describe.skip('login', () => {
     const LOGIN_MOCK_REQ = {
       body: {
         email: REGISTERED_USER.email,
@@ -100,7 +111,7 @@ describe.skip('Auth functions', () => {
     test('[LOGIN] should return status 200 when creds are correct', async () => {
       const resetToken = jwt.sign(
         { email: REGISTERED_USER.email },
-        process.env[ENV_KEYS.JWT_SECRET] as string,
+        process.env[ENV_SECRETS.JWT_SECRET] as string,
         { expiresIn: resetTokenExp }
       );
 
@@ -136,7 +147,7 @@ describe.skip('Auth functions', () => {
     });
   });
 
-  describe('reset', () => {
+  describe.skip('reset', () => {
     const MOCK_REQ = {
       query: {
         token: null
@@ -197,7 +208,7 @@ describe.skip('Auth functions', () => {
     });
   });
 
-  describe('registerConfirm', () => {
+  describe.skip('registerConfirm', () => {
     beforeAll(async () => {
       await getFirestore().collection(COLLECTIONS.USERS).add(REGISTERED_USER);
     });

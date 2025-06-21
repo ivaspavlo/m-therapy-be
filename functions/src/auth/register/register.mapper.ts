@@ -6,11 +6,11 @@ const bcrypt = require('bcrypt');
 const xss = require('xss');
 
 export const RegisterMapper = async (req: IRegisterReq): Promise<IUser> => {
-  const saltRounds = process.env[ENV_KEYS.SALT_ROUNDS];
+  const saltRounds = process.env[ENV_KEYS.SALT_ROUNDS]!;
 
   let hashedPassword;
   try {
-    hashedPassword = await bcrypt.hash(req.password, saltRounds);
+    hashedPassword = await bcrypt.hash(req.password, +saltRounds);
   } catch (e: any) {
     return Promise.reject();
   }

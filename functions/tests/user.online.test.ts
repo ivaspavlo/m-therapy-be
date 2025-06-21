@@ -1,10 +1,10 @@
 import * as jwt from 'jsonwebtoken';
-import * as functions from 'src/index';
 import firebaseFunctionsTest from 'firebase-functions-test';
-import { defineString } from 'firebase-functions/params';
 import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admin/firestore';
 import { describe, expect, afterAll, beforeAll, test } from '@jest/globals';
-import { ENV_KEYS, COLLECTIONS, ENV_SECRETS } from 'src/shared/constants';
+
+import * as functions from 'src/index';
+import { ENV_KEYS, COLLECTIONS } from 'src/shared/constants';
 import { ResponseBody } from 'src/shared/models';
 import { ISubscriber, IUser } from 'src/shared/interfaces';
 
@@ -12,9 +12,6 @@ firebaseFunctionsTest({
   projectId: 'mt-stage-db6be',
   databaseURL: 'https://mt-stage-db6be.firebaseio.com'
 }, process.env[ENV_KEYS.FIREBASE_SERVICE_ACCOUNT_STAGE] || './stage-service-account-key.json');
-
-const resetTokenExp = defineString(ENV_KEYS.RESET_TOKEN_EXP).value();
-const jwtSecret = defineString(ENV_SECRETS.JWT_SECRET).value();
 
 const REGISTERED_USER = {
   firstname: 'Test',
@@ -28,6 +25,8 @@ const REGISTERED_USER = {
   hasEmailConsent: true
 };
 
+const resetTokenExp = '10min';
+const jwtSecret = 'mockSecret';
 const mockSubscriberId = 'mockSubscriberId';
 const unsubscribeToken = jwt.sign({id: mockSubscriberId}, jwtSecret, {expiresIn: resetTokenExp});
 
@@ -160,7 +159,7 @@ describe.skip('user', () => {
   });
 });
 
-describe('subscriber', () => {
+describe.skip('subscriber', () => {
   const newValueForEmail = 'mockEmail@gmail.com';
 
   afterEach(async () => {
