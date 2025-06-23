@@ -33,6 +33,10 @@ describe('Auth functions', () => {
     on: jest.fn()
   };
 
+  const MOCK_REQ = {
+    headers: {origin: 'http://localhost'}
+  }
+
   const PASSWORD = 'TestPass1!';
 
   const REGISTERED_USER = {
@@ -53,7 +57,7 @@ describe('Auth functions', () => {
 
   describe('register', () => {
     beforeAll(async () => {
-      await functions.register({body: REGISTERED_USER, headers: {origin: 'http://localhost'}} as any, MOCK_RES as any);
+      await functions.register({...MOCK_REQ, body: REGISTERED_USER} as any, MOCK_RES as any);
     });
 
     afterAll(async () => {
@@ -86,12 +90,13 @@ describe('Auth functions', () => {
           };
         }
       };
-      await functions.register({body: REGISTERED_USER, headers: {origin: 'http://localhost'}} as any, res as any);
+      await functions.register({...MOCK_REQ, body: REGISTERED_USER} as any, res as any);
     });
   });
 
-  describe.skip('login', () => {
+  describe('login', () => {
     const LOGIN_MOCK_REQ = {
+      ...MOCK_REQ,
       body: {
         email: REGISTERED_USER.email,
         password: PASSWORD
@@ -116,9 +121,10 @@ describe('Auth functions', () => {
       );
 
       // @ts-ignore
-      await functions.registerConfirm({ query: { token: resetToken } }, MOCK_RES as any);
+      await functions.registerConfirm({...MOCK_REQ, query: {token: resetToken} }, MOCK_RES as any);
 
       const res = {
+        ...MOCK_RES,
         status: (code: number) => {
           expect(code).toBe(200);
           return {
@@ -132,6 +138,7 @@ describe('Auth functions', () => {
 
     test('[LOGIN] should return status 401 when creds are incorrect', async () => {
       const res = {
+        ...MOCK_RES,
         status: (code: number) => {
           expect(code).toBe(401);
           return {
@@ -141,14 +148,15 @@ describe('Auth functions', () => {
         }
       }
       await functions.login(
-        { body: { email: 'incorrect_email@testmail.com', password: 'incorrect_pwd' } } as any,
+        { ...MOCK_REQ, body: {email: 'incorrect_email@testmail.com', password: 'incorrect_pwd'} } as any,
         res as any
       );
     });
   });
 
-  describe.skip('reset', () => {
+  describe('reset', () => {
     const MOCK_REQ = {
+      headers: {origin: 'http://localhost'},
       query: {
         token: null
       },
@@ -170,6 +178,7 @@ describe('Auth functions', () => {
 
     test('[RESET] should return 401 if the token is not valid', async () => {
       const res = {
+        ...MOCK_RES,
         status: (code: number) => {
           expect(code).toBe(401);
           return {
@@ -181,8 +190,9 @@ describe('Auth functions', () => {
       await functions.reset({ ...MOCK_REQ, query: { token: INVALID_CONFIRM_TOKEN_1 } } as any, res as any);
     });
 
-    test('[RESET] should return 400 if the email is incorrect', async () => {
+    test.skip('[RESET] should return 400 if the email is incorrect', async () => {
       const res = {
+        ...MOCK_RES,
         status: (code: number) => {
           expect(code).toBe(400);
           return {
@@ -194,8 +204,9 @@ describe('Auth functions', () => {
       await functions.reset({ ...MOCK_REQ, query: { token: INVALID_CONFIRM_TOKEN_2 } } as any, res as any);
     });
 
-    test('[RESET] should return 200 if the token is valid', async () => {
+    test.skip('[RESET] should return 200 if the token is valid', async () => {
       const res = {
+        ...MOCK_RES,
         status: (code: number) => {
           expect(code).toBe(200);
           return {
