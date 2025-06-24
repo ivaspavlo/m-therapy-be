@@ -9,7 +9,7 @@ export const ResetMapper = async (req: IResetReq, user: IUser): Promise<IUser> =
 
   let hashedPassword;
   try {
-    hashedPassword = await bcrypt.hash(req.password, saltRounds);
+    hashedPassword = await bcrypt.hash(req.password, saltRounds ? Number(saltRounds) : 2);
   } catch (e: any) {
     return Promise.reject();
   }
