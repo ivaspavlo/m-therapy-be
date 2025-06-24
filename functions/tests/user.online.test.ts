@@ -4,7 +4,7 @@ import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admi
 import { describe, expect, afterAll, beforeAll, test } from '@jest/globals';
 
 import * as functions from 'src/index';
-import { ENV_KEYS, COLLECTIONS } from 'src/shared/constants';
+import { ENV_KEYS, COLLECTIONS, ENV_SECRETS } from 'src/shared/constants';
 import { ResponseBody } from 'src/shared/models';
 import { ISubscriber, IUser } from 'src/shared/interfaces';
 
@@ -12,6 +12,9 @@ firebaseFunctionsTest({
   projectId: 'mt-stage-db6be',
   databaseURL: 'https://mt-stage-db6be.firebaseio.com'
 }, process.env[ENV_KEYS.FIREBASE_SERVICE_ACCOUNT_STAGE] || './stage-service-account-key.json');
+
+const dotenv = require('dotenv');
+dotenv.config();
 
 const REGISTERED_USER = {
   firstname: 'Test',
@@ -25,16 +28,31 @@ const REGISTERED_USER = {
   hasEmailConsent: true
 };
 
-const resetTokenExp = '10min';
 const jwtSecret = 'mockSecret';
 const mockSubscriberId = 'mockSubscriberId';
+const resetTokenExp = process.env[ENV_KEYS.JWT_EXP] as any;
 const unsubscribeToken = jwt.sign({id: mockSubscriberId}, jwtSecret, {expiresIn: resetTokenExp});
+process.env[ENV_SECRETS.JWT_SECRET] = jwtSecret;
 
-describe.skip('user', () => {
+describe('user', () => {
   let USER_ID: string;
   let VALID_AUTH_TOKEN: string;
   let INVALID_AUTH_TOKEN_1: string;
   let INVALID_AUTH_TOKEN_2: string;
+
+  const MOCK_RES = {
+    status: jest.fn().mockReturnThis(),
+    json: jest.fn().mockReturnThis(),
+    send: jest.fn().mockReturnThis(),
+    setHeader: jest.fn(),
+    getHeader: jest.fn(),
+    end: jest.fn(),
+    on: jest.fn()
+  };
+
+  const MOCK_REQ_HEADERS = {
+    origin: 'http://localhost'
+  };
 
   beforeAll(async () => {
     await getFirestore().collection(COLLECTIONS.USERS).add(REGISTERED_USER);
@@ -59,6 +77,7 @@ describe.skip('user', () => {
 
   test('[GET USER] should return correct user by id', async () => {
     const res = {
+      ...MOCK_RES,
       status: (code: number) => {
         return {
           send: (value: any) => {
@@ -68,11 +87,12 @@ describe.skip('user', () => {
         }
       }
     };
-    await functions.user({ headers: { authorization: VALID_AUTH_TOKEN as string }, method: 'GET' } as any, res as any);
+    await functions.user({headers: {...MOCK_REQ_HEADERS, authorization: VALID_AUTH_TOKEN}, method: 'GET' } as any, res as any);
   });
 
   test('[GET USER] should return 400 if user was not found', async () => {
     const res = {
+      ...MOCK_RES,
       status: (code: number) => {
         expect(code).toBe(400);
         return {
@@ -81,11 +101,12 @@ describe.skip('user', () => {
         }
       }
     };
-    await functions.user({ headers: { authorization: INVALID_AUTH_TOKEN_1 as string }, method: 'GET' } as any, res as any);
+    await functions.user({headers: {...MOCK_REQ_HEADERS, authorization: INVALID_AUTH_TOKEN_1}, method: 'GET' } as any, res as any);
   });
 
   test('[PUT USER] should return 401 if token is invalid', async () => {
     const res = {
+      ...MOCK_RES,
       status: (code: number) => {
         expect(code).toBe(401);
         return {
@@ -94,11 +115,12 @@ describe.skip('user', () => {
         }
       }
     };
-    await functions.user({ headers: { authorization: INVALID_AUTH_TOKEN_2 as string }, method: 'PUT' } as any, res as any);
+    await functions.user({headers: {...MOCK_REQ_HEADERS, authorization: INVALID_AUTH_TOKEN_2}, method: 'GET' } as any, res as any);
   });
 
   test('[PUT USER] should return 400 if fields are invalid', async () => {
     const res = {
+      ...MOCK_RES,
       status: (code: number) => {
         expect(code).toBe(400);
         return {
@@ -108,7 +130,7 @@ describe.skip('user', () => {
       } 
     };
     await functions.user({
-      headers: { authorization: VALID_AUTH_TOKEN as string },
+      headers: { ...MOCK_REQ_HEADERS, authorization: VALID_AUTH_TOKEN as string },
       method: 'PUT',
       body: { firstname: false }
     } as any,
@@ -119,6 +141,7 @@ describe.skip('user', () => {
   test('[PUT USER] should return updated user', async () => {
     const newValueForFirstname = 'mockName';
     const res = {
+      ...MOCK_RES,
       status: (code: number) => {
         return {
           send: (value: ResponseBody<IUser>) => {
@@ -129,7 +152,7 @@ describe.skip('user', () => {
       }
     };
     await functions.user({
-      headers: { authorization: VALID_AUTH_TOKEN as string },
+      headers: { ...MOCK_REQ_HEADERS, authorization: VALID_AUTH_TOKEN as string },
       method: 'PUT',
       body: { firstname: newValueForFirstname }
     } as any,
@@ -140,6 +163,7 @@ describe.skip('user', () => {
   test('[PUT USER] should save the updated user in DB', async () => {
     const newValueForFirstname = 'mockName';
     const res = {
+      ...MOCK_RES,
       status: (code: number) => {
         return {
           send: (value: any) => { },
@@ -148,7 +172,7 @@ describe.skip('user', () => {
       }
     };
     await functions.user({
-      headers: { authorization: VALID_AUTH_TOKEN as string },
+      headers: { ...MOCK_REQ_HEADERS, authorization: VALID_AUTH_TOKEN as string },
       method: 'PUT',
       body: { firstname: newValueForFirstname }
     } as any,

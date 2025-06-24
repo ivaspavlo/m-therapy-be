@@ -21,7 +21,7 @@ describe('Auth functions', () => {
 
   process.env[ENV_SECRETS.JWT_SECRET] = jwtSecret;
   process.env[ENV_SECRETS.MAIL_USER] = 'mockMailUser';
-  process.env[ENV_SECRETS.JWT_SECRET] = 'mockMailSecret';
+  process.env[ENV_SECRETS.MAIL_PASS] = 'mockMailSecret';
 
   const MOCK_RES = {
     status: jest.fn().mockReturnThis(),
@@ -190,7 +190,7 @@ describe('Auth functions', () => {
       await functions.reset({ ...MOCK_REQ, query: { token: INVALID_CONFIRM_TOKEN_1 } } as any, res as any);
     });
 
-    test.skip('[RESET] should return 400 if the email is incorrect', async () => {
+    test('[RESET] should return 400 if the email is incorrect', async () => {
       const res = {
         ...MOCK_RES,
         status: (code: number) => {
@@ -204,7 +204,7 @@ describe('Auth functions', () => {
       await functions.reset({ ...MOCK_REQ, query: { token: INVALID_CONFIRM_TOKEN_2 } } as any, res as any);
     });
 
-    test.skip('[RESET] should return 200 if the token is valid', async () => {
+    test('[RESET] should return 200 if the token is valid', async () => {
       const res = {
         ...MOCK_RES,
         status: (code: number) => {
@@ -219,7 +219,7 @@ describe('Auth functions', () => {
     });
   });
 
-  describe.skip('registerConfirm', () => {
+  describe('registerConfirm', () => {
     beforeAll(async () => {
       await getFirestore().collection(COLLECTIONS.USERS).add(REGISTERED_USER);
     });
@@ -232,6 +232,7 @@ describe('Auth functions', () => {
 
     test('[REGISTER_CONFIRM] should return 401 if the token is not valid', async () => {
       const res = {
+        ...MOCK_RES,
         status: (code: number) => {
           expect(code).toBe(401);
           return {
@@ -240,11 +241,12 @@ describe('Auth functions', () => {
           }
         }
       };
-      await functions.registerConfirm({ query: { token: INVALID_CONFIRM_TOKEN_1 } } as any, res as any);
+      await functions.registerConfirm({...MOCK_REQ, query: { token: INVALID_CONFIRM_TOKEN_1 }} as any, res as any);
     });
 
     test('[REGISTER_CONFIRM] should return 400 if the email is incorrect', async () => {
       const res = {
+        ...MOCK_RES,
         status: (code: number) => {
           expect(code).toBe(400);
           return {
@@ -253,11 +255,12 @@ describe('Auth functions', () => {
           }
         }
       };
-      await functions.registerConfirm({ query: { token: INVALID_CONFIRM_TOKEN_2 } } as any, res as any);
+      await functions.registerConfirm({...MOCK_REQ, query: { token: INVALID_CONFIRM_TOKEN_2 }} as any, res as any);
     });
 
     test('[REGISTER_CONFIRM] should return 200 if the token is valid', async () => {
       const res = {
+        ...MOCK_RES,
         status: (code: number) => {
           expect(code).toBe(200);
           return {
@@ -266,7 +269,7 @@ describe('Auth functions', () => {
           }
         }
       };
-      await functions.registerConfirm({ query: { token: VALID_CONFIRM_TOKEN } } as any, res as any);
+      await functions.registerConfirm({...MOCK_REQ, query: { token: VALID_CONFIRM_TOKEN }} as any, res as any);
     });
   });
 });
