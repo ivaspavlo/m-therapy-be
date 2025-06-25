@@ -34,25 +34,25 @@ const resetTokenExp = process.env[ENV_KEYS.JWT_EXP] as any;
 const unsubscribeToken = jwt.sign({id: mockSubscriberId}, jwtSecret, {expiresIn: resetTokenExp});
 process.env[ENV_SECRETS.JWT_SECRET] = jwtSecret;
 
+const MOCK_RES = {
+  status: jest.fn().mockReturnThis(),
+  json: jest.fn().mockReturnThis(),
+  send: jest.fn().mockReturnThis(),
+  setHeader: jest.fn(),
+  getHeader: jest.fn(),
+  end: jest.fn(),
+  on: jest.fn()
+};
+
+const MOCK_REQ_HEADERS = {
+  origin: 'http://localhost'
+};
+
 describe('user', () => {
   let USER_ID: string;
   let VALID_AUTH_TOKEN: string;
   let INVALID_AUTH_TOKEN_1: string;
   let INVALID_AUTH_TOKEN_2: string;
-
-  const MOCK_RES = {
-    status: jest.fn().mockReturnThis(),
-    json: jest.fn().mockReturnThis(),
-    send: jest.fn().mockReturnThis(),
-    setHeader: jest.fn(),
-    getHeader: jest.fn(),
-    end: jest.fn(),
-    on: jest.fn()
-  };
-
-  const MOCK_REQ_HEADERS = {
-    origin: 'http://localhost'
-  };
 
   beforeAll(async () => {
     await getFirestore().collection(COLLECTIONS.USERS).add(REGISTERED_USER);
@@ -183,7 +183,7 @@ describe('user', () => {
   });
 });
 
-describe.skip('subscriber', () => {
+describe('subscriber', () => {
   const newValueForEmail = 'mockEmail@gmail.com';
 
   afterEach(async () => {
@@ -195,6 +195,7 @@ describe.skip('subscriber', () => {
 
   test('[POST USER SUBSCRIBE] should return created subscriber', async () => {
     const res = {
+      ...MOCK_RES,
       status: (code: number) => {
         return {
           send: (value: ResponseBody<ISubscriber>) => {
@@ -205,6 +206,7 @@ describe.skip('subscriber', () => {
       }
     };
     await functions.user({
+      headers: MOCK_REQ_HEADERS,
       method: 'POST',
       url: '/subscribe',
       body: { email: newValueForEmail }
@@ -215,15 +217,18 @@ describe.skip('subscriber', () => {
 
   test('[POST USER SUBSCRIBE] should return an error if subscriber already exists', async () => {
     const res_1 = {
+      ...MOCK_RES,
       status: (code: number) => ({ send: (value: any) => { }, json: (value: any) => { }})
     };
     const res_2 = {
+      ...MOCK_RES,
       status: (code: number) => {
         expect(code).toBe(400);
         return {send: (value: any) => { }, json: (value: any) => { }}
       }
     }
     await functions.user({
+      headers: MOCK_REQ_HEADERS,
       method: 'POST',
       url: '/subscribe',
       body: { email: newValueForEmail }
@@ -231,6 +236,7 @@ describe.skip('subscriber', () => {
     res_1 as any
     );
     await functions.user({
+      headers: MOCK_REQ_HEADERS,
       method: 'POST',
       url: '/subscribe',
       body: { email: newValueForEmail }
@@ -241,6 +247,7 @@ describe.skip('subscriber', () => {
 
   test('[POST USER SUBSCRIBE] should save subscirber in DB', async () => {
     const res = {
+      ...MOCK_RES,
       status: (code: number) => {
         return {
           send: (value: any) => { },
@@ -249,6 +256,7 @@ describe.skip('subscriber', () => {
       }
     };
     await functions.user({
+      headers: MOCK_REQ_HEADERS,
       method: 'POST',
       url: '/subscribe',
       body: { email: newValueForEmail, lang: 'en' }
@@ -264,6 +272,7 @@ describe.skip('subscriber', () => {
   test('[DELETE USER UNSUBSCRIBE] should delete subscirber in DB', async () => {
     await getFirestore().collection(COLLECTIONS.SUBSCRIBERS).doc(mockSubscriberId).set({email: newValueForEmail});
     const res = {
+      ...MOCK_RES,
       status: () => {
         return {
           send: () => {},
@@ -272,6 +281,7 @@ describe.skip('subscriber', () => {
       }
     };
     await functions.user({
+      headers: MOCK_REQ_HEADERS,
       method: 'DELETE',
       url: '/unsubscribe',
       body: {token: unsubscribeToken}
@@ -285,6 +295,7 @@ describe.skip('subscriber', () => {
   test('[DELETE USER UNSUBSCRIBE] should set hasEmailConsent flag to false in the user instance', async () => {
     await getFirestore().collection(COLLECTIONS.USERS).doc(mockSubscriberId).set(REGISTERED_USER);
     const res = {
+      ...MOCK_RES,
       status: () => {
         return {
           send: () => {},
@@ -293,6 +304,7 @@ describe.skip('subscriber', () => {
       }
     };
     await functions.user({
+      headers: MOCK_REQ_HEADERS,
       method: 'DELETE',
       url: '/unsubscribe',
       body: {token: unsubscribeToken}
@@ -308,6 +320,7 @@ describe.skip('subscriber', () => {
 
   test('[DELETE USER UNSUBSCRIBE] should set return 400 if no user or subscriber found by id', async () => {
     const res = {
+      ...MOCK_RES,
       status: (res: number) => {
         return {
           send: () => {},
@@ -318,6 +331,7 @@ describe.skip('subscriber', () => {
       }
     };
     await functions.user({
+      headers: MOCK_REQ_HEADERS,
       method: 'DELETE',
       url: '/unsubscribe',
       body: {token: unsubscribeToken}
