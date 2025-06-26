@@ -1,6 +1,6 @@
 # Massage Therapy BE
 
-This is a system for booking time slots for massage sessions. It includes authenticatio, user profile and admin functionality.
+This is a system for booking time slots for massage sessions. It also includes authenticatio, user profile and admin functionality.
 
 ## Project overview
   - The root of the project contains `index.ts` file which exports all Firebase functions as module exports. This is required for deployment to Firebase cloud.
@@ -11,28 +11,34 @@ This is a system for booking time slots for massage sessions. It includes authen
 
 ## Features
 
-<!-- Features are located in the `src/app/modules/lazy` folder: they are all routable and loaded lazily.
-- main - contains the landing page with components that represent sections of the page.
-- auth - contains authentication flow and logic: register, login, reset password etc.
-- booking - contains the booking flow and logic: cart, select product page, checkout page etc.
-- admin - has all the logic related to the content management.
-- user - used for displaying user related data and bookings. -->
+Business:
+Features are located in `src` folder in the separate folder each:
+- auth - auth related APIs, e.g. register, login, reset password etc.
+- user - user management APIs, e.g. get user, delete user etc.
+- booking - booking related APIs, e.g. book time slot, cancel time slot etc.
+- admin - APIs related to the appliation management.
+- content - simple endpoint for fetching data to populate the main web page.
 
-## Folders overview
+Security:
+- CORS setup in every function.
+- Google Secrets for storing sensitive information.
+- JWT for protecting the APIs.
 
-<!-- All the main modules (e.g. CoreModule and SharedModule) are loaded into AppModule.
-The entry point for application-related logic is app.component.ts, it loads among others CoreModule and SharedModule, inits i18n logic.
-- core - contains singletons, constants, decorators, upper-level routing and i18n.
-- shared - contains dumb UI components, pipes, utils, directives and abstract classes.
-- interfaces - is the entry point for all app-wide interfaces that are used in more than one module.
-- modules - is the place for business modules (in "lazy" folder because they are lazy loadable) and UI modules (e.g. dialog). -->
+Additional:
+- Database seeding setup during the init time.
+- Email templates are stored in the `functions/assets` folder.
+- Eslint is used for linting: https://github.com/eslint/eslint/blob/main/packages/js/src/configs/eslint-recommended.js.
+- Jest is used for testing along with the Firebase tooling.
 
 ## Environments
 
 The application has three environments:
 - local: set up via .env file.
 - stage: set up via .env.mt-stage-db6be
-- prod: set up via .env.mt-prod-30347
+- prod: set up via .env.mt-prod-17c09
+
+The correct env file is used automatically by Github action during the deployment.
+For the integration test dotenv is used to set up the local env.
 
 ## CLI commands
   - run linter: `npm run lint`
@@ -42,9 +48,6 @@ The application has three environments:
   - switch to a specific Firebase project: `firebase use <project_id>`
   - kill process not ended greacefully: `lsof -t -i tcp:5004 | xargs kill`
   - deploy specific function: `firebase deploy --only functions:content`
-
-## Linting rules
-https://github.com/eslint/eslint/blob/main/packages/js/src/configs/eslint-recommended.js
 
 ## Firebase admins contacts
 https://firebase.google.com/support/troubleshooter/contact
