@@ -4,15 +4,32 @@ import { describe, expect, beforeAll, test } from '@jest/globals';
 
 import { getFirestore } from 'firebase-admin/firestore';
 import { IContent } from 'src/shared/interfaces';
-import { COLLECTIONS } from 'src/shared/constants';
+import { COLLECTIONS, ENV_KEYS } from 'src/shared/constants';
 import { ResponseBody } from 'src/shared/models';
 
 firebaseFunctionsTest({
   projectId: 'mt-stage-db6be',
   databaseURL: 'https://mt-stage-db6be.firebaseio.com'
-}, process.env.FIREBASE_SERVICE_ACCOUNT || './mt-stage-db6be-a531eb8c5a6b.json');
+}, process.env[ENV_KEYS.FIREBASE_SERVICE_ACCOUNT_STAGE] || './stage-service-account-key.json');
 
-describe.skip('content', () => {
+const dotenv = require('dotenv');
+dotenv.config();
+
+const MOCK_RES = {
+  status: jest.fn().mockReturnThis(),
+  json: jest.fn().mockReturnThis(),
+  send: jest.fn().mockReturnThis(),
+  setHeader: jest.fn(),
+  getHeader: jest.fn(),
+  end: jest.fn(),
+  on: jest.fn()
+};
+
+const MOCK_REQ_HEADERS = {
+  origin: 'http://localhost'
+};
+
+describe('content', () => {
   const testAd = {
     type: 'FOOTER',
     title: 'Test Footer',
@@ -43,6 +60,7 @@ describe.skip('content', () => {
 
   test('[GET CONTENT] should return correct response', async () => {
     const res = {
+      ...MOCK_RES,
       status: (code: number) => {
         return {
           json: (resBody: ResponseBody<IContent>) => {
@@ -53,6 +71,6 @@ describe.skip('content', () => {
         }
       }
     };
-    await functions.content({ method: 'GET' } as any, res as any);
+    await functions.content({ headers: {...MOCK_REQ_HEADERS}, method: 'GET' } as any, res as any);
   });
 });
