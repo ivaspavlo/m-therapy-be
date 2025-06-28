@@ -4,9 +4,10 @@ import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admi
 import { describe, expect, afterAll, beforeAll, test } from '@jest/globals';
 
 import * as functions from 'src/index';
-import { ENV_KEYS, COLLECTIONS, ENV_SECRETS } from 'src/shared/constants';
+import { ENV_KEYS, COLLECTIONS, ENV_SECRETS, KEYS } from 'src/shared/constants';
 import { ResponseBody } from 'src/shared/models';
 import { ISubscriber, IUser } from 'src/shared/interfaces';
+import { cleanTestData } from 'src/shared/utils';
 
 firebaseFunctionsTest({
   projectId: 'mt-stage-db6be',
@@ -17,6 +18,7 @@ const dotenv = require('dotenv');
 dotenv.config();
 
 const REGISTERED_USER = {
+  [KEYS.TEST_DATA_TAG]: true,
   firstname: 'Test',
   lastname: 'Testovich',
   email: 'test@testmail.com',
@@ -69,10 +71,7 @@ describe('user', () => {
   });
 
   afterAll(async () => {
-    // clear mocked users
-    const usersQuery = getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTERED_USER  .email);
-    const querySnapshot = await usersQuery.get();
-    querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
+    cleanTestData(getFirestore());
   });
 
   test('[GET USER] should return correct user by id', async () => {

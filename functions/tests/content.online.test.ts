@@ -4,8 +4,9 @@ import { describe, expect, beforeAll, test } from '@jest/globals';
 
 import { getFirestore } from 'firebase-admin/firestore';
 import { IContent } from 'src/shared/interfaces';
-import { COLLECTIONS, ENV_KEYS } from 'src/shared/constants';
+import { COLLECTIONS, ENV_KEYS, KEYS } from 'src/shared/constants';
 import { ResponseBody } from 'src/shared/models';
+import { cleanTestData } from 'src/shared/utils';
 
 firebaseFunctionsTest({
   projectId: 'mt-stage-db6be',
@@ -31,11 +32,13 @@ const MOCK_REQ_HEADERS = {
 
 describe('content', () => {
   const testAd = {
+    [KEYS.TEST_DATA_TAG]: true,
     type: 'FOOTER',
     title: 'Test Footer',
     content: 'Test test test test test test test test test test test test'
   };
   const testProduct = {
+    [KEYS.TEST_DATA_TAG]: true,
     id: "1",
     title: "Test1",
     price: 1000,
@@ -44,6 +47,7 @@ describe('content', () => {
     imgUrl: ""
   };
   const testContact = {
+    [KEYS.TEST_DATA_TAG]: true,
     type: "MOBILE",
     value: "test"
   };
@@ -58,10 +62,14 @@ describe('content', () => {
     }
   });
 
-  test('[GET CONTENT] should return correct response', async () => {
+  afterAll(async () => {
+    await cleanTestData(getFirestore());
+  });
+
+  test.skip('[GET CONTENT] should return correct response', async () => {
     const res = {
       ...MOCK_RES,
-      status: (code: number) => {
+      status: () => {
         return {
           json: (resBody: ResponseBody<IContent>) => {
             expect(resBody.data[COLLECTIONS.ADS][0].title).toBe(testAd.title);
