@@ -7,7 +7,6 @@ import localSeeds from './json/seed.local.json';
 export const Seed = async (): Promise<void> => {
   switch(process.env[ENV_KEYS.ENVIRONMENT]) {
     case ENV.LOCAL: await populateLocal(); break; // eslint-disable-line
-    case ENV.STAGE: await populateStage(); break; // eslint-disable-line
   }
 };
 
@@ -28,12 +27,8 @@ async function populateLocal(): Promise<void> {
       }
       seeds.forEach(async (item: any) => await collection.add(item));
     });
-    logger.info(`Successfully seeded in env.: ${ENV.LOCAL}`);
+    logger.info(`Successfully seeded in env.: ${process.env[ENV_KEYS.ENVIRONMENT]}`);
   } catch (error: any) {
-    logger.error(`Error occured when seeding in env.: ${ENV.LOCAL}`);
+    logger.error(`Error occured when seeding in env.: ${process.env[ENV_KEYS.ENVIRONMENT]}`);
   }
-}
-
-function populateStage(): void {
-  // to be implemented on demand
 }

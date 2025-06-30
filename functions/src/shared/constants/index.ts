@@ -1,4 +1,6 @@
-export const CORS_URLS: string[] = [];
+export enum KEYS {
+  TEST_DATA_TAG = 'isTestData'
+}
 
 export enum FE_URLS {
   CONFIRM_REGISTER = 'auth/register-confirm',
@@ -35,10 +37,10 @@ export enum COLLECTIONS {
   ADS = 'ads',
   PRODUCTS = 'products',
   CONTACTS = 'contacts',
-  PAYMENT_CARDS = 'payment-cards',
+  PAYMENT_CARDS = 'paymentCards',
   SUBSCRIBERS = 'subscribers',
   BOOKINGS = 'bookings',
-  PREBOOKINGS = 'pre-bookings'
+  PREBOOKINGS = 'pre-bookings' // TODO: remove
 }
 
 export enum ENV {
@@ -62,24 +64,6 @@ export enum ENV_SECRETS {
   JWT_SECRET = 'JWT_SECRET',
   MAIL_USER = 'MAIL_USER',
   MAIL_PASS = 'MAIL_PASS'
-}
-
-export const ENV_KEYS_ = {
-  general: {
-    ENVIRONMENT: 'ENVIRONMENT',
-    ui_url: 'ui_url'
-  },
-  AUTH: {
-    SALT_ROUNDS: 'SALT_ROUNDS',
-    JWT_SECRET: 'JWT_SECRET',
-    JWT_EXP: 'JWT_EXP',
-    JWT_EXP_ADMIN: 'JWT_EXP_ADMIN',
-    RESET_TOKEN_EXP: 'RESET_TOKEN_EXP'
-  },
-  MAIL: {
-    MAIL_USER: 'MAIL_USER',
-    MAIL_PASS: 'MAIL_PASS',
-  }
 }
 
 export enum AD_TYPE {

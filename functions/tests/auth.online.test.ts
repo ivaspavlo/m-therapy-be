@@ -5,7 +5,8 @@ import { DocumentData, QueryDocumentSnapshot, getFirestore } from 'firebase-admi
 
 import * as functions from 'src/index';
 import { IUser } from 'src/shared/interfaces';
-import { ENV_KEYS, COLLECTIONS, ENV_SECRETS } from 'src/shared/constants';
+import { ENV_KEYS, COLLECTIONS, ENV_SECRETS, KEYS } from 'src/shared/constants';
+import { cleanTestData } from 'src/shared/utils';
 
 firebaseFunctionsTest({
   projectId: 'mt-stage-db6be',
@@ -40,6 +41,7 @@ describe('Auth functions', () => {
   const PASSWORD = 'TestPass1!';
 
   const REGISTERED_USER = {
+    [KEYS.TEST_DATA_TAG]: true,
     firstname: 'Test',
     lastname: 'Testovich',
     email: 'test@testmail.com',
@@ -64,6 +66,8 @@ describe('Auth functions', () => {
       const usersQuery = getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTERED_USER.email);
       const querySnapshot = await usersQuery.get();
       querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
+
+      // await cleanTestData(getFirestore());
     });
 
     test('[REGISTER] should create a user in db', async () => {
@@ -103,17 +107,13 @@ describe('Auth functions', () => {
       }
     };
 
-    beforeAll(async () => {
-      await getFirestore().collection(COLLECTIONS.USERS).add(REGISTERED_USER);
-    });
-
     afterAll(async () => {
-      const usersQuery = getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTERED_USER.email);
-      const querySnapshot = await usersQuery.get();
-      querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
+      await cleanTestData(getFirestore());
     });
 
     test('[LOGIN] should return status 200 when creds are correct', async () => {
+      await getFirestore().collection(COLLECTIONS.USERS).add(REGISTERED_USER);
+
       const resetToken = jwt.sign(
         { email: REGISTERED_USER.email },
         process.env[ENV_SECRETS.JWT_SECRET] as string,
@@ -171,9 +171,7 @@ describe('Auth functions', () => {
     });
   
     afterAll(async () => {
-      const usersQuery = getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTERED_USER.email);
-      const querySnapshot = await usersQuery.get();
-      querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
+      await cleanTestData(getFirestore());
     });
 
     test('[RESET] should return 401 if the token is not valid', async () => {
@@ -225,9 +223,7 @@ describe('Auth functions', () => {
     });
   
     afterAll(async () => {
-      const usersQuery = getFirestore().collection(COLLECTIONS.USERS).where('email', '==', REGISTERED_USER.email);
-      const querySnapshot = await usersQuery.get();
-      querySnapshot.forEach((doc: DocumentData) => doc.ref.delete());
+      await cleanTestData(getFirestore());
     });
 
     test('[REGISTER_CONFIRM] should return 401 if the token is not valid', async () => {
