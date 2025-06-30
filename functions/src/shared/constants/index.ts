@@ -37,10 +37,10 @@ export enum COLLECTIONS {
   ADS = 'ads',
   PRODUCTS = 'products',
   CONTACTS = 'contacts',
-  PAYMENT_CARDS = 'payment-cards',
+  PAYMENT_CARDS = 'paymentCards',
   SUBSCRIBERS = 'subscribers',
   BOOKINGS = 'bookings',
-  PREBOOKINGS = 'pre-bookings'
+  PREBOOKINGS = 'pre-bookings' // TODO: remove
 }
 
 export enum ENV {

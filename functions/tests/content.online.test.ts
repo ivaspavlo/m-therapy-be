@@ -51,12 +51,18 @@ describe('content', () => {
     type: "MOBILE",
     value: "test"
   };
+  const testPaymentCard = {
+    [KEYS.TEST_DATA_TAG]: true,
+    name: "privat",
+    number: "5532 3354 1734 2267"
+  };
 
   beforeAll(async () => {
     try {
       await getFirestore().collection(COLLECTIONS.ADS).add(testAd);
       await getFirestore().collection(COLLECTIONS.PRODUCTS).add(testProduct);
       await getFirestore().collection(COLLECTIONS.CONTACTS).add(testContact);
+      await getFirestore().collection(COLLECTIONS.PAYMENT_CARDS).add(testPaymentCard);
     } catch (error: any) {
       // no action
     }
@@ -75,6 +81,7 @@ describe('content', () => {
             expect(resBody.data[COLLECTIONS.ADS][0].title).toBe(testAd.title);
             expect(resBody.data[COLLECTIONS.PRODUCTS][0].title).toBe(testProduct.title);
             expect(resBody.data[COLLECTIONS.CONTACTS][0].value).toBe(testContact.value);
+            expect(resBody.data[COLLECTIONS.PAYMENT_CARDS][0].number).toBe(testPaymentCard.number);
           }
         }
       }
