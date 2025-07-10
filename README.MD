@@ -33,7 +33,7 @@ Additional:
 ## Environments
 
 The application has three environments:
-- local: set up via .env file.
+- local: set up via .env file. It is needed mostly in testing.
 - stage: set up via .env.mt-stage-db6be
 - prod: set up via .env.mt-prod-17c09
 
