@@ -1,12 +1,12 @@
 import { getFirestore } from 'firebase-admin/firestore';
 import * as logger from 'firebase-functions/logger';
 
-import { COLLECTIONS, ENV, ENV_KEYS } from '../../constants';
-import localSeeds from './json/seed.local.json';
+import { COLLECTIONS, ENV_KEYS } from '../../constants';
+import localSeeds from './seed.local.json';
 
 export const Seed = async (): Promise<void> => {
-  switch(process.env[ENV_KEYS.ENVIRONMENT]) {
-    case ENV.LOCAL: await populateLocal(); break; // eslint-disable-line
+  if (process.env[ENV_KEYS.IS_LOCAL]) {
+    await populateLocal();
   }
 };
 
@@ -27,8 +27,8 @@ async function populateLocal(): Promise<void> {
       }
       seeds.forEach(async (item: any) => await collection.add(item));
     });
-    logger.info(`Successfully seeded in env.: ${process.env[ENV_KEYS.ENVIRONMENT]}`);
+    logger.info(`Successfully seeded}`);
   } catch (error: any) {
-    logger.error(`Error occured when seeding in env.: ${process.env[ENV_KEYS.ENVIRONMENT]}`);
+    logger.error(`Error occured when seeding: ${error}`);
   }
 }

@@ -19,7 +19,7 @@ export const RegisterFunction = onRequest(
   async (req: Request, res: Response): Promise<void> => {
     const resetTokenExp = process.env[ENV_KEYS.RESET_TOKEN_EXP];
     const uiUrl = process.env[ENV_KEYS.UI_URL];
-    const environment = process.env[ENV_KEYS.ENVIRONMENT];
+    const isProd = Boolean(process.env[ENV_KEYS.IS_PROD]);
 
     const userData: IRegisterReq = req.body;
     const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
@@ -104,7 +104,7 @@ export const RegisterFunction = onRequest(
 
     transporter.sendMail(mailOptions, (e: any) => {
       if (e) {
-        if (environment === 'PROD') {
+        if (isProd) {
           logger.error('[REGISTER] Nodemailer failed to send register confirmation email', e);
         }
         res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));

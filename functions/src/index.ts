@@ -18,7 +18,7 @@ exports.user = UserFunction;
 exports.content = ContentFunction;
 exports.booking = BookingFunction;
 
-// Exports for unit-tests
+// Exports for integration tests
 export const register = RegisterFunction;
 export const login = LoginFunction;
 export const remind = RemindFunction;

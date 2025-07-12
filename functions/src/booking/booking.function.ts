@@ -182,7 +182,7 @@ async function postBookingHandler(
   if (req.url.includes(BookingURLs.POST.preBooking)) {
     const uiUrl = process.env[ENV_KEYS.UI_URL];
     const resetTokenExp = process.env[ENV_KEYS.RESET_TOKEN_EXP];
-    const environment = process.env[ENV_KEYS.ENVIRONMENT];
+    const isProd = Boolean(process.env[ENV_KEYS.IS_PROD]);
 
     const reqBody: IPreBooking = req.body;
     const validationErrors = putBookingValidator(reqBody);
@@ -242,7 +242,7 @@ async function postBookingHandler(
 
       transporter.sendMail(mailOptions, (error: unknown) => {
         if (error) {
-          if (environment === 'PROD') {
+          if (isProd) {
             logger.error('[PUT BOOKING PRE_BOOKING] Nodemailer failed to send pre-booking confirmation email', error);
           }
           res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
