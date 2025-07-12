@@ -3,7 +3,7 @@
   "name": "m-therapy-be",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && SKIP_ENV_FILE=true firebase emulators:start --inspect-functions",
+    "start": "npm run build && cross-env IS_LOCAL=true firebase emulators:start --inspect-functions",
     "deploy:stage": "npm run build && firebase deploy --only functions --project mt-stage-db6be",
     "deploy:prod": "npm run build && firebase deploy --only functions --project mt-prod-17c09",
     "lint": "eslint --ext .js,.ts .",
@@ -18,6 +18,7 @@
     "@firebase/rules-unit-testing": "^4.0.1",
     "@types/nodemailer": "^6.4.13",
     "bcrypt": "^5.1.1",
+    "cross-env": "^7.0.3",
     "firebase": "^11.8.1",
     "firebase-admin": "^13.4.0",
     "firebase-functions": "^6.3.2",

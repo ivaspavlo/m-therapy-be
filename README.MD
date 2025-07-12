@@ -2,16 +2,23 @@
 
 This is a system for booking time slots for massage sessions. It also includes authenticatio, user profile and admin functionality.
 
-## Project overview
-  - The root of the project contains `index.ts` file which exports all Firebase functions as module exports. This is required for deployment to Firebase cloud.
+<details>
+
+<summary>Project overview</summary>
+
+  - The root of the project contains `index.ts` file which exports all Firebase functions as module exports. This is required for deployment to Firebase cloud. Additionally it exports as constants for integration tests.
   - Integration tests are located in the tests folder. Tests are run with spinning up Firestore locally on every commit with Husky script.
   - All APIs are contained in the folders as per business domain: auth, booking, content, manager, user etc.
-  - Each feature usually inculdes at least three files: function, validator, interface.
+  - Each feature folder usually inculdes at least three files: function, validator, interface.
   - Shared folder includes folders: constants, interfaces, models and utils. Models folder includes util classes to make it simpler to create business related objects.
 
-## Features
+</details>
 
-Business:
+<details>
+
+<summary>Features</summary>
+
+### Business
 Features are located in `src` folder in the separate folder each:
 - auth - auth related APIs, e.g. register, login, reset password etc.
 - user - user management APIs, e.g. get user, delete user etc.
@@ -19,35 +26,48 @@ Features are located in `src` folder in the separate folder each:
 - admin - APIs related to the appliation management.
 - content - simple endpoint for fetching data to populate the main web page.
 
-Security:
+### Security
 - CORS setup in every function.
 - Google Secrets for storing sensitive information.
 - JWT for protecting the APIs.
 
-Additional:
+### Additional
 - Database seeding setup during the init time.
 - Email templates are stored in the `functions/assets` folder.
 - Eslint is used for linting: https://github.com/eslint/eslint/blob/main/packages/js/src/configs/eslint-recommended.js.
 - Jest is used for testing along with the Firebase tooling.
 
-## Environments
+</details>
+
+<details>
+
+<summary>Environments</summary>
 
 The application has three environments:
 - local: set up via .env file. It is needed mostly in testing.
 - stage: set up via .env.mt-stage-db6be
 - prod: set up via .env.mt-prod-17c09
 
-The correct env file is used automatically by Github action during the deployment.
-For the integration test dotenv is used to set up the local env.
+### Important notes
+- The correct env file is used automatically by Github action during the deployment.
+- For the integration test dotenv is used to set up the local env.
+- In the development mode .env file is loaded by default and in case a Firebase project is currently in use (firebase use [project]) e.g. mt-stage - then the corresponding file is getting loaded as well.
 
-## CLI commands
-  - run linter: `npm run lint`
-  - run tests: `npm run test`
-  - configure Firebase secret: `firebase functions:secrets:set <SECRET_NAME> --project <project_id>`
-  - list Firebase projects: `firebase projects:list`
-  - switch to a specific Firebase project: `firebase use <project_id>`
-  - kill process not ended greacefully: `lsof -t -i tcp:5004 | xargs kill`
-  - deploy specific function: `firebase deploy --only functions:content`
+</details>
+
+<details>
+
+<summary>CLI commands</summary>
+
+- run linter: `npm run lint`
+- run tests: `npm run test`
+- configure Firebase secret: `firebase functions:secrets:set <SECRET_NAME> --project <project_id>`
+- list Firebase projects: `firebase projects:list`
+- switch to a specific Firebase project: `firebase use <project_id>`
+- kill process not ended greacefully: `lsof -t -i tcp:5004 | xargs kill`
+- deploy specific function: `firebase deploy --only functions:content`
+
+</details>
 
 ## Firebase admins contacts
 https://firebase.google.com/support/troubleshooter/contact
