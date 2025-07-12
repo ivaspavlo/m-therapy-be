@@ -58,7 +58,7 @@
       "type": "TELEGRAM"
     }
   ],
-  "payment-cards": [
+  "paymentCards": [
     {
       "name": "privat",
       "number": "5532 3354 1734 2267"
