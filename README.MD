@@ -6,11 +6,11 @@ This is a system for booking time slots for massage sessions. It also includes a
 
 <summary>Project overview</summary>
 
-  - The root of the project contains `index.ts` file which exports all Firebase functions as module exports. This is required for deployment to Firebase cloud. Additionally it exports as constants for integration tests.
-  - Integration tests are located in the tests folder. Tests are run with spinning up Firestore locally on every commit with Husky script.
-  - All APIs are contained in the folders as per business domain: auth, booking, content, manager, user etc.
-  - Each feature folder usually inculdes at least three files: function, validator, interface.
-  - Shared folder includes folders: constants, interfaces, models and utils. Models folder includes util classes to make it simpler to create business related objects.
+- The root of the project contains `index.ts` file which exports all Firebase functions as module exports. This is required for deployment to Firebase cloud. Additionally it exports as constants for integration tests.
+- Integration tests are located in the tests folder. Tests are run with spinning up Firestore locally on every commit with Husky script.
+- All APIs are contained in the folders as per business domain: auth, booking, content, manager, user etc.
+- Each feature folder usually inculdes at least three files: function, validator, interface.
+- Shared folder includes folders: constants, interfaces, models and utils. Models folder includes util classes to make it simpler to create business related objects.
 
 </details>
 
@@ -69,11 +69,17 @@ The application has three environments:
 
 </details>
 
-## Firebase admins contacts
+<details>
+
+<summary>Links</summary>
+
+### Firebase admins contacts
 https://firebase.google.com/support/troubleshooter/contact
 
-## Firestore usage
+### Firestore usage
 https://console.cloud.google.com/firestore/databases
 
-## Gmail passwords management
+### Gmail passwords management
 https://myaccount.google.com/apppasswords
+
+</details>
