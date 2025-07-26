@@ -58,7 +58,7 @@
       "type": "TELEGRAM"
     }
   ],
-  "payment-cards": [
+  "paymentCards": [
     {
       "name": "privat",
       "number": "5532 3354 1734 2267"
@@ -72,60 +72,70 @@
     {
       "start": 4088824005956,
       "end": 4088827605956,
+      "productId": "1",
       "isBooked": false,
       "isPreBooked": false
     },
     {
       "start": 4088827605956,
       "end": 4088831205956,
+      "productId": "1",
       "isBooked": false,
       "isPreBooked": false
     },
     {
       "start": 4088831205956,
       "end": 4088834805956,
+      "productId": "1",
       "isBooked": false,
       "isPreBooked": false
     },
     {
       "start": 4088834805956,
       "end": 4088838405956,
+      "productId": "1",
       "isBooked": false,
       "isPreBooked": false
     },
     {
       "start": 4088838405956,
       "end": 4088842005956,
+      "productId": "1",
       "isBooked": false,
       "isPreBooked": false
     },
     {
       "start": 4088842005956,
       "end": 4088845605956,
+      "productId": "2",
       "isBooked": false,
       "isPreBooked": false
     },
     {
       "start": 4088845605956,
       "end": 4088849205956,
+      "productId": "2",
       "isBooked": false,
       "isPreBooked": false
     },
     {
       "start": 4088849205956,
       "end": 4088852805956,
+      "productId": "2",
       "isBooked": false,
       "isPreBooked": false
     },
     {
       "start": 4088852805956,
       "end": 4088856405956,
+      "productId": "2",
       "isBooked": false,
       "isPreBooked": false
     },
     {
       "start": 4088856405956,
       "end": 4088860005956,
+      "productId": "2",
       "isBooked": false,
       "isPreBooked": false
     }

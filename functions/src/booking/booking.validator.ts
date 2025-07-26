@@ -2,7 +2,8 @@ import { ERROR_MESSAGES } from '../shared/constants';
 import { IValidationConfig } from '../shared/interfaces';
 import { numberValidator, validate, arrayValidator, stringValidator, booleanValidator, emailValidator, isFalseValidator, langFieldValidator } from '../shared/utils';
 
-const fetchBookingValidators: Record<keyof {fromDate: unknown}, IValidationConfig> = {
+const fetchBookingValidators: Record<keyof {productId: unknown, fromDate: unknown}, IValidationConfig> = {
+  productId: {validators: [stringValidator]},
   fromDate: {validators: [numberValidator]}
 }
 
