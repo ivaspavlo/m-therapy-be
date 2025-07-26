@@ -2,6 +2,7 @@ import { LanguageType } from 'src/shared/interfaces'
 
 export interface IBookingSlot {
   id: string,
+  productId: string;
   start: number,
   end: number,
   isBooked: boolean,

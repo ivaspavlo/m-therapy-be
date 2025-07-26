@@ -48,15 +48,18 @@ async function getBookingHandler(
   res: Response
 ): Promise<any> {
   if (req.url.includes(BookingURLs.GET.fromDate)) {
+    let productId = null;
     let fromDate = null;
+
     try {
+      productId = req.query.productId;
       // @ts-ignore
       fromDate = +req.query.fromDate as number;
     } catch (e: unknown) {
       return res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.BAD_DATA]));
     }
 
-    const validationErrors = fetchBookingValidator({fromDate});
+    const validationErrors = fetchBookingValidator({productId, fromDate});
     if (validationErrors) {
       res.status(400).json(new ResponseBody(null, false, validationErrors));
       return;
@@ -68,10 +71,15 @@ async function getBookingHandler(
     // endDate.setDate(endDate.getDate() + 14);
     // const querySnapshot: QuerySnapshot = await getFirestore().collection(COLLECTIONS.BOOKINGS).where('start', '>=', fromDate).where('start', '<=', endDate.valueOf()).get();
 
-    const querySnapshot: QuerySnapshot = await getFirestore().collection(COLLECTIONS.BOOKINGS).where('start', '>=', fromDate).get();
+    const querySnapshot: QuerySnapshot = await getFirestore().collection(COLLECTIONS.BOOKINGS)
+      .where('start', '>=', fromDate)
+      .where('productId', '==', productId)
+      .get();
+
     const docs: IBookingSlot[] = querySnapshot.docs.map((doc: DocumentSnapshot) => ({ id: doc.id, ...doc.data() } as IBookingSlot));
 
     logger.info(`[GET BOOKING] Retrieved ${docs.length} bookings starting with date: ${fromDate}`);
+
     return res.status(200).send(new ResponseBody(docs, true));
   } else if (req.url.includes(BookingURLs.GET.preBooking)) {
     const jwtToken = extractJwt<{preBookingId: string} | null>(
