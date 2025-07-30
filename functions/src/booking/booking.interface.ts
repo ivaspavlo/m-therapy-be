@@ -15,3 +15,8 @@ export interface IPreBooking {
   email: string,
   lang: LanguageType
 }
+
+export interface IProductBooking {
+  product: string;
+  slots: IBookingSlot[];
+}
