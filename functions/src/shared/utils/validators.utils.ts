@@ -84,3 +84,10 @@ export function requiredValidator(value: unknown): boolean {
 export function arrayValidator(value: unknown): boolean {
   return Array.isArray(value);
 }
+
+export function stringArrayValidator(value: unknown): boolean {
+  if (!Array.isArray(value)) {
+    return false;
+  }
+  return value.every(i => typeof i === 'string');
+}
