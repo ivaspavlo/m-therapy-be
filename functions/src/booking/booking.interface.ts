@@ -10,7 +10,6 @@ export interface IBookingReq {
   slots: string[];
   email: string;
   phone: string;
-  isBooked: boolean;
   paymentFile: FormData;
   comment?: string;
   lang?: string;
