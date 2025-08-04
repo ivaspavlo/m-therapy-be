@@ -1,13 +1,9 @@
-import Busboy from 'busboy';
-import path from 'path';
-import fs from 'fs';
-import { tmpdir } from 'os';
-
+import formidable from 'formidable';
+// import { Readable } from 'stream';
 import { Request, Response } from 'express';
 import { onRequest } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions';
 import { DocumentData, DocumentSnapshot, getFirestore, QuerySnapshot } from 'firebase-admin/firestore';
-// import { fromBuffer } from 'file-type';
 
 import { COLLECTIONS, ENV_KEYS, ENV_SECRETS, ERROR_MESSAGES } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
@@ -166,33 +162,36 @@ async function putBookingHandler(
   return res.status(404).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_EXIST]));
 }
 
+function parseForm(req: any): Promise<{ fields: formidable.Fields; files: formidable.Files }> {
+  const form = formidable({ multiples: true });
+
+  // const stream = new Readable();
+  // stream.push(req.body);
+  // stream.push(null); // Signal end of stream
+
+  return new Promise((resolve, reject) => {
+    form.parse(req, (err, fields, files) => {
+      if (err) reject(err);
+      else resolve({ fields, files });
+    });
+  });
+}
+
 async function postBookingHandler(
   req: Request,
   res: Response
 ): Promise<any> {
-  // const reqBody: IBookingReq = req.body;
-  const busboy = Busboy({ headers: req.headers });
-  const uploads: any = {};
-  const tmpFilePath = path.join(tmpdir(), `upload-${Date.now()}`);
+  try {
+    const { fields, files } = await parseForm(req);
 
-  busboy.on('file', (_fieldname: any, file: any, filename: any, _encoding: any, mimeType: any) => {
-    const writeStream = fs.createWriteStream(tmpFilePath);
-    file.pipe(writeStream);
-
-    file.on('end', () => {
-      uploads[filename] = {
-        path: tmpFilePath,
-        mimeType
-      };
+    res.status(200).json({
+      fields,
+      files: Object.keys(files), // or send full `files` if needed
     });
-  });
-
-  busboy.on('finish', () => {
-    console.log('Upload complete:', uploads);
-    res.status(200).json({ message: 'Upload successful' });
-  });
-
-  req.pipe(busboy);
+  } catch (err) {
+    console.error('Form parsing failed:', err);
+    res.status(500).send('Form parsing error');
+  }
 
   // const uiUrl = process.env[ENV_KEYS.UI_URL];
   // const resetTokenExp = process.env[ENV_KEYS.RESET_TOKEN_EXP];
