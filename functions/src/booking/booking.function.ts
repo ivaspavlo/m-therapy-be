@@ -1,5 +1,5 @@
-import formidable from 'formidable';
-// import { Readable } from 'stream';
+import busboy from 'busboy';
+
 import { Request, Response } from 'express';
 import { onRequest } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions';
@@ -162,36 +162,28 @@ async function putBookingHandler(
   return res.status(404).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_EXIST]));
 }
 
-function parseForm(req: any): Promise<{ fields: formidable.Fields; files: formidable.Files }> {
-  const form = formidable({ multiples: true });
-
-  // const stream = new Readable();
-  // stream.push(req.body);
-  // stream.push(null); // Signal end of stream
-
-  return new Promise((resolve, reject) => {
-    form.parse(req, (err, fields, files) => {
-      if (err) reject(err);
-      else resolve({ fields, files });
-    });
+function getFieldsFromFormData(headers: any, body: any) {
+  return new Promise((resolve) => {
+    const bb = busboy({ headers });
+    let fields: any = {};
+    
+    bb.on("field", (field: string, val: any) => {
+      fields[field] = val;
+    })
+    bb.on('finish',() => resolve(fields));
+    bb.end(body);
   });
 }
+
 
 async function postBookingHandler(
   req: Request,
   res: Response
 ): Promise<any> {
-  try {
-    const { fields, files } = await parseForm(req);
+  const body = await getFieldsFromFormData(req.headers, req.body)
+  console.log('MyFormData:>> ', body);
 
-    res.status(200).json({
-      fields,
-      files: Object.keys(files), // or send full `files` if needed
-    });
-  } catch (err) {
-    console.error('Form parsing failed:', err);
-    res.status(500).send('Form parsing error');
-  }
+  res.send({});
 
   // const uiUrl = process.env[ENV_KEYS.UI_URL];
   // const resetTokenExp = process.env[ENV_KEYS.RESET_TOKEN_EXP];

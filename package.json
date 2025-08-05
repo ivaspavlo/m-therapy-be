@@ -1,8 +1,0 @@
-{
-  "version": "0.0.0",
-  "scripts": {
-    "lint": "npm run --prefix ./functions lint",
-    "start": "npm run --prefix ./functions start",
-    "test": "npm run --prefix ./functions test"
-  }
-}
