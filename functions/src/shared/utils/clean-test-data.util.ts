@@ -1,4 +1,4 @@
-import { KEYS } from "../constants";
+import { KEYS } from '../constants';
 
 export async function cleanTestData(db: any) {
   const collections = await db.listCollections();
