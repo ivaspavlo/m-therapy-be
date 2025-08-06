@@ -7,3 +7,4 @@ export * from './email/remind-password-email.util';
 export * from './email/register-email.util';
 export * from './email/confirm-booking-email.util';
 export * from './clean-test-data.util';
+export * from './parse-form-data.util';

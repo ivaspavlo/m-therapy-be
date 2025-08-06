@@ -1,5 +1,3 @@
-import busboy from 'busboy';
-
 import { Request, Response } from 'express';
 import { onRequest } from 'firebase-functions/v2/https';
 import { logger } from 'firebase-functions';
@@ -8,7 +6,8 @@ import { DocumentData, DocumentSnapshot, getFirestore, QuerySnapshot } from 'fir
 import { COLLECTIONS, ENV_KEYS, ENV_SECRETS, ERROR_MESSAGES } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
 import { IUser } from '../shared/interfaces';
-import { extractJwt } from '../shared/utils';
+import { extractJwt, getFieldsFromFormData, IFormDataBody } from '../shared/utils';
+
 import { IBookingSlot } from './booking.interface';
 import { getBookingValidator } from './booking.validator';
 
@@ -162,28 +161,19 @@ async function putBookingHandler(
   return res.status(404).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_EXIST]));
 }
 
-function getFieldsFromFormData(headers: any, body: any) {
-  return new Promise((resolve) => {
-    const bb = busboy({ headers });
-    let fields: any = {};
-    
-    bb.on("field", (field: string, val: any) => {
-      fields[field] = val;
-    })
-    bb.on('finish',() => resolve(fields));
-    bb.end(body);
-  });
-}
-
-
 async function postBookingHandler(
   req: Request,
   res: Response
 ): Promise<any> {
-  const body = await getFieldsFromFormData(req.headers, req.body)
-  console.log('MyFormData:>> ', body);
+  let parsedBody: IFormDataBody | null = null;
 
-  res.send({});
+  try {
+    parsedBody = await getFieldsFromFormData(req.headers, req.body);
+  } catch (e: unknown) {
+    return res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.BAD_DATA]));
+  }
+
+  res.send(parsedBody);
 
   // const uiUrl = process.env[ENV_KEYS.UI_URL];
   // const resetTokenExp = process.env[ENV_KEYS.RESET_TOKEN_EXP];
