@@ -4,6 +4,7 @@ import { Readable } from 'stream';
 
 export interface IFormDataFile {
   buffer: Buffer;
+  size: number;
   filename: string;
   encoding: string;
   mimeType: string;
@@ -27,11 +28,17 @@ export function getFieldsFromFormData(
         { filename, encoding, mimeType }: { filename: string; encoding: string; mimeType: string }
       ) => {
         const chunks: Buffer[] = [];
+        let totalSize = 0;
 
-        file.on('data', (data: Buffer) => chunks.push(data));
+        file.on('data', (data: Buffer) => {
+          chunks.push(data);
+          totalSize += data.length;
+        });
+
         file.on('end', () => {
           reqBody[fieldname] = {
             buffer: Buffer.concat(chunks),
+            size: totalSize,
             filename,
             encoding,
             mimeType,
