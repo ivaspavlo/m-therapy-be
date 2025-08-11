@@ -9,7 +9,7 @@ import { IUser } from '../shared/interfaces';
 import { extractJwt, getFieldsFromFormData, IFormDataBody } from '../shared/utils';
 
 import { IBookingSlot } from './booking.interface';
-import { getBookingValidator } from './booking.validator';
+import { getBookingValidator, postBookingValidator } from './booking.validator';
 
 const BookingURLs = {
   GET: {
@@ -165,15 +165,21 @@ async function postBookingHandler(
   req: Request,
   res: Response
 ): Promise<any> {
-  let parsedBody: IFormDataBody | null = null;
+  let reqBody: IFormDataBody | null = null;
 
   try {
-    parsedBody = await getFieldsFromFormData(req.headers, req.body);
+    reqBody = await getFieldsFromFormData(req.headers, req.body);
   } catch (e: unknown) {
     return res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.BAD_DATA]));
   }
 
-  res.send(parsedBody);
+  const validationErrors = postBookingValidator(reqBody);
+  if (validationErrors) {
+    res.status(400).json(new ResponseBody(null, false, validationErrors));
+    return;
+  }
+
+  res.send(reqBody);
 
   // const uiUrl = process.env[ENV_KEYS.UI_URL];
   // const resetTokenExp = process.env[ENV_KEYS.RESET_TOKEN_EXP];

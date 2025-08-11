@@ -1,6 +1,6 @@
 import { ERROR_MESSAGES } from '../shared/constants';
 import { IValidationConfig } from '../shared/interfaces';
-import { numberValidator, validate, arrayValidator, stringValidator, booleanValidator, emailValidator, isFalseValidator, langFieldValidator, stringArrayValidator } from '../shared/utils';
+import { numberValidator, validate, arrayValidator, stringValidator, booleanValidator, emailValidator, isFalseValidator, langFieldValidator, stringArrayValidator, IFormDataBody } from '../shared/utils';
 
 const getBookingValidatorsSet: Record<keyof {productId: unknown, fromDate: unknown}, IValidationConfig> = {
   productId: {validators: [stringValidator]},
@@ -68,10 +68,18 @@ export const putBookingValidator = (
 }
 
 export const postBookingValidator = (
-  data: unknown
+  data: IFormDataBody
 ): string[] | null => {
   const errors = validate(data, postBookingValidatorSet);
   return errors.length
     ? [`${ERROR_MESSAGES.FIELDS_VALIDATION}: ${errors.join(',')}`]
     : null;
 }
+
+// export interface IFormDataFile {
+//   buffer: Buffer;
+//   size: number;
+//   filename: string;
+//   encoding: string;
+//   mimeType: string;
+// }
