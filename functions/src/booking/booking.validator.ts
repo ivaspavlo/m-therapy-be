@@ -1,6 +1,6 @@
 import { ERROR_MESSAGES } from '../shared/constants';
 import { IValidationConfig } from '../shared/interfaces';
-import { numberValidator, validate, arrayValidator, stringValidator, booleanValidator, emailValidator, isFalseValidator, langFieldValidator, stringArrayValidator, IFormDataBody } from '../shared/utils';
+import { numberValidator, validate, arrayValidator, stringValidator, booleanValidator, emailValidator, isFalseValidator, langFieldValidator, stringArrayValidator, IFormDataBody, IFormDataFile } from '../shared/utils';
 
 const getBookingValidatorsSet: Record<keyof {productId: unknown, fromDate: unknown}, IValidationConfig> = {
   productId: {validators: [stringValidator]},
@@ -18,7 +18,7 @@ const postBookingValidatorSet: Record<keyof {}, IValidationConfig> = {
   email: {validators: [stringValidator]},
   phone: {validators: [stringValidator]},
   comment: {validators: [stringValidator]},
-  paymentFile: {validators: [fileSizeValidator, fileTypeValidator]},
+  paymentFile: {validators: [bookingFileValidator]},
   lang: {isOptional: true, validators: [langFieldValidator]},
 }
 
@@ -39,14 +39,41 @@ function bookingSlotValidator(value: unknown[]): boolean {
   return incorrectSlot === undefined;
 }
 
-function fileTypeValidator(value: unknown): boolean {
-  const allowedFormats = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
-  return !!allowedFormats;
-}
+function bookingFileValidator(value: unknown): boolean {
+  if (value && typeof value !== 'object') {
+    return false;
+  }
 
-function fileSizeValidator(value: unknown): boolean {
-  const maxSize = 10 * 1024 * 1024; // 10MB in bytes
-  return !!maxSize;
+  const fileObj = value as IFormDataFile;
+
+  if (!fileObj?.size || !fileObj?.filename || !fileObj?.encoding || !fileObj?.mimeType || !fileObj?.buffer) {
+    return false;
+  }
+
+  if (!Buffer.isBuffer(fileObj.buffer)) {
+    return false;
+  }
+
+  const allowedFormats = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+  if (!allowedFormats.includes(fileObj.mimeType)) {
+    return false;
+  }
+
+  // Prevent path traversal attacks (../, absolute paths). Allow only certain characters in filenames.
+  if (!/^[\w,\s-]+\.[A-Za-z]{3,4}$/.test(fileObj.filename)) {
+    return false;
+  }
+
+  // 10MB in bytes.
+  const maxSize = 10 * 1024 * 1024;
+  if (fileObj.size <= 0 && fileObj.size > maxSize) {
+    return false;
+  }
+
+  // Extra image validation.
+
+
+  return true;
 }
 
 export const getBookingValidator = (
@@ -75,11 +102,3 @@ export const postBookingValidator = (
     ? [`${ERROR_MESSAGES.FIELDS_VALIDATION}: ${errors.join(',')}`]
     : null;
 }
-
-// export interface IFormDataFile {
-//   buffer: Buffer;
-//   size: number;
-//   filename: string;
-//   encoding: string;
-//   mimeType: string;
-// }
