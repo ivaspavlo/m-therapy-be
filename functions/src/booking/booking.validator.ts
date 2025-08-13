@@ -46,7 +46,7 @@ function bookingFileValidator(value: unknown): boolean {
 
   const fileObj = value as IFormDataFile;
 
-  if (!fileObj?.size || !fileObj?.filename || !fileObj?.encoding || !fileObj?.mimeType || !fileObj?.buffer) {
+  if (!fileObj?.buffer || !fileObj?.size || !fileObj?.filename || !fileObj.mimeType || !fileObj?.detectedMime || !fileObj?.extension) {
     return false;
   }
 
@@ -55,7 +55,12 @@ function bookingFileValidator(value: unknown): boolean {
   }
 
   const allowedFormats = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
-  if (!allowedFormats.includes(fileObj.mimeType)) {
+  if (!allowedFormats.includes(fileObj.detectedMime)) {
+    return false;
+  }
+
+  // MIME spoofing detected
+  if (fileObj.detectedMime !== fileObj.mimeType) {
     return false;
   }
 
@@ -71,7 +76,16 @@ function bookingFileValidator(value: unknown): boolean {
   }
 
   // Extra image validation.
-
+  const maxWidth = 5000;
+  const maxHeight = 5000;
+  if (fileObj.detectedMime.startsWith('image/')) {
+    if (
+      fileObj.width && fileObj.width > maxWidth ||
+      fileObj.height && fileObj.height > maxHeight
+    ) {
+      return false
+    }
+  }
 
   return true;
 }

@@ -1,100 +1,95 @@
 import busboy from 'busboy';
-// import sharp from 'sharp';
+import sharp from 'sharp';
 import { IncomingHttpHeaders } from 'http2';
-import { Readable } from 'stream';
 import { fromBuffer as fileTypeFromBuffer } from 'file-type';
 
-export interface IFileMetadata {
-  originalName: string;
-  reportedMime: string;
-  detectedMime: string;
-  extension?: string;
-  size: number;
-  width?: number;   // only for images
-  height?: number;  // only for images
-}
-
 export interface IFormDataFile {
-  buffer: Buffer;
-  size: number;
-  filename: string;
-  encoding: string;
-  mimeType: string;
-  detectedType?: { mime: string; ext: string };
-  metadata?: IFileMetadata;
+  buffer: Buffer; // needed for saving/processing
+  size: number; // for max size validation
+  filename: string; // original name from client
+  mimeType: string; // reported by form
+  detectedMime?: string; // trustable MIME from content
+  extension?: string; // from detected type
+  width?: number; // only for image dimension validation
+  height?: number; // only for image dimension validation
 }
 
 export type IFormDataBody = Record<string, string | IFormDataFile>;
 
-export function getFieldsFromFormData(
+export function parseBookingFormData(
   headers: IncomingHttpHeaders,
   rawBody: Buffer
 ): Promise<IFormDataBody> {
   return new Promise((resolve, reject) => {
     const busboyInstance = busboy({ headers });
     const reqBody: IFormDataBody = {};
+    const filePromises: Promise<void>[] = [];
 
-    busboyInstance.on(
-      'file',
-      async (
-        fieldname: string,
-        file: Readable,
-        { filename, encoding, mimeType }: { filename: string; encoding: string; mimeType: string }
-      ) => {
-        const chunks: Buffer[] = [];
-        let totalSize = 0;
+    busboyInstance.on('file', (fieldname, file, { filename, mimeType }) => {
+      const chunks: Buffer[] = [];
+      let totalSize = 0;
 
+      // Create promise for each file
+      const filePromise = new Promise<void>((res, rej) => {
         file.on('data', (data: Buffer) => {
           chunks.push(data);
           totalSize += data.length;
         });
 
         file.on('end', async () => {
-          const buffer = Buffer.concat(chunks);
+          try {
+            const buffer = Buffer.concat(chunks);
 
-          // Detect file type from content
-          const detectedType = await fileTypeFromBuffer(buffer);
+            // Detect file type from content
+            const detectedType = await fileTypeFromBuffer(buffer);
 
-          // Build metadata
-          const metadata: IFileMetadata = {
-            originalName: filename,
-            reportedMime: mimeType,
-            detectedMime: detectedType?.mime || mimeType,
-            extension: detectedType?.ext,
-            size: totalSize
-          };
+            // Prepare file object
+            const fileData: IFormDataFile = {
+              buffer,
+              size: totalSize,
+              filename,
+              mimeType,
+              extension: detectedType?.ext,
+              detectedMime: detectedType?.mime
+            };
 
-          // Add extra image info
-          if (detectedType?.mime.startsWith('image/')) {
-            // try {
-            //   const imgMeta = await sharp(buffer).metadata();
-            //   if (imgMeta.width) metadata.width = imgMeta.width;
-            //   if (imgMeta.height) metadata.height = imgMeta.height;
-            // } catch (err) {
-            //   console.warn(`Image metadata extraction failed: ${err}`);
-            // }
+            // If it's an image, get dimensions
+            if (detectedType?.mime?.startsWith('image/')) {
+              try {
+                const imgMeta = await sharp(buffer).metadata();
+                if (imgMeta.width) fileData.width = imgMeta.width;
+                if (imgMeta.height) fileData.height = imgMeta.height;
+              } catch (err) {
+                console.warn(`Image metadata extraction failed: ${err}`);
+              }
+            }
+
+            reqBody[fieldname] = fileData;
+            res();
+          } catch (err) {
+            rej(err);
           }
-
-          reqBody[fieldname] = {
-            buffer,
-            size: totalSize,
-            filename,
-            encoding,
-            mimeType,
-            detectedType,
-            metadata
-          };
         });
 
-        file.on('error', (err) => reject(err));
-      }
-    );
+        file.on('error', (err) => rej(err));
+      });
 
-    busboyInstance.on('field', (fieldname: string, value: string) => {
+      filePromises.push(filePromise);
+    });
+
+    busboyInstance.on('field', (fieldname, value) => {
       reqBody[fieldname] = value;
     });
 
-    busboyInstance.on('finish', () => resolve(reqBody));
+    busboyInstance.on('finish', async () => {
+      try {
+        await Promise.all(filePromises); // wait for all async file processing
+        resolve(reqBody);
+      } catch (err) {
+        reject(err);
+      }
+    });
+
     busboyInstance.on('error', (err) => reject(err));
 
     busboyInstance.end(rawBody);
