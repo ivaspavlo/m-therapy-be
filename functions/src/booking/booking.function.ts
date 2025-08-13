@@ -6,7 +6,7 @@ import { DocumentData, DocumentSnapshot, getFirestore, QuerySnapshot } from 'fir
 import { COLLECTIONS, ENV_KEYS, ENV_SECRETS, ERROR_MESSAGES } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
 import { IUser } from '../shared/interfaces';
-import { extractJwt, getFieldsFromFormData, IFormDataBody } from '../shared/utils';
+import { extractJwt, parseBookingFormData, IFormDataBody } from '../shared/utils';
 
 import { IBookingSlot } from './booking.interface';
 import { getBookingValidator, postBookingValidator } from './booking.validator';
@@ -168,7 +168,7 @@ async function postBookingHandler(
   let reqBody: IFormDataBody | null = null;
 
   try {
-    reqBody = await getFieldsFromFormData(req.headers, req.body);
+    reqBody = await parseBookingFormData(req.headers, req.body);
   } catch (e: unknown) {
     return res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.BAD_DATA]));
   }
