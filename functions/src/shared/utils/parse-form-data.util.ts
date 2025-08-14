@@ -14,7 +14,7 @@ export interface IFormDataFile {
   height?: number; // only for image dimension validation
 }
 
-export type IFormDataBody = Record<string, string | IFormDataFile>;
+export type IFormDataBody = Record<string, string | string[] | IFormDataFile>;
 
 export function parseBookingFormData(
   headers: IncomingHttpHeaders,
@@ -78,7 +78,16 @@ export function parseBookingFormData(
     });
 
     busboyInstance.on('field', (fieldname, value) => {
-      reqBody[fieldname] = value;
+      if (reqBody[fieldname]) {
+        // already exists — make it an array
+        if (Array.isArray(reqBody[fieldname])) {
+          (reqBody[fieldname] as string[]).push(value);
+        } else {
+          reqBody[fieldname] = [reqBody[fieldname] as string, value];
+        }
+      } else {
+        reqBody[fieldname] = value;
+      }
     });
 
     busboyInstance.on('finish', async () => {

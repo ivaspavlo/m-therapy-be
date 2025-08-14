@@ -1,6 +1,18 @@
 import { ERROR_MESSAGES } from '../shared/constants';
 import { IValidationConfig } from '../shared/interfaces';
-import { numberValidator, validate, arrayValidator, stringValidator, booleanValidator, emailValidator, isFalseValidator, langFieldValidator, stringArrayValidator, IFormDataBody, IFormDataFile } from '../shared/utils';
+import {
+  numberValidator,
+  validate,
+  arrayValidator,
+  stringValidator,
+  booleanValidator,
+  emailValidator,
+  isFalseValidator,
+  langFieldValidator,
+  IFormDataBody,
+  IFormDataFile,
+  stringArrayValidator
+} from '../shared/utils';
 
 const getBookingValidatorsSet: Record<keyof {productId: unknown, fromDate: unknown}, IValidationConfig> = {
   productId: {validators: [stringValidator]},
@@ -14,7 +26,7 @@ const putBookingValidatorSet: Record<keyof {}, IValidationConfig> = {
 }
 
 const postBookingValidatorSet: Record<keyof {}, IValidationConfig> = {
-  slots: {validators: [stringArrayValidator]},
+  bookings: {validators: [stringArrayValidator]},
   email: {validators: [stringValidator]},
   phone: {validators: [stringValidator]},
   comment: {validators: [stringValidator]},
@@ -36,6 +48,7 @@ function bookingSlotValidator(value: unknown[]): boolean {
     const errors = validate(item, bookingSlotValidatorSet);
     return !!errors.length;
   });
+
   return incorrectSlot === undefined;
 }
 
@@ -76,8 +89,8 @@ function bookingFileValidator(value: unknown): boolean {
   }
 
   // Extra image validation.
-  const maxWidth = 5000;
-  const maxHeight = 5000;
+  const maxWidth = 10000;
+  const maxHeight = 10000;
   if (fileObj.detectedMime.startsWith('image/')) {
     if (
       fileObj.width && fileObj.width > maxWidth ||
