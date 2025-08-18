@@ -39,6 +39,7 @@ export enum COLLECTIONS {
   CONTACTS = 'contacts',
   PAYMENT_CARDS = 'paymentCards',
   SUBSCRIBERS = 'subscribers',
+  AVAILABLE_SLOTS = 'availableSlots',
   BOOKINGS = 'bookings',
   PREBOOKINGS = 'pre-bookings' // TODO: remove
 }
@@ -64,7 +65,8 @@ export enum ENV_KEYS {
 export enum ENV_SECRETS {
   JWT_SECRET = 'JWT_SECRET',
   MAIL_USER = 'MAIL_USER',
-  MAIL_PASS = 'MAIL_PASS'
+  MAIL_PASS = 'MAIL_PASS',
+  ADMIN_MAIL = 'ADMIN_MAIL'
 }
 
 export enum AD_TYPE {

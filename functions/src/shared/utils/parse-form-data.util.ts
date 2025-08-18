@@ -14,16 +14,24 @@ export interface IFormDataFile {
   height?: number; // only for image dimension validation
 }
 
-export type IFormDataBody = Record<string, string | string[] | IFormDataFile>;
+export interface IFormDataBody {
+  paymentFile: IFormDataFile;
+  bookings: string[];
+  email: string;
+  phone: string;
+  comment?: string;
+  lang?: string;
+}
 
 export function parseBookingFormData(
   headers: IncomingHttpHeaders,
-  rawBody: Buffer
+  rawBody: Buffer,
+  arrayFields?: string[]
 ): Promise<IFormDataBody> {
   return new Promise((resolve, reject) => {
     const busboyInstance = busboy({ headers });
-    const reqBody: IFormDataBody = {};
     const filePromises: Promise<void>[] = [];
+    const reqBody: any = {};
 
     busboyInstance.on('file', (fieldname, file, { filename, mimeType }) => {
       const chunks: Buffer[] = [];
@@ -78,13 +86,8 @@ export function parseBookingFormData(
     });
 
     busboyInstance.on('field', (fieldname, value) => {
-      if (reqBody[fieldname]) {
-        // already exists — make it an array
-        if (Array.isArray(reqBody[fieldname])) {
-          (reqBody[fieldname] as string[]).push(value);
-        } else {
-          reqBody[fieldname] = [reqBody[fieldname] as string, value];
-        }
+      if (arrayFields?.includes(fieldname)) {
+        reqBody[fieldname] = JSON.parse(value);
       } else {
         reqBody[fieldname] = value;
       }
@@ -93,7 +96,7 @@ export function parseBookingFormData(
     busboyInstance.on('finish', async () => {
       try {
         await Promise.all(filePromises); // wait for all async file processing
-        resolve(reqBody);
+        resolve(reqBody as IFormDataBody);
       } catch (err) {
         reject(err);
       }

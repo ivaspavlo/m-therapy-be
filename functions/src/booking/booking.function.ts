@@ -11,7 +11,7 @@ import { extractJwt, parseBookingFormData, IFormDataBody } from '../shared/utils
 import { IBookingSlot } from './booking.interface';
 import { getBookingValidator, postBookingValidator } from './booking.validator';
 
-const BookingURLs = {
+const BOOKING_SUB_URLS = {
   GET: {
     fromDate: 'fromDate',
     preBooking: 'pre-booking'
@@ -45,7 +45,7 @@ async function getBookingHandler(
   req: Request,
   res: Response
 ): Promise<any> {
-  if (req.url.includes(BookingURLs.GET.fromDate)) {
+  if (req.url.includes(BOOKING_SUB_URLS.GET.fromDate)) {
     let productId = null;
     let fromDate = null;
 
@@ -67,9 +67,9 @@ async function getBookingHandler(
     // @ts-ignore
     // const endDate = new Date(fromDate);
     // endDate.setDate(endDate.getDate() + 14);
-    // const querySnapshot: QuerySnapshot = await getFirestore().collection(COLLECTIONS.BOOKINGS).where('start', '>=', fromDate).where('start', '<=', endDate.valueOf()).get();
+    // const querySnapshot: QuerySnapshot = await getFirestore().collection(COLLECTIONS.AVAILABLE_SLOTS).where('start', '>=', fromDate).where('start', '<=', endDate.valueOf()).get();
 
-    const querySnapshot: QuerySnapshot = await getFirestore().collection(COLLECTIONS.BOOKINGS)
+    const querySnapshot: QuerySnapshot = await getFirestore().collection(COLLECTIONS.AVAILABLE_SLOTS)
       .where('start', '>=', fromDate)
       .where('productId', '==', productId)
       .get();
@@ -88,7 +88,7 @@ async function putBookingHandler(
   req: Request,
   res: Response
 ): Promise<any> {
-  if (req.url.includes(BookingURLs.PUT.preBookingConfirm)) {
+  if (req.url.includes(BOOKING_SUB_URLS.PUT.preBookingConfirm)) {
     const jwtToken = extractJwt<{preBookingId: string} | null>(
       req.query.token as string,
       process.env[ENV_SECRETS.JWT_SECRET] as string
@@ -107,11 +107,11 @@ async function putBookingHandler(
     }
 
     preBooking.data()!.bookingSlots.forEach(async (slot: IBookingSlot) => {
-      await getFirestore().collection(COLLECTIONS.BOOKINGS).doc(slot.id).update({isPreBooked: true});
+      await getFirestore().collection(COLLECTIONS.AVAILABLE_SLOTS).doc(slot.id).update({isPreBooked: true});
     });
 
     res.status(200).send(new ResponseBody({}, true));
-  } else if (req.url.includes(BookingURLs.PUT.bookingApprove)) {
+  } else if (req.url.includes(BOOKING_SUB_URLS.PUT.bookingApprove)) {
     const jwtToken = extractJwt<{id: string} | null>(
       req.query.token as string,
       process.env[ENV_SECRETS.JWT_SECRET] as string
@@ -147,7 +147,7 @@ async function putBookingHandler(
 
     reqBody.forEach((preBooking: any) => {
       preBooking.bookingSlots.forEach(async (bookingSlot: IBookingSlot) => {
-        await getFirestore().collection(COLLECTIONS.BOOKINGS).doc(bookingSlot.id).update({
+        await getFirestore().collection(COLLECTIONS.AVAILABLE_SLOTS).doc(bookingSlot.id).update({
           isBooked: true,
           isPreBooked: false,
           bookedByEmail: preBooking.email
@@ -165,18 +165,29 @@ async function postBookingHandler(
   req: Request,
   res: Response
 ): Promise<any> {
+  // const adminEmailAddress = process.env[ENV_SECRETS.ADMIN_MAIL];
+
   let reqBody: IFormDataBody | null = null;
 
   try {
-    reqBody = await parseBookingFormData(req.headers, req.body);
+    reqBody = await parseBookingFormData(req.headers, req.body, ['bookings']);
   } catch (e: unknown) {
+    logger.error('[POST BOOKING] Parse booking data failed', e);
     return res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.BAD_DATA]));
   }
 
   const validationErrors = postBookingValidator(reqBody);
   if (validationErrors) {
-    res.status(400).json(new ResponseBody(null, false, validationErrors));
-    return;
+    return res.status(400).json(new ResponseBody(null, false, validationErrors));
+  }
+
+
+
+  try {
+    await getFirestore().collection(COLLECTIONS.BOOKINGS).add(reqBody);
+  } catch (e: unknown) {
+    logger.error('[POST BOOKING] Saving booking data failed', e);
+    return res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
   }
 
   res.send(reqBody);
@@ -257,7 +268,7 @@ async function postBookingHandler(
 
   // reqBody.bookingSlots.forEach(async (slot: IBookingSlot) => {
   //   try {
-  //     await getFirestore().collection(COLLECTIONS.BOOKINGS).doc(slot.id).update({isPreBooked: true});
+  //     await getFirestore().collection(COLLECTIONS.AVAILABLE_SLOTS).doc(slot.id).update({isPreBooked: true});
   //   } catch (error: unknown) {
   //     res.status(500).json(generalError);
   //     return;
