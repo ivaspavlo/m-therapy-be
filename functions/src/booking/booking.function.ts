@@ -1,12 +1,13 @@
+import * as logger from 'firebase-functions/logger';
+import * as nodemailer from 'nodemailer';
 import { Request, Response } from 'express';
 import { onRequest } from 'firebase-functions/v2/https';
-import { logger } from 'firebase-functions';
 import { DocumentData, DocumentSnapshot, getFirestore, QuerySnapshot } from 'firebase-admin/firestore';
 
-import { COLLECTIONS, ENV_KEYS, ENV_SECRETS, ERROR_MESSAGES } from '../shared/constants';
+import { COLLECTIONS, ENV_KEYS, ENV_SECRETS, ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
 import { IUser } from '../shared/interfaces';
-import { extractJwt, parseBookingFormData, IFormDataBody } from '../shared/utils';
+import { extractJwt, parseBookingFormData, IFormDataBody, GetConfirmBookingTemplate } from '../shared/utils';
 
 import { IBookingSlot } from './booking.interface';
 import { getBookingValidator, postBookingValidator } from './booking.validator';
@@ -166,7 +167,7 @@ async function postBookingHandler(
   res: Response
 ): Promise<any> {
   // const adminEmailAddress = process.env[ENV_SECRETS.ADMIN_MAIL];
-
+  const isProd = Boolean(process.env[ENV_KEYS.IS_PROD]);
   let reqBody: IFormDataBody | null = null;
 
   try {
@@ -181,7 +182,36 @@ async function postBookingHandler(
     return res.status(400).json(new ResponseBody(null, false, validationErrors));
   }
 
+  const mailOptionsAdmin = GetConfirmBookingTemplate({
+    title: TRANSLATIONS.ua.confirmBookingTitle,
+    subject: TRANSLATIONS.ua.confirmBookingSubject,
+    to: reqBody.email,
+    message: `${TRANSLATIONS.ua.confirmBookingMessage}`,
+    config: {
+      url: `${'uiUrl'}/confirm-booking/${'token'}`
+    }
+  });
 
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: process.env[ENV_SECRETS.MAIL_USER],
+      pass: process.env[ENV_SECRETS.MAIL_PASS]
+    }
+  });
+
+  transporter.sendMail(mailOptionsAdmin, (error: unknown) => {
+    if (error) {
+      if (isProd) {
+        logger.error('[PUT BOOKING PRE_BOOKING] Nodemailer failed to send pre-booking confirmation email', error);
+      }
+      res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+      return;
+    }
+
+    logger.info(`[PUT BOOKING PRE_BOOKING] Pre-booking confirmation email was sent to: ${reqBody.email}`);
+    res.status(201).send(new ResponseBody({}, true));
+  });
 
   try {
     await getFirestore().collection(COLLECTIONS.BOOKINGS).add(reqBody);
