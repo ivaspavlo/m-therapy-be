@@ -3,7 +3,6 @@
 This is a system for booking time slots for massage sessions. It also includes authenticatio, user profile and admin functionality.
 
 <details>
-
 <summary>Project overview</summary>
 
 - The root of the project contains `index.ts` file which exports all Firebase functions as module exports. This is required for deployment to Firebase cloud. Additionally it exports as constants for integration tests.
@@ -11,11 +10,9 @@ This is a system for booking time slots for massage sessions. It also includes a
 - All APIs are contained in the folders as per business domain: auth, booking, content, manager, user etc.
 - Each feature folder usually inculdes at least three files: function, validator, interface.
 - Shared folder includes folders: constants, interfaces, models and utils. Models folder includes util classes to make it simpler to create business related objects.
-
 </details>
 
 <details>
-
 <summary>Features</summary>
 
 ### Business
@@ -36,11 +33,9 @@ Features are located in `src` folder in the separate folder each:
 - Email templates are stored in the `functions/assets` folder.
 - Eslint is used for linting: https://github.com/eslint/eslint/blob/main/packages/js/src/configs/eslint-recommended.js.
 - Jest is used for testing along with the Firebase tooling.
-
 </details>
 
 <details>
-
 <summary>Environments</summary>
 
 The application has three environments:
@@ -52,11 +47,23 @@ The application has three environments:
 - The correct env file is used automatically by Github action during the deployment.
 - For the integration test dotenv is used to set up the local env.
 - In the development mode .env file is loaded by default and in case a Firebase project is currently in use (firebase use [project]) e.g. mt-stage - then the corresponding file is getting loaded as well.
+</details>
+
+<details>
+<summary>Email templates</summary>
+
+- Email templates are stored in the `assets` folder.
+- Templates are generated with (Helm)[https://heml.io/].
+
+Instructions on how to create email template:
+- Run `npm install heml -g`.
+- Create HEML email in email.heml file.
+- Run `heml develop email.heml --open` to open in the browser.
+- After completing development run `heml build email.heml`.
 
 </details>
 
 <details>
-
 <summary>CLI commands</summary>
 
 - run linter: `npm run lint`
@@ -66,20 +73,12 @@ The application has three environments:
 - switch to a specific Firebase project: `firebase use <project_id>`
 - kill process not ended greacefully: `lsof -t -i tcp:5004 | xargs kill`
 - deploy specific function: `firebase deploy --only functions:content`
-
 </details>
 
 <details>
-
 <summary>Links</summary>
 
-### Firebase admins contacts
-https://firebase.google.com/support/troubleshooter/contact
-
-### Firestore usage
-https://console.cloud.google.com/firestore/databases
-
-### Gmail passwords management
-https://myaccount.google.com/apppasswords
-
+- (Firebase admins contacts)[https://firebase.google.com/support/troubleshooter/contact]
+- (Firestore usage)[https://console.cloud.google.com/firestore/databases]
+- (Gmail passwords management)[https://myaccount.google.com/apppasswords]
 </details>
