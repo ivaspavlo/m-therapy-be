@@ -3,7 +3,7 @@ import { LoginFunction, RegisterConfirmFunction, RegisterFunction, RemindFunctio
 import { UserFunction } from './user';
 import { ContentFunction } from './content';
 import { ManagerFunction } from './manager';
-import { Seed } from './shared/utils';
+// import { Seed } from './shared/utils';
 import { BookingFunction } from './booking';
 
 initializeApp();
@@ -28,4 +28,4 @@ export const user = UserFunction;
 export const content = ContentFunction;
 
 // Seed DB
-Seed();
+// Seed();
