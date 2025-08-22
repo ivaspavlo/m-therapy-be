@@ -25,6 +25,7 @@
       .logo-figure {
         display: inline-block;
         width: 100%;
+        margin: 16px 0;
       }
       .logo-img {
         display: inline;
@@ -78,17 +79,38 @@
           <figure class="logo-figure" href="localhost://4200" target="_blank">
             <img class="logo-img" src="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/mt-logo.png?alt=media&token=995a3cbe-4467-4321-bd40-9d1ea40f0197" alt="Logo" title="Logo" />
           </figure>
-          <h2 id="email-title" class="email-title">${ templateData.title }</h2>
+          <h2 id="email-title" class="email-title">Замовлення</h2>
         </column>
       </row>
       <hr>
       <row>
         <column>
-          <figure class="email-graphics-figure">
-            <img class="email-graphics-img" src="https://firebasestorage.googleapis.com/v0/b/mt-stage-db6be.appspot.com/o/promo-graphics-2.jpg?alt=media&token=fc3062e3-df85-4529-b266-1b9b561cc4e4" />
-          </figure>
-          <h5 class="email-subtitle">${ templateData.subtitle }</h5>
+          <h5 class="email-message">
+            <span>Ім`я: </span>
+            <span>${ templateData.name }</span>
+          </h5>
+
+          <h5 class="email-message">
+            <span>Телефон: </span>
+            <span>${ templateData.phone }</span>
+          </h5>
+
+          <h5 class="email-message">
+            <span>Email: </span>
+            <span>${ templateData.email }</span>
+          </h5>
+
+          <h5 class="email-message">
+            <span>Коментар: </span>
+            <span>${ templateData.comment ?? '_' }</span>
+          </h5>
+
+          <div>
+            test
+          </div>
+
           <p class="email-message">${ templateData.message }</p>
+
           <a class="main-link" href="${ templateData.config.url }">${ templateData.lang === 'en' ? 'Follow the link' : 'Перейти за посиланням' }</a>
         </column>
       </row>
