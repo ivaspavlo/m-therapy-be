@@ -24,3 +24,12 @@ export interface IRegisterEmail {
 export interface IConfirmBookingEmail {
   url: string
 }
+
+export interface IAdminNotificationEmail {
+  bookings: any[];
+  email: string;
+  phone: string;
+  name: string;
+  confirmLink: string;
+  comment?: string;
+}

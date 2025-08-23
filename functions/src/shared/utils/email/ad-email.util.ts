@@ -1,6 +1,5 @@
 import { IAdEmail, IEmailTemplate } from '../../interfaces';
 
-
 export const GetAdTemplate = (templateData: IEmailTemplate<IAdEmail>) => {
   return {
     from: 'Tkachuk Massage Therapy <tkachuk_massage_therapy@gmail.com>',

@@ -2,7 +2,7 @@ import * as logger from 'firebase-functions/logger';
 import * as nodemailer from 'nodemailer';
 import { Request, Response } from 'express';
 import { onRequest } from 'firebase-functions/v2/https';
-import { DocumentData, DocumentSnapshot, getFirestore, QuerySnapshot } from 'firebase-admin/firestore';
+import { DocumentData, DocumentReference, DocumentSnapshot, getFirestore, QuerySnapshot } from 'firebase-admin/firestore';
 
 import { COLLECTIONS, ENV_KEYS, ENV_SECRETS, ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
@@ -47,6 +47,8 @@ async function getBookingHandler(
   res: Response
 ): Promise<any> {
   if (req.url.includes(BOOKING_SUB_URLS.GET.fromDate)) {
+    const db = getFirestore();
+
     let productId = null;
     let fromDate = null;
 
@@ -70,7 +72,7 @@ async function getBookingHandler(
     // endDate.setDate(endDate.getDate() + 14);
     // const querySnapshot: QuerySnapshot = await getFirestore().collection(COLLECTIONS.AVAILABLE_SLOTS).where('start', '>=', fromDate).where('start', '<=', endDate.valueOf()).get();
 
-    const querySnapshot: QuerySnapshot = await getFirestore().collection(COLLECTIONS.AVAILABLE_SLOTS)
+    const querySnapshot: QuerySnapshot = await db.collection(COLLECTIONS.AVAILABLE_SLOTS)
       .where('start', '>=', fromDate)
       .where('productId', '==', productId)
       .get();
@@ -89,6 +91,8 @@ async function putBookingHandler(
   req: Request,
   res: Response
 ): Promise<any> {
+  const db = getFirestore();
+
   if (req.url.includes(BOOKING_SUB_URLS.PUT.preBookingConfirm)) {
     const jwtToken = extractJwt<{preBookingId: string} | null>(
       req.query.token as string,
@@ -102,13 +106,13 @@ async function putBookingHandler(
 
     let preBooking;
     try {
-      preBooking = await getFirestore().collection(COLLECTIONS.PREBOOKINGS).doc(jwtToken.preBookingId).get();
+      preBooking = await db.collection(COLLECTIONS.PREBOOKINGS).doc(jwtToken.preBookingId).get();
     } catch (error: unknown) {
       return res.status(500).json(generalError);
     }
 
     preBooking.data()!.bookingSlots.forEach(async (slot: IBookingSlot) => {
-      await getFirestore().collection(COLLECTIONS.AVAILABLE_SLOTS).doc(slot.id).update({isPreBooked: true});
+      await db.collection(COLLECTIONS.AVAILABLE_SLOTS).doc(slot.id).update({isPreBooked: true});
     });
 
     res.status(200).send(new ResponseBody({}, true));
@@ -125,7 +129,7 @@ async function putBookingHandler(
 
     let userDocumentData: DocumentData;
     try {
-      userDocumentData = (await getFirestore().collection(COLLECTIONS.USERS).doc(jwtToken!.id).get());
+      userDocumentData = (await db.collection(COLLECTIONS.USERS).doc(jwtToken!.id).get());
     } catch(e: any) {
       logger.error('[PUT BOOKING APPROVE] Querying DB by user ID failed', e);
       res.status(500).json(generalError);
@@ -148,7 +152,7 @@ async function putBookingHandler(
 
     reqBody.forEach((preBooking: any) => {
       preBooking.bookingSlots.forEach(async (bookingSlot: IBookingSlot) => {
-        await getFirestore().collection(COLLECTIONS.AVAILABLE_SLOTS).doc(bookingSlot.id).update({
+        await db.collection(COLLECTIONS.AVAILABLE_SLOTS).doc(bookingSlot.id).update({
           isBooked: true,
           isPreBooked: false,
           bookedByEmail: preBooking.email
@@ -167,6 +171,8 @@ async function postBookingHandler(
   res: Response
 ): Promise<any> {
   // const adminEmailAddress = process.env[ENV_SECRETS.ADMIN_MAIL];
+  const db = getFirestore();
+
   const isProd = Boolean(process.env[ENV_KEYS.IS_PROD]);
   let reqBody: IFormDataBody | null = null;
 
@@ -181,6 +187,21 @@ async function postBookingHandler(
   if (validationErrors) {
     return res.status(400).json(new ResponseBody(null, false, validationErrors));
   }
+
+  let bookingSlots: IBookingSlot[] = [];
+  try {
+    const slotsRefs: DocumentReference[] = reqBody.bookings.map((id: string) =>
+      db.collection(COLLECTIONS.AVAILABLE_SLOTS).doc(id)
+    );
+
+    const bookingSlotsDocSnapshots: DocumentSnapshot<DocumentData>[] = await db.getAll(...slotsRefs);
+    bookingSlots = bookingSlotsDocSnapshots.map((d: DocumentData) => d.data());
+  } catch (e: unknown) {
+    logger.error('[POST BOOKING] Incorrect bookings slots data', e);
+    return res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.BAD_DATA]));
+  }
+
+  console.log(bookingSlots);
 
   const mailOptionsAdmin = GetConfirmBookingTemplate({
     title: TRANSLATIONS.ua.confirmBookingTitle,
@@ -214,7 +235,7 @@ async function postBookingHandler(
   });
 
   try {
-    await getFirestore().collection(COLLECTIONS.BOOKINGS).add(reqBody);
+    await db.collection(COLLECTIONS.BOOKINGS).add(reqBody);
   } catch (e: unknown) {
     logger.error('[POST BOOKING] Saving booking data failed', e);
     return res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
