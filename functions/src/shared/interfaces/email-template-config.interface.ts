@@ -26,6 +26,7 @@ export interface IConfirmBookingEmail {
 }
 
 export interface IAdminNotificationEmail {
+  adminEmailAddress: string;
   bookings: any[];
   email: string;
   phone: string;
