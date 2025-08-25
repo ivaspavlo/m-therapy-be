@@ -4,10 +4,10 @@ import { Request, Response } from 'express';
 import { onRequest } from 'firebase-functions/v2/https';
 import { DocumentData, DocumentReference, DocumentSnapshot, getFirestore, QuerySnapshot } from 'firebase-admin/firestore';
 
-import { COLLECTIONS, ENV_KEYS, ENV_SECRETS, ERROR_MESSAGES, TRANSLATIONS } from '../shared/constants';
+import { COLLECTIONS, ENV_KEYS, ENV_SECRETS, ERROR_MESSAGES } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
 import { IUser } from '../shared/interfaces';
-import { extractJwt, parseBookingFormData, IFormDataBody, GetConfirmBookingTemplate } from '../shared/utils';
+import { extractJwt, parseBookingFormData, IFormDataBody, GetAdminNotificationTemplate, generateJwt } from '../shared/utils';
 
 import { IBookingSlot } from './booking.interface';
 import { getBookingValidator, postBookingValidator } from './booking.validator';
@@ -29,7 +29,7 @@ const jwtError = new ResponseBody(null, false, [ERROR_MESSAGES.JWT]);
 
 export const BookingFunction = onRequest(
   {
-    secrets: [ENV_SECRETS.JWT_SECRET],
+    secrets: [ENV_SECRETS.MAIL_PASS, ENV_SECRETS.MAIL_USER, ENV_SECRETS.JWT_SECRET],
     cors: [process.env[ENV_KEYS.UI_URL]!, process.env[ENV_KEYS.UI_URL_LOCAL]!]
   },
   async (req: Request, res: Response): Promise<void> => {
@@ -170,10 +170,13 @@ async function postBookingHandler(
   req: Request,
   res: Response
 ): Promise<any> {
-  // const adminEmailAddress = process.env[ENV_SECRETS.ADMIN_MAIL];
+  const uiUrl = process.env[ENV_KEYS.UI_URL];
+  const resetTokenExp = process.env[ENV_KEYS.RESET_TOKEN_EXP];
+  const adminEmailAddress = process.env[ENV_SECRETS.ADMIN_MAIL]!;
+  const jwtSecret = '' // process.env[ENV_SECRETS.JWT_SECRET]!;
+
   const db = getFirestore();
 
-  const isProd = Boolean(process.env[ENV_KEYS.IS_PROD]);
   let reqBody: IFormDataBody | null = null;
 
   try {
@@ -201,16 +204,26 @@ async function postBookingHandler(
     return res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.BAD_DATA]));
   }
 
-  console.log(bookingSlots);
+  let confirmToken;
+  try {
+    confirmToken = generateJwt(
+      { email: reqBody.email }, // Refactor
+      jwtSecret,
+      { expiresIn: resetTokenExp }
+    );
+  } catch (error: unknown) {
+    logger.error('[POST BOOKING] Signing JWT for admin booking confirmation email failed');
+    res.status(500).json(generalError);
+  }
 
-  const mailOptionsAdmin = GetConfirmBookingTemplate({
-    title: TRANSLATIONS.ua.confirmBookingTitle,
-    subject: TRANSLATIONS.ua.confirmBookingSubject,
-    to: reqBody.email,
-    message: `${TRANSLATIONS.ua.confirmBookingMessage}`,
-    config: {
-      url: `${'uiUrl'}/confirm-booking/${'token'}`
-    }
+  const mailOptionsAdmin = GetAdminNotificationTemplate({
+    adminEmailAddress,
+    email: reqBody.email,
+    comment: reqBody.comment,
+    phone: reqBody.phone,
+    bookings: bookingSlots,
+    name: 'Test',
+    confirmLink: `${uiUrl}/confirm-booking-admin/${confirmToken}`
   });
 
   const transporter = nodemailer.createTransport({
@@ -223,14 +236,13 @@ async function postBookingHandler(
 
   transporter.sendMail(mailOptionsAdmin, (error: unknown) => {
     if (error) {
-      if (isProd) {
-        logger.error('[PUT BOOKING PRE_BOOKING] Nodemailer failed to send pre-booking confirmation email', error);
-      }
+      logger.error('[POST BOOKING] Nodemailer failed to send admin confirmation email', error);
+
       res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       return;
     }
 
-    logger.info(`[PUT BOOKING PRE_BOOKING] Pre-booking confirmation email was sent to: ${reqBody.email}`);
+    logger.info(`[POST BOOKING] Booking admin confirmation email was sent.`);
     res.status(201).send(new ResponseBody({}, true));
   });
 
@@ -238,14 +250,13 @@ async function postBookingHandler(
     await db.collection(COLLECTIONS.BOOKINGS).add(reqBody);
   } catch (e: unknown) {
     logger.error('[POST BOOKING] Saving booking data failed', e);
+
     return res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
   }
 
   res.send(reqBody);
 
-  // const uiUrl = process.env[ENV_KEYS.UI_URL];
-  // const resetTokenExp = process.env[ENV_KEYS.RESET_TOKEN_EXP];
-  // const isProd = Boolean(process.env[ENV_KEYS.IS_PROD]);
+
 
   // const reqBody: IPreBooking = req.body;
   // const validationErrors = putBookingValidator(reqBody);

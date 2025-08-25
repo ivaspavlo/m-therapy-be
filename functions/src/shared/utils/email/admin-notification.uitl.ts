@@ -1,16 +1,16 @@
-import { IAdminNotificationEmail, IEmailTemplate } from '../../interfaces';
+import { IAdminNotificationEmail } from '../../interfaces';
 
-export const GetAdminNotificationTemplate = (templateData: IEmailTemplate<IAdminNotificationEmail>) => {
+export const GetAdminNotificationTemplate = (templateData: IAdminNotificationEmail) => {
   
 
   return {
     from: 'Tkachuk Massage Therapy <tkachuk_massage_therapy@gmail.com>',
-    to: templateData.to,
-    subject: templateData.subject,
+    subject: 'Запит на підтвердження замовлення',
+    to: templateData.adminEmailAddress,
     html: buildTemplate(templateData)
   };
 }
 
-const buildTemplate = (templateData: IEmailTemplate<IAdminNotificationEmail>): string => {
-  return '';
+const buildTemplate = (templateData: IAdminNotificationEmail): string => {
+  return JSON.stringify(templateData);
 }
