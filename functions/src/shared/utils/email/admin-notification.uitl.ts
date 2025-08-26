@@ -14,3 +14,29 @@ export const GetAdminNotificationTemplate = (templateData: IAdminNotificationEma
 const buildTemplate = (templateData: IAdminNotificationEmail): string => {
   return JSON.stringify(templateData);
 }
+
+export function renderBookingSlotsEmail(slots: any[]): string {
+  if (!slots || slots.length === 0) {
+    return '<p>No booking slots available.</p>';
+  }
+
+  const listItems = slots
+    .map(
+      (slot) => `
+        <li style='margin-bottom: 12px;'>
+          <strong>${slot.productName}</strong><br/>
+          Price: €${slot.productPrice.toFixed(2)}<br/>
+          From: ${new Date(slot.start).toLocaleString('de-AT')}<br/>
+          To: ${new Date(slot.end).toLocaleString('de-AT')}<br/>
+          Status: ${slot.isBooked ? 'Booked' : 'Available'}
+        </li>
+      `
+    ).join('');
+
+  return `
+    <ul style='list-style-type: disc; padding-left: 20px; font-family: Arial, sans-serif; font-size: 14px; color: #333;'>
+      ${listItems}
+    </ul>
+  `;
+}
+
