@@ -23,7 +23,7 @@ export function renderBookingSlotsEmail(slots: any[]): string {
   const listItems = slots
     .map(
       (slot) => `
-        <li style='margin-bottom: 12px;'>
+        <li>
           <strong>${slot.productName}</strong><br/>
           Price: €${slot.productPrice.toFixed(2)}<br/>
           From: ${new Date(slot.start).toLocaleString('de-AT')}<br/>
@@ -34,7 +34,7 @@ export function renderBookingSlotsEmail(slots: any[]): string {
     ).join('');
 
   return `
-    <ul style='list-style-type: disc; padding-left: 20px; font-family: Arial, sans-serif; font-size: 14px; color: #333;'>
+    <ul>
       ${listItems}
     </ul>
   `;

@@ -91,3 +91,10 @@ export function stringArrayValidator(value: unknown): boolean {
   }
   return value.every(i => typeof i === 'string');
 }
+
+export function notEmptyArray(value: unknown): boolean {
+  if (!Array.isArray(value)) {
+    return false;
+  }
+  return !!value.length;
+}

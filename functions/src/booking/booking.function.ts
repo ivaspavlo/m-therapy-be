@@ -204,6 +204,20 @@ async function postBookingHandler(
     return res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.BAD_DATA]));
   }
 
+  const uniqueProductIds = Array.from(new Set(bookingSlots.map((s: IBookingSlot) => s.productId)));
+
+  const productRefs = uniqueProductIds.map((id: string) =>
+    db.collection(COLLECTIONS.PRODUCTS).doc(id)
+  );
+
+  const productSnapshots: DocumentSnapshot[] = await db.getAll(...productRefs);
+
+  const products = productSnapshots
+    .filter((snap: DocumentSnapshot) => snap.exists)
+    .map((snap) => ({ id: snap.id, ...snap.data() }));
+
+  console.log(products);
+  
   let confirmToken;
   try {
     confirmToken = generateJwt(

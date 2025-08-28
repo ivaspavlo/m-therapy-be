@@ -11,7 +11,8 @@ import {
   langFieldValidator,
   IFormDataBody,
   IFormDataFile,
-  stringArrayValidator
+  stringArrayValidator,
+  notEmptyArray
 } from '../shared/utils';
 
 const getBookingValidatorsSet: Record<keyof {productId: unknown, fromDate: unknown}, IValidationConfig> = {
@@ -26,7 +27,7 @@ const putBookingValidatorSet: Record<keyof {}, IValidationConfig> = {
 }
 
 const postBookingValidatorSet: Record<keyof {}, IValidationConfig> = {
-  bookings: {validators: [stringArrayValidator]},
+  bookings: {validators: [notEmptyArray, stringArrayValidator]},
   email: {validators: [stringValidator]},
   phone: {validators: [stringValidator]},
   comment: {validators: [stringValidator]},
