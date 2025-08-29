@@ -30,9 +30,10 @@ const postBookingValidatorSet: Record<keyof {}, IValidationConfig> = {
   bookings: {validators: [notEmptyArray, stringArrayValidator]},
   email: {validators: [stringValidator]},
   phone: {validators: [stringValidator]},
-  comment: {validators: [stringValidator]},
   paymentFile: {validators: [bookingFileValidator]},
   lang: {isOptional: true, validators: [langFieldValidator]},
+  comment: {isOptional: true, validators: [stringValidator]},
+  name: {isOptional: true, validators: [stringValidator]}
 }
 
 const bookingSlotValidatorSet: Record<keyof {}, IValidationConfig> = {

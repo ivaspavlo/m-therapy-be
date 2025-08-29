@@ -5,7 +5,7 @@ export const GetAdminNotificationTemplate = (templateData: IAdminNotificationEma
 
   return {
     from: 'Tkachuk Massage Therapy <tkachuk_massage_therapy@gmail.com>',
-    subject: 'Запит на підтвердження замовлення',
+    subject: 'Підтвердження замовлення',
     to: templateData.adminEmailAddress,
     html: buildTemplate(templateData)
   };

@@ -21,6 +21,7 @@ export interface IFormDataBody {
   phone: string;
   comment?: string;
   lang?: string;
+  name?: string;
 }
 
 export function parseBookingFormData(

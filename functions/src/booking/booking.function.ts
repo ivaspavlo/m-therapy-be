@@ -1,5 +1,6 @@
 import * as logger from 'firebase-functions/logger';
 import * as nodemailer from 'nodemailer';
+
 import { Request, Response } from 'express';
 import { onRequest } from 'firebase-functions/v2/https';
 import { DocumentData, DocumentReference, DocumentSnapshot, getFirestore, QuerySnapshot } from 'firebase-admin/firestore';
@@ -173,9 +174,35 @@ async function postBookingHandler(
   const uiUrl = process.env[ENV_KEYS.UI_URL];
   const resetTokenExp = process.env[ENV_KEYS.RESET_TOKEN_EXP];
   const adminEmailAddress = process.env[ENV_SECRETS.ADMIN_MAIL]!;
-  const jwtSecret = '' // process.env[ENV_SECRETS.JWT_SECRET]!;
+  const jwtSecret = process.env[ENV_SECRETS.JWT_SECRET]!;
 
   const db = getFirestore();
+
+  const jwtToken = extractJwt<{[key:string]: string} | null>(
+    req.headers.authorization as string,
+    process.env[ENV_SECRETS.JWT_SECRET] as string
+  );
+
+  let user: IUser | null = null;
+
+  if (jwtToken) {
+    let userDocumentData: DocumentData;
+
+    try {
+      userDocumentData = (await getFirestore().collection(COLLECTIONS.USERS).doc(jwtToken!.id).get());
+    } catch(e: any) {
+      logger.error('[MANAGER] Querying DB failed', e);
+      res.status(500).json(generalError);
+      return;
+    }
+
+    if (!userDocumentData.exists) {
+      res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_FOUND]));
+      return;
+    }
+
+    user = userDocumentData.data() as IUser;
+  }
 
   let reqBody: IFormDataBody | null = null;
 
@@ -216,8 +243,6 @@ async function postBookingHandler(
     .filter((snap: DocumentSnapshot) => snap.exists)
     .map((snap) => ({ id: snap.id, ...snap.data() }));
 
-  console.log(products);
-  
   let confirmToken;
   try {
     confirmToken = generateJwt(
@@ -232,11 +257,12 @@ async function postBookingHandler(
 
   const mailOptionsAdmin = GetAdminNotificationTemplate({
     adminEmailAddress,
+    products,
+    bookings: bookingSlots,
     email: reqBody.email,
     comment: reqBody.comment,
     phone: reqBody.phone,
-    bookings: bookingSlots,
-    name: 'Test',
+    name: reqBody.name || `${user?.firstname} ${user?.lastname}`,
     confirmLink: `${uiUrl}/confirm-booking-admin/${confirmToken}`
   });
 

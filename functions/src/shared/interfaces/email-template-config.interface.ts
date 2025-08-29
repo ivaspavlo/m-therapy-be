@@ -1,3 +1,5 @@
+import { IBookingSlot } from '../../booking/booking.interface'
+
 export interface IEmailTemplate<T> {
   lang?: string,
   to: string,
@@ -27,7 +29,8 @@ export interface IConfirmBookingEmail {
 
 export interface IAdminNotificationEmail {
   adminEmailAddress: string;
-  bookings: any[];
+  products: any[];
+  bookings: IBookingSlot[];
   email: string;
   phone: string;
   name: string;
