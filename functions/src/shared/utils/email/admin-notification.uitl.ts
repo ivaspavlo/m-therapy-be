@@ -1,21 +1,31 @@
 import { IAdminNotificationEmail } from '../../interfaces';
 
 export const GetAdminNotificationTemplate = (templateData: IAdminNotificationEmail) => {
-  
+  const slotsWithProductData = templateData.bookings.map((b) => {
+    const product = templateData.products.find(p => p.id === b.productId);
+    return {
+      ...b,
+      productName: product?.name || '',
+      productPrice: product?.price || ''
+    }
+  });
+
+  const bookingSlotsDataHtml = renderBookingSlotsForEmail(slotsWithProductData);
 
   return {
     from: 'Tkachuk Massage Therapy <tkachuk_massage_therapy@gmail.com>',
     subject: 'Підтвердження замовлення',
     to: templateData.adminEmailAddress,
-    html: buildTemplate(templateData)
+    html: buildTemplate(templateData, bookingSlotsDataHtml)
   };
 }
 
-const buildTemplate = (templateData: IAdminNotificationEmail): string => {
-  return JSON.stringify(templateData);
+const buildTemplate = (templateData: IAdminNotificationEmail, bookingSlotsDataHtml: string): string => {
+  console.log(templateData, bookingSlotsDataHtml);
+  return '';
 }
 
-export function renderBookingSlotsEmail(slots: any[]): string {
+export function renderBookingSlotsForEmail(slots: any[]): string {
   if (!slots || slots.length === 0) {
     return '<p>No booking slots available.</p>';
   }
