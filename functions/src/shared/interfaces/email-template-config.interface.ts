@@ -1,4 +1,5 @@
 import { IBookingSlot } from '../../booking/booking.interface'
+import { IProduct } from './product.interface'
 
 export interface IEmailTemplate<T> {
   lang?: string,
@@ -27,9 +28,9 @@ export interface IConfirmBookingEmail {
   url: string
 }
 
-export interface IAdminNotificationEmail {
+export interface IAdminNotificationTemplateData {
   adminEmailAddress: string;
-  products: any[];
+  products: IProduct[];
   bookings: IBookingSlot[];
   email: string;
   phone: string;
