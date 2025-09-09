@@ -7,7 +7,7 @@ import { DocumentData, DocumentReference, DocumentSnapshot, getFirestore, QueryS
 
 import { COLLECTIONS, ENV_KEYS, ENV_SECRETS, ERROR_MESSAGES } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
-import { IUser } from '../shared/interfaces';
+import { IProduct, IUser } from '../shared/interfaces';
 import { extractJwt, parseBookingFormData, IFormDataBody, GetAdminNotificationTemplate, generateJwt } from '../shared/utils';
 
 import { IBookingSlot } from './booking.interface';
@@ -241,7 +241,7 @@ async function postBookingHandler(
 
   const products = productSnapshots
     .filter((snap: DocumentSnapshot) => snap.exists)
-    .map((snap) => ({ id: snap.id, ...snap.data() }));
+    .map((snap) => ({ id: snap.id, ...snap.data() })) as IProduct[];
 
   let confirmToken;
   try {
