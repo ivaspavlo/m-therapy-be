@@ -233,15 +233,17 @@ async function postBookingHandler(
 
   const uniqueProductIds = Array.from(new Set(bookingSlots.map((s: IBookingSlot) => s.productId)));
 
-  const productRefs = uniqueProductIds.map((id: string) =>
-    db.collection(COLLECTIONS.PRODUCTS).doc(id)
-  );
+  const products: IProduct[] = [];
 
-  const productSnapshots: DocumentSnapshot[] = await db.getAll(...productRefs);
+  for (const productId of uniqueProductIds) {
+    const snap = await db.collection(COLLECTIONS.PRODUCTS)
+      .where('id', '==', productId)
+      .get();
 
-  const products = productSnapshots
-    .filter((snap: DocumentSnapshot) => snap.exists)
-    .map((snap) => ({ id: snap.id, ...snap.data() })) as IProduct[];
+    snap.forEach((doc) => {
+      products.push({ id: doc.id, ...doc.data() } as IProduct);
+    });
+  }
 
   let confirmToken;
   try {
