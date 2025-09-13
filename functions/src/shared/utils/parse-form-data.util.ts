@@ -14,7 +14,7 @@ export interface IFormDataFile {
   height?: number; // only for image dimension validation
 }
 
-export interface IFormDataBody {
+export interface IBookingReq {
   paymentFile: IFormDataFile;
   bookings: string[];
   email: string;
@@ -28,7 +28,7 @@ export function parseBookingFormData(
   headers: IncomingHttpHeaders,
   rawBody: Buffer,
   arrayFields?: string[]
-): Promise<IFormDataBody> {
+): Promise<IBookingReq> {
   return new Promise((resolve, reject) => {
     const busboyInstance = busboy({ headers });
     const filePromises: Promise<void>[] = [];
@@ -97,7 +97,7 @@ export function parseBookingFormData(
     busboyInstance.on('finish', async () => {
       try {
         await Promise.all(filePromises); // wait for all async file processing
-        resolve(reqBody as IFormDataBody);
+        resolve(reqBody as IBookingReq);
       } catch (err) {
         reject(err);
       }

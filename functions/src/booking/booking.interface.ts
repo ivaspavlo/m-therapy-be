@@ -19,7 +19,9 @@ export interface IBooking {
   slots: string[];
   email: string;
   phone: string;
-  paymentFile: FormData;
+  paymentFileLink: string;
   comment?: string;
   isConfirmed: boolean;
+  lang?: string;
+  name?: string;
 }

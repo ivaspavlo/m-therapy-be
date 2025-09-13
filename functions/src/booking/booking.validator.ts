@@ -9,7 +9,7 @@ import {
   emailValidator,
   isFalseValidator,
   langFieldValidator,
-  IFormDataBody,
+  IBookingReq,
   IFormDataFile,
   stringArrayValidator,
   notEmptyArray
@@ -124,7 +124,7 @@ export const putBookingValidator = (
 }
 
 export const postBookingValidator = (
-  data: IFormDataBody
+  data: IBookingReq
 ): string[] | null => {
   const errors = validate(data, postBookingValidatorSet);
   return errors.length
