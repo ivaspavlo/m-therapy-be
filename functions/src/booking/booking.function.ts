@@ -4,11 +4,12 @@ import * as nodemailer from 'nodemailer';
 import { Request, Response } from 'express';
 import { onRequest } from 'firebase-functions/v2/https';
 import { DocumentData, DocumentReference, DocumentSnapshot, getFirestore, QuerySnapshot } from 'firebase-admin/firestore';
+import { getStorage } from 'firebase-admin/storage';
 
 import { COLLECTIONS, ENV_KEYS, ENV_SECRETS, ERROR_MESSAGES } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
 import { IProduct, IUser } from '../shared/interfaces';
-import { extractJwt, parseBookingFormData, IFormDataBody, GetAdminNotificationTemplate, generateJwt } from '../shared/utils';
+import { extractJwt, parseBookingFormData, IBookingReq, GetAdminNotificationTemplate, generateJwt } from '../shared/utils';
 
 import { IBookingSlot } from './booking.interface';
 import { getBookingValidator, postBookingValidator } from './booking.validator';
@@ -204,7 +205,7 @@ async function postBookingHandler(
     user = userDocumentData.data() as IUser;
   }
 
-  let reqBody: IFormDataBody | null = null;
+  let reqBody: IBookingReq | null = null;
 
   try {
     reqBody = await parseBookingFormData(req.headers, req.body, ['bookings']);
@@ -287,6 +288,24 @@ async function postBookingHandler(
     logger.info(`[POST BOOKING] Booking admin confirmation email was sent.`);
     res.status(201).send(new ResponseBody({}, true));
   });
+
+  const storage = getStorage();
+
+  const { paymentFile } = reqBody;
+  const bucket = storage.bucket();
+  const file = bucket.file(paymentFile.filename);
+  await file.save(paymentFile.buffer, {
+    contentType: paymentFile.detectedMime || paymentFile.mimeType,
+    metadata: {
+      originalName: paymentFile.filename,
+      width: paymentFile.width?.toString(),
+      height: paymentFile.height?.toString()
+    }
+  });
+  await file.makePublic();
+  const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+
+  console.log(publicUrl);
 
   try {
     await db.collection(COLLECTIONS.BOOKINGS).add(reqBody);
