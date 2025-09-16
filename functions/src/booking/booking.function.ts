@@ -4,7 +4,7 @@ import * as nodemailer from 'nodemailer';
 import { Request, Response } from 'express';
 import { onRequest } from 'firebase-functions/v2/https';
 import { DocumentData, DocumentReference, DocumentSnapshot, getFirestore, QuerySnapshot } from 'firebase-admin/firestore';
-import { getStorage } from 'firebase-admin/storage';
+// import { getStorage } from 'firebase-admin/storage';
 
 import { COLLECTIONS, ENV_KEYS, ENV_SECRETS, ERROR_MESSAGES } from '../shared/constants';
 import { ResponseBody } from '../shared/models';
@@ -289,23 +289,23 @@ async function postBookingHandler(
     res.status(201).send(new ResponseBody({}, true));
   });
 
-  const storage = getStorage();
+  // const storage = getStorage();
 
-  const { paymentFile } = reqBody;
-  const bucket = storage.bucket();
-  const file = bucket.file(paymentFile.filename);
-  await file.save(paymentFile.buffer, {
-    contentType: paymentFile.detectedMime || paymentFile.mimeType,
-    metadata: {
-      originalName: paymentFile.filename,
-      width: paymentFile.width?.toString(),
-      height: paymentFile.height?.toString()
-    }
-  });
-  await file.makePublic();
-  const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+  // const { paymentFile } = reqBody;
+  // const bucket = storage.bucket();
+  // const file = bucket.file(paymentFile.filename);
+  // await file.save(paymentFile.buffer, {
+  //   contentType: paymentFile.detectedMime || paymentFile.mimeType,
+  //   metadata: {
+  //     originalName: paymentFile.filename,
+  //     width: paymentFile.width?.toString(),
+  //     height: paymentFile.height?.toString()
+  //   }
+  // });
+  // await file.makePublic();
+  // const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
 
-  console.log(publicUrl);
+  // console.log(publicUrl);
 
   try {
     await db.collection(COLLECTIONS.BOOKINGS).add(reqBody);

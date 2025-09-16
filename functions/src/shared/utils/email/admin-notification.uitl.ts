@@ -9,6 +9,7 @@ interface IBookingSlotWithProduct extends IBookingSlot {
 export const GetAdminNotificationTemplate = (templateData: IAdminNotificationTemplateData) => {
   const slotsWithProductData = templateData.bookings.map((b) => {
     const product = templateData.products.find(p => p.id === b.productId);
+
     return {
       ...b,
       productTitle: product?.title || '',
