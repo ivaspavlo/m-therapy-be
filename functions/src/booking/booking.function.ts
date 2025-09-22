@@ -1,53 +1,77 @@
-import * as logger from 'firebase-functions/logger';
-import * as nodemailer from 'nodemailer';
+import * as logger from "firebase-functions/logger";
+import * as nodemailer from "nodemailer";
 
-import { Request, Response } from 'express';
-import { onRequest } from 'firebase-functions/v2/https';
-import { DocumentData, DocumentReference, DocumentSnapshot, getFirestore, QuerySnapshot } from 'firebase-admin/firestore';
-// import { getStorage } from 'firebase-admin/storage';
+import { Request, Response } from "express";
+import { onRequest } from "firebase-functions/v2/https";
+import {
+  DocumentData,
+  DocumentReference,
+  DocumentSnapshot,
+  getFirestore,
+  QuerySnapshot,
+} from "firebase-admin/firestore";
+import { getStorage } from "firebase-admin/storage";
 
-import { COLLECTIONS, ENV_KEYS, ENV_SECRETS, ERROR_MESSAGES } from '../shared/constants';
-import { ResponseBody } from '../shared/models';
-import { IProduct, IUser } from '../shared/interfaces';
-import { extractJwt, parseBookingFormData, IBookingReq, GetAdminNotificationTemplate, generateJwt } from '../shared/utils';
+import {
+  COLLECTIONS,
+  ENV_KEYS,
+  ENV_SECRETS,
+  ERROR_MESSAGES,
+} from "../shared/constants";
+import { ResponseBody } from "../shared/models";
+import { IProduct, IUser } from "../shared/interfaces";
+import {
+  extractJwt,
+  parseBookingFormData,
+  IBookingReq,
+  GetAdminNotificationTemplate,
+  generateJwt,
+} from "../shared/utils";
 
-import { IBookingSlot } from './booking.interface';
-import { getBookingValidator, postBookingValidator } from './booking.validator';
+import { IBookingSlot } from "./booking.interface";
+import { getBookingValidator, postBookingValidator } from "./booking.validator";
 
 const BOOKING_SUB_URLS = {
   GET: {
-    fromDate: 'fromDate',
-    preBooking: 'pre-booking'
+    fromDate: "fromDate",
+    preBooking: "pre-booking",
   },
   PUT: {
-    preBookingConfirm: 'pre-booking/confirm',
-    bookingApprove: 'approve'
+    preBookingConfirm: "pre-booking/confirm",
+    bookingApprove: "approve",
   },
-  POST: {}
-}
+  POST: {},
+};
 
 const generalError = new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]);
 const jwtError = new ResponseBody(null, false, [ERROR_MESSAGES.JWT]);
 
 export const BookingFunction = onRequest(
   {
-    secrets: [ENV_SECRETS.MAIL_PASS, ENV_SECRETS.MAIL_USER, ENV_SECRETS.JWT_SECRET],
-    cors: [process.env[ENV_KEYS.UI_URL]!, process.env[ENV_KEYS.UI_URL_LOCAL]!]
+    secrets: [
+      ENV_SECRETS.MAIL_PASS,
+      ENV_SECRETS.MAIL_USER,
+      ENV_SECRETS.JWT_SECRET,
+    ],
+    cors: [process.env[ENV_KEYS.UI_URL]!, process.env[ENV_KEYS.UI_URL_LOCAL]!],
   },
   async (req: Request, res: Response): Promise<void> => {
-    switch(req.method) {
-    case('GET'): return getBookingHandler(req, res);
-    case('PUT'): return putBookingHandler(req, res);
-    case('POST'): return postBookingHandler(req, res);
-    case('DELETE'): return deleteBookingHandler(req, res);
+    /* eslint-disable indent */
+    switch (req.method) {
+      case "GET":
+        return getBookingHandler(req, res);
+      case "PUT":
+        return putBookingHandler(req, res);
+      case "POST":
+        return postBookingHandler(req, res);
+      case "DELETE":
+        return deleteBookingHandler(req, res);
     }
+    /* eslint-enable indent */
   }
 );
 
-async function getBookingHandler(
-  req: Request,
-  res: Response
-): Promise<any> {
+async function getBookingHandler(req: Request, res: Response): Promise<any> {
   if (req.url.includes(BOOKING_SUB_URLS.GET.fromDate)) {
     const db = getFirestore();
 
@@ -59,10 +83,12 @@ async function getBookingHandler(
       // @ts-ignore
       fromDate = +req.query.fromDate as number;
     } catch (e: unknown) {
-      return res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.BAD_DATA]));
+      return res
+        .status(400)
+        .json(new ResponseBody(null, false, [ERROR_MESSAGES.BAD_DATA]));
     }
 
-    const validationErrors = getBookingValidator({productId, fromDate});
+    const validationErrors = getBookingValidator({ productId, fromDate });
     if (validationErrors) {
       res.status(400).json(new ResponseBody(null, false, validationErrors));
       return;
@@ -74,29 +100,33 @@ async function getBookingHandler(
     // endDate.setDate(endDate.getDate() + 14);
     // const querySnapshot: QuerySnapshot = await getFirestore().collection(COLLECTIONS.AVAILABLE_SLOTS).where('start', '>=', fromDate).where('start', '<=', endDate.valueOf()).get();
 
-    const querySnapshot: QuerySnapshot = await db.collection(COLLECTIONS.AVAILABLE_SLOTS)
-      .where('start', '>=', fromDate)
-      .where('productId', '==', productId)
+    const querySnapshot: QuerySnapshot = await db
+      .collection(COLLECTIONS.AVAILABLE_SLOTS)
+      .where("start", ">=", fromDate)
+      .where("productId", "==", productId)
       .get();
 
-    const docs: IBookingSlot[] = querySnapshot.docs.map((doc: DocumentSnapshot) => ({ id: doc.id, ...doc.data() } as IBookingSlot));
+    const docs: IBookingSlot[] = querySnapshot.docs.map(
+      (doc: DocumentSnapshot) => ({ id: doc.id, ...doc.data() } as IBookingSlot)
+    );
 
-    logger.info(`[GET BOOKING] Retrieved ${docs.length} bookings starting with date: ${fromDate}`);
+    logger.info(
+      `[GET BOOKING] Retrieved ${docs.length} bookings starting with date: ${fromDate}`
+    );
 
     return res.status(200).send(new ResponseBody(docs, true));
   }
 
-  return res.status(404).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_EXIST]));
+  return res
+    .status(404)
+    .json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_EXIST]));
 }
 
-async function putBookingHandler(
-  req: Request,
-  res: Response
-): Promise<any> {
+async function putBookingHandler(req: Request, res: Response): Promise<any> {
   const db = getFirestore();
 
   if (req.url.includes(BOOKING_SUB_URLS.PUT.preBookingConfirm)) {
-    const jwtToken = extractJwt<{preBookingId: string} | null>(
+    const jwtToken = extractJwt<{ preBookingId: string } | null>(
       req.query.token as string,
       process.env[ENV_SECRETS.JWT_SECRET] as string
     );
@@ -108,18 +138,24 @@ async function putBookingHandler(
 
     let preBooking;
     try {
-      preBooking = await db.collection(COLLECTIONS.PREBOOKINGS).doc(jwtToken.preBookingId).get();
+      preBooking = await db
+        .collection(COLLECTIONS.PREBOOKINGS)
+        .doc(jwtToken.preBookingId)
+        .get();
     } catch (error: unknown) {
       return res.status(500).json(generalError);
     }
 
     preBooking.data()!.bookingSlots.forEach(async (slot: IBookingSlot) => {
-      await db.collection(COLLECTIONS.AVAILABLE_SLOTS).doc(slot.id).update({isPreBooked: true});
+      await db
+        .collection(COLLECTIONS.AVAILABLE_SLOTS)
+        .doc(slot.id)
+        .update({ isPreBooked: true });
     });
 
     res.status(200).send(new ResponseBody({}, true));
   } else if (req.url.includes(BOOKING_SUB_URLS.PUT.bookingApprove)) {
-    const jwtToken = extractJwt<{id: string} | null>(
+    const jwtToken = extractJwt<{ id: string } | null>(
       req.query.token as string,
       process.env[ENV_SECRETS.JWT_SECRET] as string
     );
@@ -131,15 +167,20 @@ async function putBookingHandler(
 
     let userDocumentData: DocumentData;
     try {
-      userDocumentData = (await db.collection(COLLECTIONS.USERS).doc(jwtToken!.id).get());
-    } catch(e: any) {
-      logger.error('[PUT BOOKING APPROVE] Querying DB by user ID failed', e);
+      userDocumentData = await db
+        .collection(COLLECTIONS.USERS)
+        .doc(jwtToken!.id)
+        .get();
+    } catch (e: any) {
+      logger.error("[PUT BOOKING APPROVE] Querying DB by user ID failed", e);
       res.status(500).json(generalError);
       return;
     }
 
     if (!userDocumentData.exists) {
-      res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_FOUND]));
+      res
+        .status(400)
+        .json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_FOUND]));
       return;
     }
 
@@ -154,24 +195,26 @@ async function putBookingHandler(
 
     reqBody.forEach((preBooking: any) => {
       preBooking.bookingSlots.forEach(async (bookingSlot: IBookingSlot) => {
-        await db.collection(COLLECTIONS.AVAILABLE_SLOTS).doc(bookingSlot.id).update({
-          isBooked: true,
-          isPreBooked: false,
-          bookedByEmail: preBooking.email
-        });
+        await db
+          .collection(COLLECTIONS.AVAILABLE_SLOTS)
+          .doc(bookingSlot.id)
+          .update({
+            isBooked: true,
+            isPreBooked: false,
+            bookedByEmail: preBooking.email,
+          });
       });
 
       // todo success email send
     });
   }
 
-  return res.status(404).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_EXIST]));
+  return res
+    .status(404)
+    .json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_EXIST]));
 }
 
-async function postBookingHandler(
-  req: Request,
-  res: Response
-): Promise<any> {
+async function postBookingHandler(req: Request, res: Response): Promise<any> {
   const uiUrl = process.env[ENV_KEYS.UI_URL];
   const resetTokenExp = process.env[ENV_KEYS.RESET_TOKEN_EXP];
   const adminEmailAddress = process.env[ENV_SECRETS.ADMIN_MAIL]!;
@@ -179,7 +222,7 @@ async function postBookingHandler(
 
   const db = getFirestore();
 
-  const jwtToken = extractJwt<{[key:string]: string} | null>(
+  const jwtToken = extractJwt<{ [key: string]: string } | null>(
     req.headers.authorization as string,
     process.env[ENV_SECRETS.JWT_SECRET] as string
   );
@@ -190,15 +233,20 @@ async function postBookingHandler(
     let userDocumentData: DocumentData;
 
     try {
-      userDocumentData = (await getFirestore().collection(COLLECTIONS.USERS).doc(jwtToken!.id).get());
-    } catch(e: any) {
-      logger.error('[MANAGER] Querying DB failed', e);
+      userDocumentData = await getFirestore()
+        .collection(COLLECTIONS.USERS)
+        .doc(jwtToken!.id)
+        .get();
+    } catch (e: any) {
+      logger.error("[MANAGER] Querying DB failed", e);
       res.status(500).json(generalError);
       return;
     }
 
     if (!userDocumentData.exists) {
-      res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_FOUND]));
+      res
+        .status(400)
+        .json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_FOUND]));
       return;
     }
 
@@ -208,15 +256,19 @@ async function postBookingHandler(
   let reqBody: IBookingReq | null = null;
 
   try {
-    reqBody = await parseBookingFormData(req.headers, req.body, ['bookings']);
+    reqBody = await parseBookingFormData(req.headers, req.body, ["bookings"]);
   } catch (e: unknown) {
-    logger.error('[POST BOOKING] Parse booking data failed', e);
-    return res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.BAD_DATA]));
+    logger.error("[POST BOOKING] Parse booking data failed", e);
+    return res
+      .status(400)
+      .json(new ResponseBody(null, false, [ERROR_MESSAGES.BAD_DATA]));
   }
 
   const validationErrors = postBookingValidator(reqBody);
   if (validationErrors) {
-    return res.status(400).json(new ResponseBody(null, false, validationErrors));
+    return res
+      .status(400)
+      .json(new ResponseBody(null, false, validationErrors));
   }
 
   let bookingSlots: IBookingSlot[] = [];
@@ -225,20 +277,26 @@ async function postBookingHandler(
       db.collection(COLLECTIONS.AVAILABLE_SLOTS).doc(id)
     );
 
-    const bookingSlotsDocSnapshots: DocumentSnapshot<DocumentData>[] = await db.getAll(...slotsRefs);
+    const bookingSlotsDocSnapshots: DocumentSnapshot<DocumentData>[] =
+      await db.getAll(...slotsRefs);
     bookingSlots = bookingSlotsDocSnapshots.map((d: DocumentData) => d.data());
   } catch (e: unknown) {
-    logger.error('[POST BOOKING] Incorrect bookings slots data', e);
-    return res.status(400).json(new ResponseBody(null, false, [ERROR_MESSAGES.BAD_DATA]));
+    logger.error("[POST BOOKING] Incorrect bookings slots data", e);
+    return res
+      .status(400)
+      .json(new ResponseBody(null, false, [ERROR_MESSAGES.BAD_DATA]));
   }
 
-  const uniqueProductIds = Array.from(new Set(bookingSlots.map((s: IBookingSlot) => s.productId)));
+  const uniqueProductIds = Array.from(
+    new Set(bookingSlots.map((s: IBookingSlot) => s.productId))
+  );
 
   const products: IProduct[] = [];
 
   for (const productId of uniqueProductIds) {
-    const snap = await db.collection(COLLECTIONS.PRODUCTS)
-      .where('id', '==', productId)
+    const snap = await db
+      .collection(COLLECTIONS.PRODUCTS)
+      .where("id", "==", productId)
       .get();
 
     snap.forEach((doc) => {
@@ -254,7 +312,9 @@ async function postBookingHandler(
       { expiresIn: resetTokenExp }
     );
   } catch (error: unknown) {
-    logger.error('[POST BOOKING] Signing JWT for admin booking confirmation email failed');
+    logger.error(
+      "[POST BOOKING] Signing JWT for admin booking confirmation email failed"
+    );
     res.status(500).json(generalError);
   }
 
@@ -266,22 +326,27 @@ async function postBookingHandler(
     comment: reqBody.comment,
     phone: reqBody.phone,
     name: reqBody.name || `${user?.firstname} ${user?.lastname}`,
-    confirmLink: `${uiUrl}/confirm-booking-admin/${confirmToken}`
+    confirmLink: `${uiUrl}/confirm-booking-admin/${confirmToken}`,
   });
 
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: "gmail",
     auth: {
       user: process.env[ENV_SECRETS.MAIL_USER],
-      pass: process.env[ENV_SECRETS.MAIL_PASS]
-    }
+      pass: process.env[ENV_SECRETS.MAIL_PASS],
+    },
   });
 
   transporter.sendMail(mailOptionsAdmin, (error: unknown) => {
     if (error) {
-      logger.error('[POST BOOKING] Nodemailer failed to send admin confirmation email', error);
+      logger.error(
+        "[POST BOOKING] Nodemailer failed to send admin confirmation email",
+        error
+      );
 
-      res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+      res
+        .status(500)
+        .send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
       return;
     }
 
@@ -289,35 +354,35 @@ async function postBookingHandler(
     res.status(201).send(new ResponseBody({}, true));
   });
 
-  // const storage = getStorage();
+  const storage = getStorage();
 
-  // const { paymentFile } = reqBody;
-  // const bucket = storage.bucket();
-  // const file = bucket.file(paymentFile.filename);
-  // await file.save(paymentFile.buffer, {
-  //   contentType: paymentFile.detectedMime || paymentFile.mimeType,
-  //   metadata: {
-  //     originalName: paymentFile.filename,
-  //     width: paymentFile.width?.toString(),
-  //     height: paymentFile.height?.toString()
-  //   }
-  // });
-  // await file.makePublic();
-  // const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+  const { paymentFile } = reqBody;
+  const bucket = storage.bucket();
+  const file = bucket.file(paymentFile.filename);
+  await file.save(paymentFile.buffer, {
+    contentType: paymentFile.detectedMime || paymentFile.mimeType,
+    metadata: {
+      originalName: paymentFile.filename,
+      width: paymentFile.width?.toString(),
+      height: paymentFile.height?.toString(),
+    },
+  });
+  await file.makePublic();
+  const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
 
-  // console.log(publicUrl);
+  console.log(publicUrl);
 
   try {
     await db.collection(COLLECTIONS.BOOKINGS).add(reqBody);
   } catch (e: unknown) {
-    logger.error('[POST BOOKING] Saving booking data failed', e);
+    logger.error("[POST BOOKING] Saving booking data failed", e);
 
-    return res.status(500).json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
+    return res
+      .status(500)
+      .json(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
   }
 
   res.send(reqBody);
-
-
 
   // const reqBody: IPreBooking = req.body;
   // const validationErrors = putBookingValidator(reqBody);
@@ -403,9 +468,8 @@ async function postBookingHandler(
   // return res.status(404).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_EXIST]));
 }
 
-async function deleteBookingHandler(
-  req: Request,
-  res: Response
-): Promise<any> {
-  return res.status(404).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_EXIST]));
+async function deleteBookingHandler(req: Request, res: Response): Promise<any> {
+  return res
+    .status(404)
+    .json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_EXIST]));
 }
