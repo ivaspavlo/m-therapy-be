@@ -105,11 +105,7 @@
             <span>${ templateData.comment ?? '_' }</span>
           </h5>
 
-          <div>
-            test
-          </div>
-
-          <p class="email-message">${ templateData.message }</p>
+          ${ orders }
 
           <a class="main-link" href="${ templateData.config.url }">${ templateData.lang === 'en' ? 'Follow the link' : 'Перейти за посиланням' }</a>
         </column>
