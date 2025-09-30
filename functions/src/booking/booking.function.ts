@@ -28,7 +28,7 @@ import {
   generateJwt,
 } from "../shared/utils";
 
-import { IBookingSlot } from "./booking.interface";
+import { IBooking, IBookingSlot } from "./booking.interface";
 import { getBookingValidator, postBookingValidator } from "./booking.validator";
 
 const BOOKING_SUB_URLS = {
@@ -337,7 +337,7 @@ async function postBookingHandler(req: Request, res: Response): Promise<any> {
     },
   });
 
-  transporter.sendMail(mailOptionsAdmin, (error: unknown) => {
+  await transporter.sendMail(mailOptionsAdmin, (error: unknown) => {
     if (error) {
       logger.error(
         "[POST BOOKING] Nodemailer failed to send admin confirmation email",
@@ -351,7 +351,6 @@ async function postBookingHandler(req: Request, res: Response): Promise<any> {
     }
 
     logger.info(`[POST BOOKING] Booking admin confirmation email was sent.`);
-    res.status(201).send(new ResponseBody({}, true));
   });
 
   const storage = getStorage();
@@ -368,12 +367,21 @@ async function postBookingHandler(req: Request, res: Response): Promise<any> {
     },
   });
   await file.makePublic();
-  const publicUrl = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
+  const paymentFileLink = `https://storage.googleapis.com/${bucket.name}/${file.name}`;
 
-  console.log(publicUrl);
+  const booking: IBooking = {
+    paymentFileLink,
+    slots: reqBody.bookings,
+    email: user?.email || reqBody.email,
+    phone: user?.phone || reqBody.phone,
+    comment: reqBody.comment,
+    isConfirmed: false,
+    lang: reqBody.lang,
+    name: reqBody.name || user ? `${user?.firstname} ${user?.lastname}` : "",
+  };
 
   try {
-    await db.collection(COLLECTIONS.BOOKINGS).add(reqBody);
+    await db.collection(COLLECTIONS.BOOKINGS).add(booking);
   } catch (e: unknown) {
     logger.error("[POST BOOKING] Saving booking data failed", e);
 
@@ -383,89 +391,6 @@ async function postBookingHandler(req: Request, res: Response): Promise<any> {
   }
 
   res.send(reqBody);
-
-  // const reqBody: IPreBooking = req.body;
-  // const validationErrors = putBookingValidator(reqBody);
-  // if (validationErrors) {
-  //   res.status(400).json(new ResponseBody(null, false, validationErrors));
-  //   return;
-  // }
-
-  // let preBookingId;
-  // try {
-  //   preBookingId = (await getFirestore().collection(COLLECTIONS.PREBOOKINGS).add(reqBody)).id;
-  // } catch (error) {
-  //   return res.status(500).json(generalError);
-  // }
-
-  // let user;
-  // try {
-  //   user = await getFirestore().collection(COLLECTIONS.USERS).where('email', '==', reqBody.email).get();
-  // } catch (error) {
-  //   return res.status(500).json(generalError);
-  // }
-
-  // If user is not registered or not confirmed
-  // if (user?.empty || user.docs[0]?.data()?.isConfirmed) {
-  //   let token;
-  //   try {
-  //     token = generateJwt(
-  //       { preBookingId: preBookingId },
-  //       process.env[ENV_SECRETS.JWT_SECRET] as string,
-  //       { expiresIn: resetTokenExp }
-  //     );
-  //   } catch (error: unknown) {
-  //     logger.error('[PUT BOOKING PRE_BOOKING] Signing JWT for pre-booking confirmation email failed');
-  //     res.status(500).json(generalError);
-  //   }
-
-  //   // @ts-ignore
-  //   const currentTranslations = TRANSLATIONS[reqBody.lang];
-
-  //   const mailOptions = GetConfirmBookingTemplate({
-  //     title: currentTranslations.confirmBookingTitle,
-  //     subject: currentTranslations.confirmBookingSubject,
-  //     to: reqBody.email,
-  //     message: `${currentTranslations.confirmBookingMessage}`,
-  //     config: {
-  //       url: `${uiUrl}/confirm-booking/${token}`
-  //     }
-  //   });
-
-  //   const transporter = nodemailer.createTransport({
-  //     service: 'gmail',
-  //     auth: {
-  //       user: process.env[ENV_SECRETS.MAIL_USER],
-  //       pass: process.env[ENV_SECRETS.MAIL_PASS]
-  //     }
-  //   });
-
-  //   transporter.sendMail(mailOptions, (error: unknown) => {
-  //     if (error) {
-  //       if (isProd) {
-  //         logger.error('[PUT BOOKING PRE_BOOKING] Nodemailer failed to send pre-booking confirmation email', error);
-  //       }
-  //       res.status(500).send(new ResponseBody(null, false, [ERROR_MESSAGES.GENERAL]));
-  //       return;
-  //     }
-
-  //     logger.info(`[PUT BOOKING PRE_BOOKING] Pre-booking confirmation email was sent to: ${reqBody.email}`);
-  //     res.status(201).send(new ResponseBody({}, true));
-  //   });
-  // }
-
-  // reqBody.bookingSlots.forEach(async (slot: IBookingSlot) => {
-  //   try {
-  //     await getFirestore().collection(COLLECTIONS.AVAILABLE_SLOTS).doc(slot.id).update({isPreBooked: true});
-  //   } catch (error: unknown) {
-  //     res.status(500).json(generalError);
-  //     return;
-  //   }
-  // });
-
-  // return res.status(200).json(new ResponseBody({id: preBookingId}, true));
-
-  // return res.status(404).json(new ResponseBody(null, false, [ERROR_MESSAGES.NOT_EXIST]));
 }
 
 async function deleteBookingHandler(req: Request, res: Response): Promise<any> {
