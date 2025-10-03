@@ -16,7 +16,9 @@ This is a system for booking time slots for massage sessions. It also includes a
 <summary>Features</summary>
 
 ### Business
+
 Features are located in `src` folder in the separate folder each:
+
 - auth - auth related APIs, e.g. register, login, reset password etc.
 - user - user management APIs, e.g. get user, delete user etc.
 - booking - booking related APIs, e.g. book time slot, cancel time slot etc.
@@ -24,11 +26,13 @@ Features are located in `src` folder in the separate folder each:
 - content - simple endpoint for fetching data to populate the main web page.
 
 ### Security
+
 - CORS setup in every function.
 - Google Secrets for storing sensitive information.
 - JWT for protecting the APIs.
 
 ### Additional
+
 - Database seeding setup during the init time.
 - Email templates are stored in the `functions/assets` folder.
 - Eslint is used for linting: https://github.com/eslint/eslint/blob/main/packages/js/src/configs/eslint-recommended.js.
@@ -39,11 +43,13 @@ Features are located in `src` folder in the separate folder each:
 <summary>Environments</summary>
 
 The application has three environments:
+
 - local: set up via .env file. It is needed mostly in testing.
 - stage: set up via .env.mt-stage-db6be
 - prod: set up via .env.mt-prod-17c09
 
 ### Important notes
+
 - The correct env file is used automatically by Github action during the deployment.
 - For the integration test dotenv is used to set up the local env.
 - In the development mode .env file is loaded by default and in case a Firebase project is currently in use (firebase use [project]) e.g. mt-stage - then the corresponding file is getting loaded as well.
@@ -56,6 +62,7 @@ The application has three environments:
 - Templates are generated with (Helm)[https://heml.io/].
 
 Instructions on how to create email template:
+
 - Run `npm install heml -g`.
 - Create HEML email in email.heml file.
 - Run `heml develop email.heml --open` to open in the browser.
