@@ -102,12 +102,15 @@
 
           <h5 class="email-message">
             <span>Коментар: </span>
-            <span>${ templateData.comment ?? '_' }</span>
+            <span>${ templateData.comment ||  '-' }</span>
           </h5>
 
-          ${ orders }
+          <h5 class="email-message">
+            <span>Замовленні послуги: </span>
+            <span>${ orders }</span>
+          </h5>
 
-          <a class="main-link" href="${ templateData.config.url }">${ templateData.lang === 'en' ? 'Follow the link' : 'Перейти за посиланням' }</a>
+          <a class="main-link" href="${ templateData.config.url }">Підтвердити чи відхилити замовлення</a>
         </column>
       </row>
       <hr>
