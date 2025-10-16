@@ -318,6 +318,11 @@ async function postBookingHandler(req: Request, res: Response): Promise<any> {
     res.status(500).json(generalError);
   }
 
+  const userName =
+    reqBody.name || (user?.firstname && user?.lastname)
+      ? `${user?.firstname} ${user?.lastname}`
+      : "";
+
   const mailOptionsAdmin = GetAdminNotificationTemplate({
     adminEmailAddress,
     products,
@@ -325,7 +330,7 @@ async function postBookingHandler(req: Request, res: Response): Promise<any> {
     email: reqBody.email,
     comment: reqBody.comment,
     phone: reqBody.phone,
-    name: reqBody.name || `${user?.firstname} ${user?.lastname}`,
+    name: userName,
     confirmLink: `${uiUrl}/confirm-booking-admin/${confirmToken}`,
   });
 

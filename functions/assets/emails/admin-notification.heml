@@ -87,7 +87,7 @@
         <column>
           <h5 class="email-message">
             <span>Ім`я: </span>
-            <span>${ templateData.name }</span>
+            <span>${ templateData.name || '-' }</span>
           </h5>
 
           <h5 class="email-message">
@@ -102,7 +102,7 @@
 
           <h5 class="email-message">
             <span>Коментар: </span>
-            <span>${ templateData.comment ||  '-' }</span>
+            <span>${ templateData.comment || '-' }</span>
           </h5>
 
           <h5 class="email-message">
