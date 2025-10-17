@@ -146,7 +146,7 @@ const buildTemplate = (
                                 <h5 class="email-message header h5" style="margin: 20px 0; line-height: 17px; font-family: Helvetica,Arial,sans-serif; color: #044E3B;">
                                   <span style="display: block;">Ім'я: </span>
                                   <span style="display: block;">${
-                                    templateData.name
+                                    templateData.name || "-"
                                   }</span>
                                 </h5>
                                 <h5 class="email-message header h5" style="margin: 20px 0; line-height: 17px; font-family: Helvetica,Arial,sans-serif; color: #044E3B;">
